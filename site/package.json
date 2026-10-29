@@ -9,12 +9,13 @@
     "predev": "node scripts/sincronizar-design.mjs",
     "dev": "astro dev",
     "prebuild": "node scripts/sincronizar-design.mjs",
-    "build": "astro check && astro build && pagefind --site .vercel/output/static",
+    "build": "astro check && node scripts/verificar-rascunhos.mjs && astro build && pagefind --site .vercel/output/static",
     "preview": "astro preview",
     "check": "node scripts/sincronizar-design.mjs && astro check",
     "novo": "node scripts/novo.mjs",
     "ingerir": "tsx --env-file-if-exists=.env scripts/ingerir.ts",
-    "astro": "astro"
+    "astro": "astro",
+    "verificar-rascunhos": "node scripts/verificar-rascunhos.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.4.6",

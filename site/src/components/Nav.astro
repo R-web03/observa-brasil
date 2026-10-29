@@ -33,13 +33,29 @@ const ativo = (href: string) => atual === href || atual.startsWith(`${href}/`);
     <button type="button" class="ob-btn ob-btn--ghost ob-btn--sm" data-alternar-tema aria-label="Alternar tema claro e escuro">
       Tema
     </button>
+    <!-- No celular o design system esconde a lista acima; este menu a substitui (funciona sem JavaScript). -->
+    <details class="menu-movel">
+      <summary class="ob-btn ob-btn--secondary ob-btn--sm">Menu</summary>
+      <ul>
+        {
+          LINKS.map((l) => (
+            <li>
+              <a href={l.href} aria-current={ativo(l.href) ? 'page' : undefined}>
+                {l.rotulo}
+              </a>
+            </li>
+          ))
+        }
+        <li><button type="button" data-alternar-tema>Alternar tema claro e escuro</button></li>
+      </ul>
+    </details>
   </nav>
 </header>
 
 <script>
   // Troca entre Grafite e Claro e lembra a escolha (localStorage pode falhar: modo privado).
-  const botao = document.querySelector<HTMLButtonElement>('[data-alternar-tema]');
-  botao?.addEventListener('click', () => {
+  // Há dois botões: um na barra (computador) e um dentro do menu (celular).
+  document.querySelectorAll<HTMLButtonElement>('[data-alternar-tema]').forEach((botao) => botao.addEventListener('click', () => {
     const raiz = document.documentElement;
     const novo = raiz.getAttribute('data-theme') === 'light' ? 'grafite' : 'light';
     raiz.setAttribute('data-theme', novo);
@@ -48,5 +64,5 @@ const ativo = (href: string) => atual === href || atual.startsWith(`${href}/`);
     } catch {
       /* sem armazenamento: vale só para esta visita */
     }
-  });
+  }));
 </script>

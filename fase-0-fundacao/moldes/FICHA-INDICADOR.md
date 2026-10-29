@@ -6,7 +6,7 @@ nome: Nome do indicador
 o_que_mede: Uma frase simples.
 unidade: "%"                   # %, % do PIB, R$ milhões, índice, pessoas
 instituicao: IBGE
-serie: Nome e código da série (ex.: IPCA, Sidra tabela 1737)
+serie: "Nome e código da série (ex.: IPCA, Sidra tabela 1737)"
 link: https://fonte.a-preencher.invalid
 frequencia: mensal             # diaria | mensal | trimestral | anual
 quebras_de_serie: []           # - { data: 2020-01-01, motivo: "..." }
@@ -14,6 +14,7 @@ verbete:                       # id do verbete que explica o conceito
 andam_junto: []                # ids de indicadores do mesmo tema (para o espelhamento)
 status: rascunho
 atualizado_em:
+# Dica: se um texto tiver ": " (dois-pontos e espaço), coloque-o entre aspas "assim: desse jeito".
 ---
 
 <!--

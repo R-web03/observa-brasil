@@ -12,6 +12,7 @@ revisao_cruzada: false        # true para aulas 8, 9 e 10
 publicado_em:
 atualizado_em:
 correcoes: []                 # - { data: 2026-11-02, antes: "...", depois: "...", muda_conclusao: false }
+# Dica: se um texto tiver ": " (dois-pontos e espaço), coloque-o entre aspas "assim: desse jeito".
 ---
 
 <!--
@@ -44,11 +45,15 @@ Regras: ESTILO.md e METODO.md. Alvo de 900 a 1.400 palavras.
 
 ## Teste rápido
 
-1. <!-- Pergunta de compreensão, não de memorização. -->
-   <details><summary>Ver resposta</summary>
-   <!-- Resposta comentada: por que sim, por que não. -->
-   </details>
-2.
+<!-- 2 ou 3 perguntas de compreensão, não de memorização. A resposta fica escondida até o leitor abrir. -->
+
+<Pergunta texto="1. Pergunta de compreensão?">
+  Resposta comentada: por que sim, por que não.
+</Pergunta>
+
+<Pergunta texto="2. Pergunta de compreensão?">
+  Resposta comentada.
+</Pergunta>
 
 ## Para aprofundar
 

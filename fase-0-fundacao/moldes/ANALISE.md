@@ -15,6 +15,7 @@ data_de_corte_dos_dados: 2026-01-01
 publicado_em:
 atualizado_em:
 correcoes: []
+# Dica: se um texto tiver ": " (dois-pontos e espaço), coloque-o entre aspas "assim: desse jeito".
 ---
 
 <!--

@@ -11,6 +11,7 @@ autoria: Nome
 revisores: []
 atualizado_em:
 correcoes: []
+# Dica: se um texto tiver ": " (dois-pontos e espaço), coloque-o entre aspas "assim: desse jeito".
 ---
 
 <!-- Molde de verbete. Alvo de 150 a 400 palavras. -->

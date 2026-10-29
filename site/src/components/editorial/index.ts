@@ -5,5 +5,6 @@ import Efeito from './Efeito.astro';
 import Aviso from './Aviso.astro';
 import Afirmacao from './Afirmacao.astro';
 import Termo from './Termo.astro';
+import Pergunta from './Pergunta.astro';
 
-export const componentesEditoriais = { Fonte, NotaMetodo, Efeito, Aviso, Afirmacao, Termo };
+export const componentesEditoriais = { Fonte, NotaMetodo, Efeito, Aviso, Afirmacao, Termo, Pergunta };

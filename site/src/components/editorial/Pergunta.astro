@@ -1,0 +1,19 @@
+---
+// Pergunta do "Teste rápido", com resposta comentada escondida até o leitor abrir.
+// Uso no MDX:
+//   <Pergunta texto="Qual é o custo de oportunidade?">
+//     A resposta comentada, em markdown.
+//   </Pergunta>
+interface Props {
+  texto: string;
+}
+const { texto } = Astro.props;
+---
+
+<div class="pergunta">
+  <p class="pergunta-texto">{texto}</p>
+  <details>
+    <summary>Ver resposta</summary>
+    <div class="pergunta-resposta"><slot /></div>
+  </details>
+</div>
