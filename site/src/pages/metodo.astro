@@ -1,0 +1,42 @@
+---
+import Base from '../layouts/Base.astro';
+import Aviso from '../components/editorial/Aviso.astro';
+---
+
+<Base titulo="Método" descricao="Como o Observa Brasil analisa propostas, compara governos e trata a incerteza.">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Método</div>
+    <h1 class="ob-headline">A mesma régua para todos</h1>
+    <p class="ob-deck">Como escolhemos temas, avaliamos evidências, comparamos governos e corrigimos erros.</p>
+  </header>
+
+  <div class="artigo">
+    <Aviso tipo="info" titulo="Versão em revisão">
+      O método completo está sendo revisado por pessoas de visões econômicas diferentes antes da publicação.
+    </Aviso>
+
+    <h2>Princípios</h2>
+    <ol>
+      <li><strong>Compreensão acima de veredito.</strong> O objetivo é entender o mecanismo, não concordar com uma conclusão.</li>
+      <li><strong>Mesma régua para todos.</strong> Molde, escalas e exigência não mudam conforme o autor da proposta.</li>
+      <li><strong>Peso proporcional à evidência.</strong> Equilíbrio não é dar espaço igual a argumentos de força desigual.</li>
+      <li><strong>Dizer o que não se sabe.</strong> Incerteza faz parte da resposta.</li>
+      <li><strong>Todo número tem endereço:</strong> o que mede, fonte, período e data de consulta.</li>
+    </ol>
+
+    <h2>Tipos de afirmação</h2>
+    <p>Separamos <strong>fatos observados</strong>, <strong>estimativas</strong>, <strong>previsões</strong>, <strong>hipóteses</strong> e <strong>opiniões atribuídas</strong>, e marcamos cada uma no texto.</p>
+
+    <h2>Grau de evidência</h2>
+    <p>Todo elo de causa e efeito recebe um grau: forte, moderada, fraca, em disputa ou sem evidência. "Forte" exige vários estudos que comparem com um cenário sem a política, não só um antes e depois.</p>
+
+    <h2>O que não fazemos</h2>
+    <ul>
+      <li>Selo de "verdadeiro" ou "falso".</li>
+      <li>Ranking ou nota de governos.</li>
+      <li>Recomendação de voto ou de investimento.</li>
+    </ul>
+
+    <p><a href="/correcoes">Veja nossas correções e peça uma</a>.</p>
+  </div>
+</Base>

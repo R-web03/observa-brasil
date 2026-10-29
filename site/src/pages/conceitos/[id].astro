@@ -1,0 +1,51 @@
+---
+import { render, getEntry, type CollectionEntry } from 'astro:content';
+import Artigo from '../../components/Artigo.astro';
+import { componentesEditoriais } from '../../components/editorial';
+import { listar, url, visivel } from '../../lib/conteudo';
+
+export async function getStaticPaths() {
+  return (await listar('verbetes')).map((verbete) => ({ params: { id: verbete.id }, props: { verbete } }));
+}
+
+interface Props {
+  verbete: CollectionEntry<'verbetes'>;
+}
+
+const { verbete } = Astro.props;
+const { Content } = await render(verbete);
+const d = verbete.data;
+
+const vizinhos = (await Promise.all(d.nao_confundir_com.map((id) => getEntry('verbetes', id)))).filter(
+  (v): v is CollectionEntry<'verbetes'> => !!v && visivel(v.data.status),
+);
+---
+
+<Artigo
+  titulo={d.termo}
+  linhaFina={d.definicao}
+  editoria="Conceito"
+  tipo={d.nivel === 'basico' ? 'Básico' : 'Aprofundamento'}
+  status={d.status}
+  autoria={d.autoria}
+  revisores={d.revisores}
+  atualizadoEm={d.atualizado_em}
+  correcoes={d.correcoes}
+>
+  <Content components={componentesEditoriais} />
+
+  {
+    vizinhos.length > 0 && (
+      <aside class="ob-summary">
+        <h3>Não confundir com</h3>
+        <ul>
+          {vizinhos.map((v) => (
+            <li>
+              <a href={url('verbetes', v.id)}>{v.data.termo}</a>: {v.data.definicao}
+            </li>
+          ))}
+        </ul>
+      </aside>
+    )
+  }
+</Artigo>

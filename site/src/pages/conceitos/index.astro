@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import ListaVazia from '../../components/ListaVazia.astro';
+import { listar, url } from '../../lib/conteudo';
+
+const FAMILIAS: Record<string, string> = {
+  fundamentos: 'Fundamentos',
+  'precos-e-moeda': 'Preços e moeda',
+  'trabalho-e-renda': 'Trabalho e renda',
+  crescimento: 'Crescimento',
+  'contas-publicas': 'Contas públicas',
+  'estado-e-empresas': 'Estado e empresas',
+  correntes: 'Correntes de pensamento',
+};
+
+const verbetes = (await listar('verbetes')).sort((a, b) => a.data.termo.localeCompare(b.data.termo, 'pt-BR'));
+const porFamilia = Object.entries(FAMILIAS)
+  .map(([chave, nome]) => ({ nome, itens: verbetes.filter((v) => v.data.familia === chave) }))
+  .filter((f) => f.itens.length > 0);
+---
+
+<Base titulo="Conceitos" descricao="Glossário de economia com definições simples e o que não confundir.">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Glossário</div>
+    <h1 class="ob-headline">Conceitos de economia, sem jargão</h1>
+    <p class="ob-deck">Cada termo com uma definição curta, um exemplo e o que não confundir.</p>
+  </header>
+  {verbetes.length === 0 && <ListaVazia oQue="conceitos" />}
+  {
+    porFamilia.map((f) => (
+      <section class="artigo">
+        <h2>{f.nome}</h2>
+        <dl>
+          {f.itens.map((v) => (
+            <>
+              <dt>
+                <a href={url('verbetes', v.id)}>{v.data.termo}</a>
+              </dt>
+              <dd>{v.data.definicao}</dd>
+            </>
+          ))}
+        </dl>
+      </section>
+    ))
+  }
+</Base>

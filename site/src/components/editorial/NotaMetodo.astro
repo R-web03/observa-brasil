@@ -1,0 +1,28 @@
+---
+// Nota de método: como um número foi calculado e o que ele deixa de fora.
+interface Props {
+  titulo?: string;
+  aberta?: boolean;
+  itens?: Record<string, string>; // ex.: { Unidade: 'R$ de set./2026', Limitação: '...' }
+}
+const { titulo = 'Como calculamos', aberta = false, itens = {} } = Astro.props;
+---
+
+<details class="ob-method" open={aberta}>
+  <summary><span class="ob-method-icon" aria-hidden="true">M</span>{titulo}</summary>
+  <div class="ob-method-body">
+    <slot />
+    {
+      Object.keys(itens).length > 0 && (
+        <dl>
+          {Object.entries(itens).map(([rotulo, valor]) => (
+            <>
+              <dt>{rotulo}</dt>
+              <dd>{valor}</dd>
+            </>
+          ))}
+        </dl>
+      )
+    }
+  </div>
+</details>

@@ -1,0 +1,19 @@
+---
+// Etiqueta de efeito: cor + símbolo + palavra, nunca só cor.
+interface Props {
+  tipo: 'beneficio' | 'prejuizo' | 'misto' | 'incerto';
+  para?: string; // "para quem": obrigatório na prática editorial
+}
+const MAPA = {
+  beneficio: { classe: 'benefit', simbolo: '▲', rotulo: 'Benefício' },
+  prejuizo: { classe: 'harm', simbolo: '▼', rotulo: 'Prejuízo' },
+  misto: { classe: 'mixed', simbolo: '◐', rotulo: 'Efeito misto' },
+  incerto: { classe: 'uncertain', simbolo: '?', rotulo: 'Incerto' },
+} as const;
+const { tipo, para } = Astro.props;
+const e = MAPA[tipo];
+---
+
+<span class={`ob-effect ob-effect--${e.classe}`}>
+  <i aria-hidden="true">{e.simbolo}</i>{e.rotulo}{para && <span class="ob-sr"> para {para}</span>}
+</span>

@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cartao from '../../components/Cartao.astro';
+import ListaVazia from '../../components/ListaVazia.astro';
+import { listar, url } from '../../lib/conteudo';
+
+const trilhas = await listar('trilhas');
+---
+
+<Base titulo="Trilhas" descricao="Siga uma pergunta elo a elo e veja de que condições cada efeito depende.">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Trilhas</div>
+    <h1 class="ob-headline">Como uma coisa leva a outra</h1>
+    <p class="ob-deck">Cada trilha segue uma pergunta um passo por vez, com o mecanismo, as condições e a força da evidência.</p>
+  </header>
+  {
+    trilhas.length === 0 ? (
+      <ListaVazia oQue="trilhas" />
+    ) : (
+      <div class="grade">
+        {trilhas.map((t) => (
+          <Cartao href={url('trilhas', t.id)} titulo={t.data.pergunta} etiqueta="Trilha" rascunho={t.data.status === 'rascunho'} />
+        ))}
+      </div>
+    )
+  }
+</Base>

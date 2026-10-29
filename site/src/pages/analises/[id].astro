@@ -1,0 +1,66 @@
+---
+import { render, getEntry, type CollectionEntry } from 'astro:content';
+import Artigo from '../../components/Artigo.astro';
+import { componentesEditoriais } from '../../components/editorial';
+import { listar, url, visivel } from '../../lib/conteudo';
+import { formatarData } from '../../lib/formato';
+
+export async function getStaticPaths() {
+  return (await listar('analises')).map((analise) => ({ params: { id: analise.id }, props: { analise } }));
+}
+
+interface Props {
+  analise: CollectionEntry<'analises'>;
+}
+
+const { analise } = Astro.props;
+const { Content } = await render(analise);
+const d = analise.data;
+const ROTULO = { politica: 'Política', proposta: 'Proposta', declaracao: 'Declaração' } as const;
+
+// Pré-requisitos podem ser aulas ou verbetes.
+const preRequisitos = (
+  await Promise.all(
+    d.pre_requisitos.map(async (id) => {
+      const aula = await getEntry('aulas', id);
+      if (aula && visivel(aula.data.status)) return { href: url('aulas', id), rotulo: aula.data.titulo };
+      const verbete = await getEntry('verbetes', id);
+      if (verbete && visivel(verbete.data.status)) return { href: url('verbetes', id), rotulo: verbete.data.termo };
+      return null;
+    }),
+  )
+).filter((p) => p !== null);
+---
+
+<Artigo
+  titulo={d.titulo}
+  linhaFina={d.linha_fina}
+  editoria="Análise"
+  tipo={ROTULO[d.objeto]}
+  status={d.status}
+  autoria={d.autoria}
+  revisores={d.revisores}
+  publicadoEm={d.publicado_em}
+  atualizadoEm={d.atualizado_em}
+  correcoes={d.correcoes}
+>
+  {
+    preRequisitos.length > 0 && (
+      <aside class="ob-summary">
+        <h3>Para entender esta análise</h3>
+        <ul>
+          {preRequisitos.map((p) => (
+            <li>
+              <a href={p.href}>{p.rotulo}</a>
+            </li>
+          ))}
+        </ul>
+      </aside>
+    )
+  }
+  <p class="ob-source">
+    <span><b>Dados até:</b> {formatarData(d.data_de_corte_dos_dados)}</span>
+    <span><b>Afirmação de:</b> {formatarData(d.data_da_afirmacao)}</span>
+  </p>
+  <Content components={componentesEditoriais} />
+</Artigo>

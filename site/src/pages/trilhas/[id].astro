@@ -1,0 +1,32 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Artigo from '../../components/Artigo.astro';
+import { componentesEditoriais } from '../../components/editorial';
+import { listar } from '../../lib/conteudo';
+
+export async function getStaticPaths() {
+  return (await listar('trilhas')).map((trilha) => ({ params: { id: trilha.id }, props: { trilha } }));
+}
+
+interface Props {
+  trilha: CollectionEntry<'trilhas'>;
+}
+
+const { trilha } = Astro.props;
+const { Content } = await render(trilha);
+const d = trilha.data;
+---
+
+<Artigo
+  titulo={d.pergunta}
+  editoria="Trilha"
+  tipo="Causa e efeito"
+  status={d.status}
+  autoria={d.autoria}
+  revisores={d.revisores}
+  publicadoEm={d.publicado_em}
+  atualizadoEm={d.atualizado_em}
+  correcoes={d.correcoes}
+>
+  <Content components={componentesEditoriais} />
+</Artigo>

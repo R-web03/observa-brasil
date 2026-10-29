@@ -1,0 +1,20 @@
+---
+// Linha de fonte: obrigatória junto de todo número (METODO.md, princípio 5).
+interface Props {
+  fonte: string;
+  link: string;
+  periodo: string;
+  unidade?: string;
+  consulta: string; // "29 out. 2026"
+  limitacao?: string;
+}
+const { fonte, link, periodo, unidade, consulta, limitacao } = Astro.props;
+---
+
+<div class="ob-source">
+  <span><b>Fonte:</b> <a href={link} rel="noopener">{fonte}</a></span>
+  <span><b>Período:</b> {periodo}</span>
+  {unidade && <span><b>Unidade:</b> {unidade}</span>}
+  <span><b>Consulta:</b> {consulta}</span>
+  {limitacao && <span><b>Limitação:</b> {limitacao}</span>}
+</div>

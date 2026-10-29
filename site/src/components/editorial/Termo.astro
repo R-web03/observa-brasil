@@ -1,0 +1,26 @@
+---
+// Termo técnico com link para o verbete e a definição de uma linha.
+// Uso no MDX: <Termo id="ipca">IPCA</Termo>
+import { getEntry } from 'astro:content';
+import { visivel } from '../../lib/conteudo';
+
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+const verbete = await getEntry('verbetes', id);
+if (!verbete) throw new Error(`<Termo id="${id}">: verbete não encontrado em src/content/verbetes/`);
+const publicado = visivel(verbete.data.status);
+---
+
+{
+  publicado ? (
+    <a class="ob-link" href={`/conceitos/${id}`} title={verbete.data.definicao}>
+      <slot />
+    </a>
+  ) : (
+    <span title={verbete.data.definicao}>
+      <slot />
+    </span>
+  )
+}

@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cartao from '../../components/Cartao.astro';
+import ListaVazia from '../../components/ListaVazia.astro';
+import { listar, url } from '../../lib/conteudo';
+
+const comparacoes = await listar('comparacoes');
+---
+
+<Base titulo="Comparações" descricao="Governos, períodos e países lado a lado, com contexto e sem ranking.">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Comparações</div>
+    <h1 class="ob-headline">Lado a lado, com o contexto de cada época</h1>
+    <p class="ob-deck">Sem nota final nem ranking. Cada comparação mostra vários indicadores, os choques de cada período e quem decidiu o quê.</p>
+  </header>
+  {
+    comparacoes.length === 0 ? (
+      <ListaVazia oQue="comparações" />
+    ) : (
+      <div class="grade">
+        {comparacoes.map((c) => (
+          <Cartao
+            href={url('comparacoes', c.id)}
+            titulo={c.data.titulo}
+            resumo={c.data.lados.map((l) => l.nome).join(' · ')}
+            etiqueta="Comparação"
+            rascunho={c.data.status === 'rascunho'}
+          />
+        ))}
+      </div>
+    )
+  }
+</Base>

@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cartao from '../../components/Cartao.astro';
+import ListaVazia from '../../components/ListaVazia.astro';
+import { listar, url } from '../../lib/conteudo';
+
+const aulas = (await listar('aulas')).sort((a, b) => a.data.numero - b.data.numero);
+---
+
+<Base titulo="Curso" descricao="Economia básica em 11 aulas curtas, com exemplos brasileiros.">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Curso</div>
+    <h1 class="ob-headline">Economia básica em 11 aulas</h1>
+    <p class="ob-deck">Um caminho recomendado, nunca obrigatório. Cada aula funciona sozinha.</p>
+  </header>
+  {
+    aulas.length === 0 ? (
+      <ListaVazia oQue="aulas" />
+    ) : (
+      <ol class="grade" role="list">
+        {aulas.map((a) => (
+          <li>
+            <Cartao
+              href={url('aulas', a.id)}
+              titulo={a.data.titulo}
+              resumo={a.data.linha_fina}
+              etiqueta={`Aula ${a.data.numero}`}
+              rascunho={a.data.status !== 'publicado' && a.data.status !== 'aprovado'}
+            />
+          </li>
+        ))}
+      </ol>
+    )
+  }
+</Base>

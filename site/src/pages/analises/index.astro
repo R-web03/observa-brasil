@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cartao from '../../components/Cartao.astro';
+import ListaVazia from '../../components/ListaVazia.astro';
+import { listar, url } from '../../lib/conteudo';
+
+const ROTULO = { politica: 'Política', proposta: 'Proposta', declaracao: 'Declaração' } as const;
+const analises = (await listar('analises')).sort(
+  (a, b) => (b.data.publicado_em?.getTime() ?? 0) - (a.data.publicado_em?.getTime() ?? 0),
+);
+---
+
+<Base titulo="Análises" descricao="Propostas, declarações e políticas examinadas com o mesmo método, para qualquer governo.">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Análises</div>
+    <h1 class="ob-headline">O que uma decisão pode mudar na prática</h1>
+    <p class="ob-deck">
+      Mesmo método para qualquer governo, partido ou pessoa. <a class="ob-link" href="/metodo">Veja como analisamos</a>.
+    </p>
+  </header>
+  {
+    analises.length === 0 ? (
+      <ListaVazia oQue="análises" />
+    ) : (
+      <div class="grade">
+        {analises.map((a) => (
+          <Cartao
+            href={url('analises', a.id)}
+            titulo={a.data.titulo}
+            resumo={a.data.linha_fina}
+            etiqueta={ROTULO[a.data.objeto]}
+            rascunho={a.data.status === 'rascunho'}
+          />
+        ))}
+      </div>
+    )
+  }
+</Base>

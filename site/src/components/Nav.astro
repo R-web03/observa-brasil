@@ -1,0 +1,52 @@
+---
+const LINKS = [
+  { href: '/curso', rotulo: 'Curso' },
+  { href: '/conceitos', rotulo: 'Conceitos' },
+  { href: '/analises', rotulo: 'Análises' },
+  { href: '/comparacoes', rotulo: 'Comparações' },
+  { href: '/metodo', rotulo: 'Método' },
+];
+const atual = Astro.url.pathname;
+const ativo = (href: string) => atual === href || atual.startsWith(`${href}/`);
+---
+
+<header class="topo">
+  <nav class="ob-nav ob-nav--glass" aria-label="Principal">
+    <a class="ob-nav-brand" href="/">Observa<span>.</span>Brasil</a>
+    <ul>
+      {
+        LINKS.map((l) => (
+          <li>
+            <a href={l.href} aria-current={ativo(l.href) ? 'page' : undefined}>
+              {l.rotulo}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <a class="ob-nav-search" href="/busca">
+      Buscar um tema
+      <span class="ob-iconbtn ob-iconbtn--inverse" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+      </span>
+    </a>
+    <button type="button" class="ob-btn ob-btn--ghost ob-btn--sm" data-alternar-tema aria-label="Alternar tema claro e escuro">
+      Tema
+    </button>
+  </nav>
+</header>
+
+<script>
+  // Troca entre Grafite e Claro e lembra a escolha (localStorage pode falhar: modo privado).
+  const botao = document.querySelector<HTMLButtonElement>('[data-alternar-tema]');
+  botao?.addEventListener('click', () => {
+    const raiz = document.documentElement;
+    const novo = raiz.getAttribute('data-theme') === 'light' ? 'grafite' : 'light';
+    raiz.setAttribute('data-theme', novo);
+    try {
+      localStorage.setItem('tema', novo);
+    } catch {
+      /* sem armazenamento: vale só para esta visita */
+    }
+  });
+</script>

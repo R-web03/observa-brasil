@@ -1,0 +1,74 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import GraficoLinha from '../../components/GraficoLinha.astro';
+import Fonte from '../../components/editorial/Fonte.astro';
+import Aviso from '../../components/editorial/Aviso.astro';
+import { componentesEditoriais } from '../../components/editorial';
+import { listar } from '../../lib/conteudo';
+import { observacoes } from '../../lib/dados';
+import { formatarData, formatarMesAno } from '../../lib/formato';
+import { buscarSerie } from '../../lib/ingestao/series';
+
+export async function getStaticPaths() {
+  return (await listar('indicadores')).map((indicador) => ({ params: { id: indicador.id }, props: { indicador } }));
+}
+
+interface Props {
+  indicador: CollectionEntry<'indicadores'>;
+}
+
+const { indicador } = Astro.props;
+const { Content } = await render(indicador);
+const d = indicador.data;
+
+// A ficha e a série coletada compartilham o mesmo id.
+const serie = buscarSerie(indicador.id);
+const pontos = serie ? await observacoes(indicador.id) : [];
+const primeiro = pontos[0];
+const ultimo = pontos.at(-1);
+const hoje = formatarData(new Date());
+---
+
+<Base titulo={d.nome} descricao={d.o_que_mede} rascunho={d.status !== 'publicado' && d.status !== 'aprovado'}>
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Indicador<span class="ob-eyebrow-sep">·</span><span>{d.instituicao}</span></div>
+    <h1 class="ob-headline">{d.nome}</h1>
+    <p class="ob-deck">{d.o_que_mede}</p>
+  </header>
+
+  <div class="artigo largo">
+    {
+      pontos.length > 1 && primeiro && ultimo ? (
+        <GraficoLinha
+          titulo={d.nome}
+          descricao={`Série de ${formatarMesAno(new Date(primeiro.data))} a ${formatarMesAno(new Date(ultimo.data))}.`}
+          pontos={pontos}
+          unidade={d.unidade}
+        >
+          <Fonte
+            fonte={`${d.instituicao}, ${d.serie}`}
+            link={d.link}
+            periodo={`${formatarMesAno(new Date(primeiro.data))} a ${formatarMesAno(new Date(ultimo.data))}`}
+            unidade={d.unidade}
+            consulta={hoje}
+          />
+        </GraficoLinha>
+      ) : (
+        <Aviso tipo="info" titulo="Série ainda não carregada">
+          Os dados aparecem aqui depois que a coleta automática gravar a série no banco.
+        </Aviso>
+      )
+    }
+
+    {
+      d.quebras_de_serie.length > 0 && (
+        <Aviso tipo="info" titulo="Mudança de metodologia">
+          {d.quebras_de_serie.map((q) => `${formatarData(q.data)}: ${q.motivo}`).join(' · ')}
+        </Aviso>
+      )
+    }
+
+    <Content components={componentesEditoriais} />
+  </div>
+</Base>

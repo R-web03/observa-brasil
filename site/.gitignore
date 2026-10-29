@@ -1,0 +1,20 @@
+# build
+dist/
+.astro/
+.vercel/
+
+# dependências
+node_modules/
+
+# segredos: nunca versionar
+.env
+.env.*
+!.env.example
+
+# cópias geradas do design system (fonte: ../observa-brasil-design-system)
+src/styles/ds-*.css
+
+# logs e sistema
+npm-debug.log*
+.DS_Store
+.idea/

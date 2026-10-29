@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import Cartao from '../../components/Cartao.astro';
+import ListaVazia from '../../components/ListaVazia.astro';
+import { listar, url } from '../../lib/conteudo';
+
+const indicadores = (await listar('indicadores')).sort((a, b) => a.data.nome.localeCompare(b.data.nome, 'pt-BR'));
+---
+
+<Base titulo="Indicadores" descricao="Fichas dos indicadores usados no site: o que medem, a fonte e as limitações.">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Dados</div>
+    <h1 class="ob-headline">Indicadores, com endereço e limitações</h1>
+    <p class="ob-deck">Cada indicador tem uma ficha: o que mede, quem publica, desde quando e o que não capta.</p>
+  </header>
+  {
+    indicadores.length === 0 ? (
+      <ListaVazia oQue="indicadores" />
+    ) : (
+      <div class="grade">
+        {indicadores.map((i) => (
+          <Cartao href={url('indicadores', i.id)} titulo={i.data.nome} resumo={i.data.o_que_mede} etiqueta={i.data.instituicao} />
+        ))}
+      </div>
+    )
+  }
+</Base>

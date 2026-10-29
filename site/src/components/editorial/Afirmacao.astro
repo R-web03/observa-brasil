@@ -1,0 +1,29 @@
+---
+// Marca o tipo de uma afirmação (METODO.md, seção 2) e, para elos causais,
+// o grau de evidência (seção 3).
+interface Props {
+  tipo: 'fato' | 'estimativa' | 'previsao' | 'hipotese' | 'opiniao';
+  evidencia?: 'forte' | 'moderada' | 'fraca' | 'em-disputa' | 'sem-evidencia';
+}
+const TIPOS = {
+  fato: { rotulo: 'Fato observado', classe: 'ob-tag--outline' },
+  estimativa: { rotulo: 'Estimativa', classe: 'ob-tag--outline' },
+  previsao: { rotulo: 'Previsão', classe: 'ob-tag--outline' },
+  hipotese: { rotulo: 'Hipótese', classe: 'ob-tag--warm' },
+  opiniao: { rotulo: 'Opinião atribuída', classe: 'ob-tag--outline' },
+} as const;
+const EVIDENCIA = {
+  forte: 'Evidência forte',
+  moderada: 'Evidência moderada',
+  fraca: 'Evidência fraca',
+  'em-disputa': 'Evidência em disputa',
+  'sem-evidencia': 'Sem evidência',
+} as const;
+const { tipo, evidencia } = Astro.props;
+const t = TIPOS[tipo];
+---
+
+<span class="afirmacao">
+  <span class={`ob-tag ${t.classe}`}>{t.rotulo}</span>
+  {evidencia && <span class="ob-tag">{EVIDENCIA[evidencia]}</span>}
+</span>

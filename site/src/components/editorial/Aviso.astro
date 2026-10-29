@@ -1,0 +1,21 @@
+---
+// Avisos: incerteza, informação, dado provisório, erro, sucesso.
+interface Props {
+  tipo?: 'incerteza' | 'info' | 'provisorio' | 'erro' | 'sucesso';
+  titulo: string;
+}
+const MAPA = {
+  incerteza: { classe: 'uncertain', icone: '?', papel: 'note' },
+  info: { classe: 'info', icone: 'i', papel: 'note' },
+  provisorio: { classe: 'warning', icone: '!', papel: 'status' },
+  erro: { classe: 'error', icone: '×', papel: 'alert' },
+  sucesso: { classe: 'success', icone: '✓', papel: 'status' },
+} as const;
+const { tipo = 'incerteza', titulo } = Astro.props;
+const a = MAPA[tipo];
+---
+
+<div class={`ob-notice ob-notice--${a.classe}`} role={a.papel}>
+  <span class="ob-notice-icon" aria-hidden="true">{a.icone}</span>
+  <div><strong>{titulo}</strong><slot /></div>
+</div>

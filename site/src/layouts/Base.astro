@@ -1,0 +1,61 @@
+---
+import '../styles/ds-tokens.css';
+import '../styles/ds-components.css';
+import '../styles/site.css';
+import Nav from '../components/Nav.astro';
+import Rodape from '../components/Rodape.astro';
+
+interface Props {
+  titulo: string;
+  descricao?: string;
+  rascunho?: boolean;
+}
+
+const { titulo, descricao = 'Economia explicada com calma, com fontes e sem torcida.', rascunho = false } = Astro.props;
+const tituloCompleto = Astro.url.pathname === '/' ? 'Observa Brasil' : `${titulo} · Observa Brasil`;
+const canonico = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={canonico} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    {rascunho && <meta name="robots" content="noindex" />}
+    <!-- Aplica o tema salvo (ou o do sistema) antes de pintar a página, sem piscar. -->
+    <script is:inline>
+      (function () {
+        var tema = null;
+        try { tema = localStorage.getItem('tema'); } catch (e) {}
+        if (tema !== 'light' && tema !== 'grafite') {
+          tema = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'grafite';
+        }
+        document.documentElement.setAttribute('data-theme', tema);
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    <Nav />
+    <main id="conteudo" class="pagina" data-pagefind-body={rascunho ? undefined : ''}>
+      {
+        rascunho && (
+          <p class="faixa-rascunho" role="note">
+            <strong>Rascunho.</strong> Esta página só aparece no ambiente de desenvolvimento e não será publicada até ser aprovada.
+          </p>
+        )
+      }
+      <slot />
+    </main>
+    <Rodape />
+  </body>
+</html>

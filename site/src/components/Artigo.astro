@@ -1,0 +1,82 @@
+---
+// Moldura comum de toda página de conteúdo: cabeçalho, assinatura, corpo e correções.
+import Base from '../layouts/Base.astro';
+import { formatarData, dataIso } from '../lib/formato';
+import { ROTULO_STATUS } from '../lib/conteudo';
+
+type Correcao = { data: Date; antes: string; depois: string; muda_conclusao: boolean };
+
+interface Props {
+  titulo: string;
+  linhaFina?: string;
+  editoria: string;
+  tipo: string;
+  status: string;
+  autoria?: string;
+  revisores?: string[];
+  publicadoEm?: Date;
+  atualizadoEm?: Date;
+  tempoLeitura?: number;
+  correcoes?: Correcao[];
+}
+
+const p = Astro.props;
+const rascunho = p.status !== 'publicado' && p.status !== 'aprovado';
+const correcoes = p.correcoes ?? [];
+const mudaConclusao = correcoes.filter((c) => c.muda_conclusao);
+---
+
+<Base titulo={p.titulo} descricao={p.linhaFina} rascunho={rascunho}>
+  <article>
+    <header class="cabecalho">
+      <div class="ob-eyebrow">
+        {p.editoria}<span class="ob-eyebrow-sep">·</span><span>{p.tipo}</span>
+        {rascunho && <span class="ob-tag ob-tag--warm">{ROTULO_STATUS[p.status]}</span>}
+      </div>
+      <h1 class="ob-headline">{p.titulo}</h1>
+      {p.linhaFina && <p class="ob-deck">{p.linhaFina}</p>}
+      <div class="ob-byline">
+        {p.autoria && <span>Por <strong>{p.autoria}</strong></span>}
+        {p.revisores && p.revisores.length > 0 && <span>Revisão: {p.revisores.join(', ')}</span>}
+        {p.publicadoEm && <span>Publicado em <time datetime={dataIso(p.publicadoEm)}>{formatarData(p.publicadoEm)}</time></span>}
+        {p.atualizadoEm && <span>Atualizado em <time datetime={dataIso(p.atualizadoEm)}>{formatarData(p.atualizadoEm)}</time></span>}
+        {p.tempoLeitura && <span>Leitura de {p.tempoLeitura} min</span>}
+      </div>
+    </header>
+
+    {
+      mudaConclusao.length > 0 && (
+        <div class="ob-notice ob-notice--warning cabecalho" role="note">
+          <span class="ob-notice-icon" aria-hidden="true">!</span>
+          <div>
+            <strong>Este texto foi corrigido</strong>
+            Uma correção mudou a conclusão. Veja o registro no fim da página.
+          </div>
+        </div>
+      )
+    }
+
+    <div class="artigo">
+      <slot />
+    </div>
+
+    {
+      correcoes.length > 0 && (
+        <section class="lista-correcoes artigo" aria-labelledby="correcoes">
+          <h2 id="correcoes">Correções</h2>
+          <ul>
+            {correcoes.map((c) => (
+              <li>
+                <time datetime={dataIso(c.data)}>{formatarData(c.data)}</time>: o texto dizia "{c.antes}"; o correto é "{c.depois}".
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <p class="lista-correcoes artigo">
+      Encontrou um erro? <a href={`/correcoes?pagina=${encodeURIComponent(Astro.url.pathname)}#pedido`}>Peça uma correção</a>.
+    </p>
+  </article>
+</Base>

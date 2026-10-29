@@ -1,0 +1,44 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Artigo from '../../components/Artigo.astro';
+import { componentesEditoriais } from '../../components/editorial';
+import { listar } from '../../lib/conteudo';
+import { formatarData } from '../../lib/formato';
+
+export async function getStaticPaths() {
+  return (await listar('comparacoes')).map((comparacao) => ({ params: { id: comparacao.id }, props: { comparacao } }));
+}
+
+interface Props {
+  comparacao: CollectionEntry<'comparacoes'>;
+}
+
+const { comparacao } = Astro.props;
+const { Content } = await render(comparacao);
+const d = comparacao.data;
+---
+
+<Artigo
+  titulo={d.titulo}
+  editoria="Comparação"
+  tipo={d.lados.map((l) => l.nome).join(' e ')}
+  status={d.status}
+  autoria={d.autoria}
+  revisores={d.revisores}
+  publicadoEm={d.publicado_em}
+  atualizadoEm={d.atualizado_em}
+  correcoes={d.correcoes}
+>
+  <div class="ob-source">
+    {
+      d.lados.map((l) => (
+        <span>
+          <b>{l.nome}:</b> {l.inicio} a {l.fim}
+          {l.data_de_corte && ` (dados até ${formatarData(l.data_de_corte)})`}
+        </span>
+      ))
+    }
+    <span><b>Janela comparada:</b> {d.janela_equivalente}</span>
+  </div>
+  <Content components={componentesEditoriais} />
+</Artigo>

@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import { listar, url } from '../lib/conteudo';
+import { formatarData, dataIso } from '../lib/formato';
+import type { CollectionKey } from 'astro:content';
+
+// Junta as correções registradas no cabeçalho de cada conteúdo.
+const colecoes: { chave: CollectionKey; titulo: (d: any) => string }[] = [
+  { chave: 'aulas', titulo: (d) => d.titulo },
+  { chave: 'verbetes', titulo: (d) => d.termo },
+  { chave: 'trilhas', titulo: (d) => d.pergunta },
+  { chave: 'analises', titulo: (d) => d.titulo },
+  { chave: 'comparacoes', titulo: (d) => d.titulo },
+];
+
+const registros = (
+  await Promise.all(
+    colecoes.map(async ({ chave, titulo }) =>
+      (await listar(chave)).flatMap((item) =>
+        ((item.data as any).correcoes ?? []).map((c: any) => ({ ...c, href: url(chave, item.id), pagina: titulo(item.data) })),
+      ),
+    ),
+  )
+)
+  .flat()
+  .sort((a, b) => b.data.getTime() - a.data.getTime());
+---
+
+<Base titulo="Correções" descricao="Registro público de correções e formulário para pedir uma.">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Transparência</div>
+    <h1 class="ob-headline">Correções</h1>
+    <p class="ob-deck">Erramos às vezes. Quando acontece, corrigimos no texto e registramos aqui.</p>
+  </header>
+
+  <div class="artigo">
+    <h2>Registro</h2>
+    {
+      registros.length === 0 ? (
+        <p>Nenhuma correção registrada até agora.</p>
+      ) : (
+        <ul>
+          {registros.map((r) => (
+            <li>
+              <time datetime={dataIso(r.data)}>{formatarData(r.data)}</time>, <a href={r.href}>{r.pagina}</a>: o texto dizia
+              "{r.antes}"; o correto é "{r.depois}".
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <h2 id="pedido">Pedir uma correção</h2>
+    <div id="retorno" aria-live="polite"></div>
+
+    <form method="post" action="/api/correcoes" class="ob-stack">
+      <div class="campo">
+        <label class="ob-field-label" for="pagina">Página</label>
+        <input id="pagina" name="pagina" required maxlength="300" placeholder="/curso/o-que-a-economia-estuda" />
+      </div>
+      <div class="campo">
+        <label class="ob-field-label" for="trecho">Trecho com problema (opcional)</label>
+        <textarea id="trecho" name="trecho" rows="3" maxlength="2000"></textarea>
+      </div>
+      <div class="campo">
+        <label class="ob-field-label" for="descricao">O que está errado</label>
+        <textarea id="descricao" name="descricao" rows="5" required minlength="10" maxlength="4000"></textarea>
+      </div>
+      <div class="campo">
+        <label class="ob-field-label" for="fonte_sugerida">Fonte que mostra o correto (opcional)</label>
+        <input id="fonte_sugerida" name="fonte_sugerida" maxlength="1000" />
+      </div>
+      <div class="campo">
+        <label class="ob-field-label" for="email">Seu e-mail, se quiser resposta (opcional)</label>
+        <input id="email" name="email" type="email" maxlength="254" autocomplete="email" />
+        <span class="ob-field-help">Usado só para responder a este pedido.</span>
+      </div>
+      <div class="isca" aria-hidden="true">
+        <label for="site_web">Não preencha este campo</label>
+        <input id="site_web" name="site_web" tabindex="-1" autocomplete="off" />
+      </div>
+      <div>
+        <button class="ob-btn ob-btn--primary" type="submit">Enviar pedido</button>
+      </div>
+    </form>
+  </div>
+</Base>
+
+<script>
+  // Página estática: lê o resultado do envio na URL e preenche a página de origem.
+  const params = new URLSearchParams(location.search);
+  const retorno = document.getElementById('retorno');
+  const pagina = params.get('pagina');
+  const campoPagina = document.querySelector<HTMLInputElement>('#pagina');
+  if (pagina && campoPagina && pagina.startsWith('/')) campoPagina.value = pagina;
+
+  if (retorno && (params.has('enviado') || params.has('erro'))) {
+    const ok = params.has('enviado');
+    const caixa = document.createElement('div');
+    caixa.className = `ob-notice ob-notice--${ok ? 'success' : 'error'}`;
+    caixa.setAttribute('role', ok ? 'status' : 'alert');
+    const titulo = document.createElement('strong');
+    titulo.textContent = ok ? 'Pedido recebido. Obrigado.' : 'Não foi possível enviar.';
+    const texto = document.createElement('div');
+    texto.append(titulo, ok ? ' Vamos analisar e responder com evidência.' : ` ${params.get('erro') ?? ''}`);
+    caixa.append(texto);
+    retorno.append(caixa);
+  }
+</script>

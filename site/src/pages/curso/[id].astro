@@ -1,0 +1,45 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Artigo from '../../components/Artigo.astro';
+import { componentesEditoriais } from '../../components/editorial';
+import { listar, url } from '../../lib/conteudo';
+
+export async function getStaticPaths() {
+  const aulas = (await listar('aulas')).sort((a, b) => a.data.numero - b.data.numero);
+  return aulas.map((aula, i) => ({
+    params: { id: aula.id },
+    props: { aula, anterior: aulas[i - 1], proxima: aulas[i + 1] },
+  }));
+}
+
+interface Props {
+  aula: CollectionEntry<'aulas'>;
+  anterior?: CollectionEntry<'aulas'>;
+  proxima?: CollectionEntry<'aulas'>;
+}
+
+const { aula, anterior, proxima } = Astro.props;
+const { Content } = await render(aula);
+const d = aula.data;
+---
+
+<Artigo
+  titulo={d.titulo}
+  linhaFina={d.linha_fina}
+  editoria={`Aula ${d.numero} de 11`}
+  tipo="Curso"
+  status={d.status}
+  autoria={d.autoria}
+  revisores={d.revisores}
+  publicadoEm={d.publicado_em}
+  atualizadoEm={d.atualizado_em}
+  tempoLeitura={d.tempo_leitura_min}
+  correcoes={d.correcoes}
+>
+  <Content components={componentesEditoriais} />
+
+  <nav class="ob-row" aria-label="Navegação do curso">
+    {anterior && <a class="ob-btn ob-btn--secondary" href={url('aulas', anterior.id)}>Aula anterior</a>}
+    {proxima && <a class="ob-btn ob-btn--primary" href={url('aulas', proxima.id)}>Próxima aula: {proxima.data.titulo}</a>}
+  </nav>
+</Artigo>

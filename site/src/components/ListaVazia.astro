@@ -1,0 +1,11 @@
+---
+interface Props {
+  oQue: string;
+}
+const { oQue } = Astro.props;
+---
+
+<div class="ob-notice ob-notice--info" role="note">
+  <span class="ob-notice-icon" aria-hidden="true">i</span>
+  <div><strong>Em preparação</strong>Ainda não há {oQue} publicados. O conteúdo passa por revisão antes de entrar no site.</div>
+</div>

@@ -1,0 +1,19 @@
+---
+interface Props {
+  href: string;
+  titulo: string;
+  resumo?: string;
+  etiqueta?: string;
+  rascunho?: boolean;
+}
+const { href, titulo, resumo, etiqueta, rascunho } = Astro.props;
+---
+
+<a class="ob-card ob-card--link" href={href}>
+  <div class="ob-card-head">
+    {etiqueta && <span class="ob-tag ob-tag--section">{etiqueta}</span>}
+    {rascunho && <span class="ob-tag ob-tag--warm">Rascunho</span>}
+  </div>
+  <h2 class="t-title-3">{titulo}</h2>
+  {resumo && <p class="t-body">{resumo}</p>}
+</a>

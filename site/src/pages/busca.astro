@@ -1,0 +1,102 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base titulo="Buscar" descricao="Busque um tema, um conceito ou uma pergunta.">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Busca</div>
+    <h1 class="ob-headline">Ir direto ao tema</h1>
+  </header>
+
+  <form class="ob-search" role="search" data-busca>
+    <label class="ob-sr" for="q">Buscar</label>
+    <input id="q" name="q" type="search" placeholder="Ex.: o que é a Selic?" autocomplete="off" />
+  </form>
+  <p id="estado" class="ob-field-help" aria-live="polite"></p>
+  <ol id="resultados" class="ob-stack" role="list"></ol>
+</Base>
+
+<script>
+  // Busca estática com Pagefind (índice gerado no build). Sem servidor, sem rastreamento.
+  type Resultado = { url: string; meta: { title?: string }; excerpt: string };
+
+  const form = document.querySelector<HTMLFormElement>('[data-busca]');
+  const campo = document.querySelector<HTMLInputElement>('#q');
+  const lista = document.getElementById('resultados');
+  const estado = document.getElementById('estado');
+
+  let pagefind: any = null;
+  async function carregar() {
+    if (pagefind) return pagefind;
+    try {
+      const caminho = '/pagefind/pagefind.js';
+      pagefind = await import(/* @vite-ignore */ caminho);
+      await pagefind.options({ excerptLength: 24 });
+    } catch {
+      pagefind = null;
+    }
+    return pagefind;
+  }
+
+  function trechoSeguro(html: string): DocumentFragment {
+    // O Pagefind marca os termos com <mark>; mantemos só isso, como texto seguro.
+    const frag = document.createDocumentFragment();
+    html.split(/(<mark>.*?<\/mark>)/g).forEach((parte) => {
+      const m = parte.match(/^<mark>(.*)<\/mark>$/);
+      if (m) {
+        const mark = document.createElement('mark');
+        mark.textContent = m[1] ?? '';
+        frag.append(mark);
+      } else {
+        frag.append(parte.replace(/<[^>]*>/g, ''));
+      }
+    });
+    return frag;
+  }
+
+  async function buscar(termo: string) {
+    if (!lista || !estado) return;
+    lista.replaceChildren();
+    if (!termo.trim()) {
+      estado.textContent = '';
+      return;
+    }
+    const pf = await carregar();
+    if (!pf) {
+      estado.textContent = 'A busca fica disponível na versão publicada do site.';
+      return;
+    }
+    const busca = await pf.search(termo);
+    const dados: Resultado[] = await Promise.all(busca.results.slice(0, 10).map((r: any) => r.data()));
+    estado.textContent = dados.length ? `${busca.results.length} resultado(s)` : 'Nada encontrado. Tente outras palavras.';
+    for (const r of dados) {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.className = 'ob-card ob-card--link';
+      a.href = r.url;
+      const h = document.createElement('h2');
+      h.className = 't-title-3';
+      h.textContent = r.meta.title ?? r.url;
+      const p = document.createElement('p');
+      p.append(trechoSeguro(r.excerpt));
+      a.append(h, p);
+      li.append(a);
+      lista.append(li);
+    }
+  }
+
+  let espera: number | undefined;
+  campo?.addEventListener('input', () => {
+    clearTimeout(espera);
+    espera = window.setTimeout(() => buscar(campo.value), 200);
+  });
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (campo) buscar(campo.value);
+  });
+  const inicial = new URLSearchParams(location.search).get('q');
+  if (inicial && campo) {
+    campo.value = inicial;
+    buscar(inicial);
+  }
+</script>

@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import Cartao from '../components/Cartao.astro';
+import { listar, url } from '../lib/conteudo';
+
+const aulas = (await listar('aulas')).sort((a, b) => a.data.numero - b.data.numero);
+const primeira = aulas[0];
+const analises = (await listar('analises')).slice(0, 3);
+---
+
+<Base titulo="Início">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Economia, com calma</div>
+    <h1 class="ob-headline">Entenda a economia que mexe com a sua vida</h1>
+    <p class="ob-deck">
+      Um curso leve para quem nunca estudou economia, e um método para examinar decisões públicas com fontes e sem
+      torcida.
+    </p>
+  </header>
+
+  <section class="portas" aria-label="Por onde começar">
+    <a class="ob-card ob-card--link" href={primeira ? url('aulas', primeira.id) : '/curso'}>
+      <span class="ob-tag ob-tag--section">Curso</span>
+      <h2 class="t-title-3">Começar pelo básico</h2>
+      <p class="t-body">Onze aulas curtas, em sequência, do que a economia estuda até como avaliar uma proposta.</p>
+    </a>
+    <a class="ob-card ob-card--link" href="/busca">
+      <span class="ob-tag ob-tag--section">Busca</span>
+      <h2 class="t-title-3">Ir direto ao tema</h2>
+      <p class="t-body">Pergunte como você perguntaria a alguém: "por que a gasolina subiu?", "o que é a Selic?".</p>
+    </a>
+  </section>
+
+  {
+    analises.length > 0 && (
+      <section aria-labelledby="recentes">
+        <h2 id="recentes" class="t-title-2">Análises recentes</h2>
+        <div class="grade">
+          {analises.map((a) => (
+            <Cartao href={url('analises', a.id)} titulo={a.data.titulo} resumo={a.data.linha_fina} etiqueta="Análise" />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>
