@@ -20,7 +20,8 @@ A fase 1 (aulas 1 a 7 e cerca de 25 verbetes) só começa quando todos os itens 
 - [ ] Método, estilo e moldes lidos e ajustados por quem vai escrever
 - [ ] 2 revisores externos, de visões econômicas diferentes, convidados
 - [ ] Os 2 revisores leram o [METODO.md](METODO.md) e aprovaram, ou as objeções deles foram resolvidas
-- [ ] Aula-piloto (aula 1) escrita no molde e revisada, para testar se o molde funciona
+- [x] Aula-piloto (aula 1) escrita no molde: `site/src/content/aulas/o-que-a-economia-estuda.mdx`
+- [ ] Aula-piloto revisada (ajustar o molde com o que a revisão mostrar antes das aulas 2 a 7)
 - [ ] Decisões em aberto da proposta respondidas: nome, quem assina, licença
 
 ## Decisões já tomadas
