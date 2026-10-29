@@ -11,10 +11,9 @@ node_modules/
 .env.*
 !.env.example
 
-# cópias geradas do design system (fonte: ../observa-brasil-design-system)
-src/styles/ds-*.css
-
 # logs e sistema
 npm-debug.log*
 .DS_Store
 .idea/
+
+.vercel

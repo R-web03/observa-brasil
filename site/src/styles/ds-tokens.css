@@ -1,0 +1,192 @@
+/* Observa Brasil — tokens. Tema padrão: Grafite. Para o tema Claro: <html data-theme="light"> */
+:root,
+[data-theme="grafite"] {
+  color-scheme: dark;
+  --bg: #2a2a28;
+  --surface: #363633;
+  --surface-soft: #42423f;
+  --surface-sunken: #30302e;
+  --surface-glass: rgba(62,62,59,0.72);
+  --ink: #f3f1ed;
+  --ink-muted: #b3b2ac;
+  --ink-disabled: #6e6e69;
+  --border: #4a4a46;
+  --border-strong: #929189;
+  --inverse: #edebe6;
+  --inverse-raised: #ffffff;
+  --inverse-ink: #292a28;
+  --inverse-muted: #63645f;
+  --inverse-accent: #2a55c4;
+  --chrome: #363633;
+  --chrome-raised: #42423f;
+  --chrome-ink: #f3f1ed;
+  --chrome-muted: #b3b2ac;
+  --chrome-accent: #8fb0ff;
+  --accent: #5b8cff;
+  --accent-ink: #8fb0ff;
+  --accent-soft: #26324f;
+  --on-accent: #10172e;
+  --warm: #d08b6a;
+  --warm-ink: #e3a98c;
+  --warm-soft: #45362e;
+  --focus: #f3f1ed;
+  --focus-inverse: #292a28;
+  --success: #7bc0a0;
+  --success-soft: #23362d;
+  --warning: #e0b060;
+  --warning-soft: #3d3220;
+  --error: #f08a80;
+  --error-soft: #432826;
+  --info: #8db8d8;
+  --info-soft: #233241;
+  --on-status: #1f1f1e;
+  --chart-1: #8db8d8;
+  --chart-2: #d9ae62;
+  --chart-3: #c49ac0;
+  --chart-4: #86bfb6;
+  --chart-5: #d99a7a;
+  --chart-context: #8a8984;
+  --chart-grid: #42423f;
+  --chart-axis: #929189;
+  --seq-1: #2e4250;
+  --seq-2: #3f6379;
+  --seq-3: #5f8aa3;
+  --seq-4: #8db8d8;
+  --seq-5: #cfe2ee;
+  --div-low-2: #e3a98c;
+  --div-low-1: #8e6450;
+  --div-mid: #42423f;
+  --div-high-1: #4f7a93;
+  --div-high-2: #9cc6e0;
+  --effect-benefit: #6cc4c4;
+  --effect-harm: #ee9a6e;
+  --effect-mixed: #c3a8da;
+  --effect-uncertain: #b3b2ac;
+  --elevation-0: none;
+  --elevation-1: 0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.25);
+  --elevation-2: 0 1px 0 rgba(255,255,255,0.05) inset, 0 8px 24px rgba(0,0,0,0.30);
+  --elevation-3: 0 2px 6px rgba(0,0,0,0.30), 0 20px 48px rgba(0,0,0,0.40);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f3f1ed;
+  --surface: #ffffff;
+  --surface-soft: #e9e7e2;
+  --surface-sunken: #e2e0da;
+  --surface-glass: rgba(255,255,255,0.72);
+  --ink: #292a28;
+  --ink-muted: #63645f;
+  --ink-disabled: #a9a8a2;
+  --border: #d8d6d0;
+  --border-strong: #7a7974;
+  --inverse: #292a28;
+  --inverse-raised: #353632;
+  --inverse-ink: #f3f1ed;
+  --inverse-muted: #b3b2ac;
+  --inverse-accent: #8fb0ff;
+  --chrome: #292a28;
+  --chrome-raised: #353632;
+  --chrome-ink: #f3f1ed;
+  --chrome-muted: #b3b2ac;
+  --chrome-accent: #8fb0ff;
+  --accent: #2f5fd8;
+  --accent-ink: #2a55c4;
+  --accent-soft: #e3eafb;
+  --on-accent: #ffffff;
+  --warm: #a86a4d;
+  --warm-ink: #8f563b;
+  --warm-soft: #f2e5dd;
+  --focus: #292a28;
+  --focus-inverse: #f3f1ed;
+  --success: #2f6b4f;
+  --success-soft: #e3eee7;
+  --warning: #8a5a00;
+  --warning-soft: #f5ead3;
+  --error: #a93a32;
+  --error-soft: #f6e2df;
+  --info: #2e5e7e;
+  --info-soft: #e1eaf0;
+  --on-status: #ffffff;
+  --chart-1: #2e5266;
+  --chart-2: #9c7230;
+  --chart-3: #7d5a7a;
+  --chart-4: #4f7d77;
+  --chart-5: #a86a4d;
+  --chart-context: #a9a8a2;
+  --chart-grid: #e2e0da;
+  --chart-axis: #7a7974;
+  --seq-1: #dce5ea;
+  --seq-2: #a9bfcc;
+  --seq-3: #6f8fa4;
+  --seq-4: #3f6379;
+  --seq-5: #1f3a4a;
+  --div-low-2: #8f563b;
+  --div-low-1: #d2a88f;
+  --div-mid: #e9e7e2;
+  --div-high-1: #9db8c8;
+  --div-high-2: #2e6b8a;
+  --effect-benefit: #1f6f73;
+  --effect-harm: #a3542f;
+  --effect-mixed: #6e5c7e;
+  --effect-uncertain: #63645f;
+  --elevation-0: none;
+  --elevation-1: 0 1px 2px rgba(41,42,40,0.06);
+  --elevation-2: 0 1px 2px rgba(41,42,40,0.05), 0 6px 16px rgba(41,42,40,0.07);
+  --elevation-3: 0 2px 6px rgba(41,42,40,0.07), 0 16px 40px rgba(41,42,40,0.12);
+}
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+  --measure: 68ch;
+  --content-text: 720px;
+  --content-wide: 1040px;
+  --content-max: 1240px;
+  --gutter-mobile: 16px;
+  --gutter-desktop: 32px;
+  --bp-sm: 640px;
+  --bp-md: 960px;
+  --bp-lg: 1280px;
+  --tap-target: 44px;
+  --font-serif: "Newsreader", "Source Serif 4", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* Estilos de texto */
+.t-display { font-family: var(--font-serif); font-size: 52px; line-height: 56px; font-weight: 500; letter-spacing: -0.015em; }
+.t-title-1 { font-family: var(--font-serif); font-size: 40px; line-height: 46px; font-weight: 500; letter-spacing: -0.01em; }
+.t-title-2 { font-family: var(--font-sans); font-size: 28px; line-height: 35px; font-weight: 600; letter-spacing: -0.01em; }
+.t-title-3 { font-family: var(--font-sans); font-size: 22px; line-height: 29px; font-weight: 600; letter-spacing: -0.01em; }
+.t-deck { font-family: var(--font-serif); font-size: 21px; line-height: 31px; font-weight: 400; }
+.t-quote { font-family: var(--font-serif); font-size: 24px; line-height: 34px; font-weight: 400; font-style: italic; }
+.t-body-lg { font-family: var(--font-sans); font-size: 19px; line-height: 31px; font-weight: 400; }
+.t-body { font-family: var(--font-sans); font-size: 17px; line-height: 27px; font-weight: 400; }
+.t-body-sm { font-family: var(--font-sans); font-size: 15px; line-height: 23px; font-weight: 400; }
+.t-caption { font-family: var(--font-sans); font-size: 13px; line-height: 19px; font-weight: 400; }
+.t-eyebrow { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.t-label { font-family: var(--font-sans); font-size: 14px; line-height: 20px; font-weight: 600; }
+.t-button { font-family: var(--font-sans); font-size: 15px; line-height: 20px; font-weight: 600; }
+.t-figure-xl { font-family: var(--font-sans); font-size: 44px; line-height: 48px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums lining-nums; }
+.t-figure { font-family: var(--font-sans); font-size: 24px; line-height: 30px; font-weight: 600; font-variant-numeric: tabular-nums lining-nums; }
+.t-data { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 400; font-variant-numeric: tabular-nums lining-nums; }
+.t-meta { font-family: var(--font-mono); font-size: 12px; line-height: 18px; font-weight: 400; font-variant-numeric: tabular-nums lining-nums; }
+@media (max-width: 640px) {
+  .t-display { font-size: 36px; line-height: 40px; }
+  .t-title-1 { font-size: 30px; line-height: 36px; }
+  .t-body-lg { font-size: 17px; line-height: 27px; }
+}
