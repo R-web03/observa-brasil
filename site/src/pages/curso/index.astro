@@ -25,7 +25,7 @@ const aulas = (await listar('aulas')).sort((a, b) => a.data.numero - b.data.nume
               titulo={a.data.titulo}
               resumo={a.data.linha_fina}
               etiqueta={`Aula ${a.data.numero}`}
-              rascunho={a.data.status !== 'publicado' && a.data.status !== 'aprovado'}
+              status={a.data.status}
             />
           </li>
         ))}

@@ -10,6 +10,7 @@ import { formatarData, formatarMesAno, formatarNumero } from '../lib/formato';
 const aulas = (await listar('aulas')).sort((a, b) => a.data.numero - b.data.numero);
 const primeira = aulas[0];
 const fichas = new Set((await listar('indicadores')).map((i) => i.id));
+const totalConceitos = (await listar('verbetes')).length;
 
 // Painel de indicadores: valores reais do banco (BCB e IBGE), lidos no build.
 // Sem banco configurado ou sem dados, o painel simplesmente não aparece.
@@ -41,8 +42,8 @@ const painel = (
 ).filter((p) => p !== null);
 
 const portas = [
-  { href: primeira ? url('aulas', primeira.id) : '/curso', etiqueta: 'Curso · 11 aulas', titulo: 'Economia do zero, uma aula por vez', meta: 'Comece pela aula 1' },
-  { href: '/conceitos', etiqueta: 'Conceitos', titulo: 'Inflação, juros, dívida: o que cada palavra quer dizer', meta: 'Glossário em linguagem simples' },
+  { href: primeira ? url('aulas', primeira.id) : '/curso', etiqueta: `Curso · ${aulas.length} de 11 aulas`, titulo: 'Economia do zero, uma aula por vez', meta: 'Comece pela aula 1' },
+  { href: '/conceitos', etiqueta: 'Conceitos', titulo: 'Inflação, juros, dívida: o que cada palavra quer dizer', meta: `${totalConceitos} termos em linguagem simples` },
   { href: '/metodo', etiqueta: 'Método', titulo: 'A mesma régua para todos os governos', meta: 'Como checamos cada número' },
 ];
 

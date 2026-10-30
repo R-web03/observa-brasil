@@ -19,7 +19,7 @@ const trilhas = await listar('trilhas');
     ) : (
       <div class="grade">
         {trilhas.map((t) => (
-          <Cartao href={url('trilhas', t.id)} titulo={t.data.pergunta} etiqueta="Trilha" rascunho={t.data.status === 'rascunho'} />
+          <Cartao href={url('trilhas', t.id)} titulo={t.data.pergunta} etiqueta="Trilha" status={t.data.status} />
         ))}
       </div>
     )

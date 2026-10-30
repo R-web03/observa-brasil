@@ -2,7 +2,7 @@
 // Moldura comum de toda página de conteúdo: cabeçalho, assinatura, corpo e correções.
 import Base from '../layouts/Base.astro';
 import { formatarData, dataIso } from '../lib/formato';
-import { ROTULO_STATUS } from '../lib/conteudo';
+import { ROTULO_STATUS, finalizado } from '../lib/conteudo';
 
 type Correcao = { data: Date; antes: string; depois: string; muda_conclusao: boolean };
 
@@ -21,17 +21,18 @@ interface Props {
 }
 
 const p = Astro.props;
-const rascunho = p.status !== 'publicado' && p.status !== 'aprovado';
+const rascunho = p.status === 'rascunho';
+const emRevisao = p.status === 'em-revisao';
 const correcoes = p.correcoes ?? [];
 const mudaConclusao = correcoes.filter((c) => c.muda_conclusao);
 ---
 
-<Base titulo={p.titulo} descricao={p.linhaFina} rascunho={rascunho}>
+<Base titulo={p.titulo} descricao={p.linhaFina} rascunho={rascunho} emRevisao={emRevisao}>
   <article>
     <header class="cabecalho">
       <div class="ob-eyebrow">
         {p.editoria}<span class="ob-eyebrow-sep">·</span><span>{p.tipo}</span>
-        {rascunho && <span class="ob-tag ob-tag--warm">{ROTULO_STATUS[p.status]}</span>}
+        {!finalizado(p.status) && <span class="ob-tag ob-tag--warm">{ROTULO_STATUS[p.status]}</span>}
       </div>
       <h1 class="ob-headline">{p.titulo}</h1>
       {p.linhaFina && <p class="ob-deck">{p.linhaFina}</p>}

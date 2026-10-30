@@ -68,7 +68,7 @@
 .artigo table { border-collapse: collapse; width: 100%; font: 400 15px/22px var(--font-sans); }
 .artigo th, .artigo td { border-bottom: 1px solid var(--border); padding: var(--space-2) var(--space-3); text-align: left; vertical-align: top; }
 .artigo th { border-bottom: 2px solid var(--ink); }
-.artigo a { color: var(--accent-ink); }
+.artigo a:not(.ob-btn) { color: var(--accent-ink); }
 .tabela-rolagem { overflow-x: auto; }
 figure { margin: 0; } /* o navegador recua figure em 40px por padrão */
 
@@ -263,3 +263,13 @@ figure { margin: 0; } /* o navegador recua figure em 40px por padrão */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* Faixa de conteúdo em revisão: informativa, não de alerta. */
+.faixa-revisao { background: var(--info-soft); border-color: var(--border); }
+.faixa-revisao a { color: var(--accent-ink); }
+
+/* Listas de definição (glossário): termo em destaque, definição logo abaixo. */
+.artigo dl { margin: 0; }
+.artigo dt { margin-top: var(--space-5); font-weight: 700; }
+.artigo dt a:not(.ob-btn) { color: var(--ink); text-decoration-color: var(--accent); text-underline-offset: 3px; }
+.artigo dd { margin: 4px 0 0; color: var(--ink-muted); }

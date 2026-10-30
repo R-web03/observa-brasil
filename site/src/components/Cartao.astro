@@ -1,18 +1,20 @@
 ---
+import { ROTULO_STATUS, finalizado } from '../lib/conteudo';
+
 interface Props {
   href: string;
   titulo: string;
   resumo?: string;
   etiqueta?: string;
-  rascunho?: boolean;
+  status?: string;
 }
-const { href, titulo, resumo, etiqueta, rascunho } = Astro.props;
+const { href, titulo, resumo, etiqueta, status } = Astro.props;
 ---
 
 <a class="ob-card ob-card--link" href={href}>
   <div class="ob-card-head">
     {etiqueta && <span class="ob-tag ob-tag--section">{etiqueta}</span>}
-    {rascunho && <span class="ob-tag ob-tag--warm">Rascunho</span>}
+    {status && !finalizado(status) && <span class="ob-tag ob-tag--warm">{ROTULO_STATUS[status]}</span>}
   </div>
   <h2 class="t-title-3">{titulo}</h2>
   {resumo && <p class="t-body">{resumo}</p>}

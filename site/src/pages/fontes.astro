@@ -1,0 +1,107 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Versão pública de fase-0-fundacao/FONTES.md. Mudou lá, mude aqui.
+type Porta = { rotulo: string; href: string };
+const FONTES: { tema: string; instituicao: string; publica: string; portas: Porta[] }[] = [
+  { tema: 'Inflação', instituicao: 'IBGE', publica: 'IPCA, INPC e IPCA-15', portas: [{ rotulo: 'Sidra', href: 'https://sidra.ibge.gov.br' }] },
+  { tema: 'Atividade', instituicao: 'IBGE', publica: 'PIB trimestral e anual (Contas Nacionais)', portas: [{ rotulo: 'Sidra', href: 'https://sidra.ibge.gov.br' }] },
+  { tema: 'Trabalho e renda', instituicao: 'IBGE', publica: 'PNAD Contínua: desocupação, informalidade, renda', portas: [{ rotulo: 'Sidra', href: 'https://sidra.ibge.gov.br' }] },
+  { tema: 'Emprego formal', instituicao: 'Ministério do Trabalho e Emprego', publica: 'Novo Caged (mensal, desde 2020) e RAIS (anual)', portas: [{ rotulo: 'gov.br/trabalho-e-emprego', href: 'https://www.gov.br/trabalho-e-emprego' }] },
+  { tema: 'Consumo das famílias', instituicao: 'IBGE', publica: 'Pesquisa de Orçamentos Familiares (POF)', portas: [{ rotulo: 'ibge.gov.br', href: 'https://www.ibge.gov.br' }] },
+  { tema: 'Juros', instituicao: 'Banco Central', publica: 'Decisões e atas do Copom, Selic', portas: [{ rotulo: 'bcb.gov.br', href: 'https://www.bcb.gov.br' }] },
+  { tema: 'Séries econômicas', instituicao: 'Banco Central', publica: 'Sistema Gerenciador de Séries Temporais (SGS)', portas: [{ rotulo: 'SGS', href: 'https://www3.bcb.gov.br/sgspub' }] },
+  { tema: 'Expectativas', instituicao: 'Banco Central', publica: 'Boletim Focus (semanal)', portas: [{ rotulo: 'Focus', href: 'https://www.bcb.gov.br/publicacoes/focus' }] },
+  { tema: 'Contas públicas consolidadas', instituicao: 'Banco Central', publica: 'Resultado primário e nominal, dívida bruta e líquida', portas: [{ rotulo: 'bcb.gov.br', href: 'https://www.bcb.gov.br' }] },
+  { tema: 'Governo central', instituicao: 'Tesouro Nacional', publica: 'Resultado do Tesouro Nacional, dívida pública federal', portas: [{ rotulo: 'Tesouro Transparente', href: 'https://www.tesourotransparente.gov.br' }] },
+  { tema: 'Arrecadação', instituicao: 'Receita Federal', publica: 'Arrecadação federal mensal, estudos de carga tributária', portas: [{ rotulo: 'gov.br/receitafederal', href: 'https://www.gov.br/receitafederal' }] },
+  { tema: 'Orçamento e execução', instituicao: 'CGU', publica: 'Portal da Transparência: despesas, transferências, programas', portas: [{ rotulo: 'Portal da Transparência', href: 'https://portaldatransparencia.gov.br' }] },
+  { tema: 'Avaliação independente das contas', instituicao: 'Senado (IFI)', publica: 'Relatórios e projeções fiscais independentes', portas: [{ rotulo: 'IFI', href: 'https://www12.senado.leg.br/ifi' }] },
+  { tema: 'Controle externo', instituicao: 'TCU', publica: 'Parecer sobre as contas do presidente, auditorias', portas: [{ rotulo: 'portal.tcu.gov.br', href: 'https://portal.tcu.gov.br' }] },
+  { tema: 'Leis e normas', instituicao: 'Presidência da República', publica: 'Constituição, leis, medidas provisórias, decretos', portas: [{ rotulo: 'planalto.gov.br', href: 'https://www.planalto.gov.br/ccivil_03/' }] },
+  { tema: 'Tramitação', instituicao: 'Câmara e Senado', publica: 'Projetos, votações, emendas', portas: [{ rotulo: 'Câmara', href: 'https://www.camara.leg.br' }, { rotulo: 'Senado', href: 'https://www12.senado.leg.br' }] },
+  { tema: 'Estudos e séries históricas', instituicao: 'Ipea', publica: 'Estudos, Carta de Conjuntura, Ipeadata', portas: [{ rotulo: 'ipea.gov.br', href: 'https://www.ipea.gov.br' }] },
+  { tema: 'Combustíveis', instituicao: 'ANP', publica: 'Levantamento de preços de combustíveis', portas: [{ rotulo: 'gov.br/anp', href: 'https://www.gov.br/anp' }] },
+  { tema: 'Energia elétrica', instituicao: 'Aneel', publica: 'Tarifas, reajustes, qualidade do serviço', portas: [{ rotulo: 'gov.br/aneel', href: 'https://www.gov.br/aneel' }] },
+  { tema: 'Empresas abertas e estatais', instituicao: 'CVM', publica: 'Demonstrações financeiras, fatos relevantes', portas: [{ rotulo: 'gov.br/cvm', href: 'https://www.gov.br/cvm' }] },
+  { tema: 'Comparação internacional', instituicao: 'FMI', publica: 'World Economic Outlook', portas: [{ rotulo: 'imf.org', href: 'https://www.imf.org/en/Publications/WEO' }] },
+  { tema: 'Comparação internacional', instituicao: 'Banco Mundial', publica: 'World Development Indicators', portas: [{ rotulo: 'data.worldbank.org', href: 'https://data.worldbank.org' }] },
+  { tema: 'Comparação internacional', instituicao: 'OCDE', publica: 'Estatísticas comparáveis entre países', portas: [{ rotulo: 'oecd.org', href: 'https://www.oecd.org' }] },
+];
+---
+
+<Base titulo="Fontes" descricao="De onde vêm os números do Observa Brasil e como citamos cada dado.">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Método<span class="ob-eyebrow-sep">·</span><span>Fontes</span></div>
+    <h1 class="ob-headline">De onde vêm os números</h1>
+    <p class="ob-deck">
+      Preferimos sempre a instituição que produz o dado. Imprensa e redes servem para achar a pista, não como fonte final
+      de um número.
+    </p>
+  </header>
+
+  <div class="artigo">
+    <h2>Como citamos um dado</h2>
+    <p>Todo dado importante vem com seis informações, na linha de fonte do gráfico ou numa nota:</p>
+    <ol>
+      <li><strong>O que mede:</strong> "inflação ao consumidor, acumulada em 12 meses".</li>
+      <li><strong>Instituição e série:</strong> "IBGE, IPCA, tabela 1737 do Sidra".</li>
+      <li><strong>Período coberto:</strong> "jan. 2019 a set. 2026".</li>
+      <li><strong>Data de consulta.</strong></li>
+      <li><strong>Link direto</strong> para a série ou o documento.</li>
+      <li><strong>Limitação relevante</strong>, quando houver: dado preliminar, mudança de método, série nova.</li>
+    </ol>
+
+    <h2>Fontes por tema</h2>
+    <p>Os links abaixo são portas de entrada. Em cada texto, citamos o caminho exato da série usada.</p>
+    <div class="tabela-rolagem">
+      <table>
+        <thead><tr><th scope="col">Tema</th><th scope="col">Instituição</th><th scope="col">O que publica</th><th scope="col">Onde</th></tr></thead>
+        <tbody>
+          {
+            FONTES.map((f) => (
+              <tr>
+                <td>{f.tema}</td>
+                <td>{f.instituicao}</td>
+                <td>{f.publica}</td>
+                <td>
+                  {f.portas.map((p, i) => (
+                    <>
+                      {i > 0 && ' · '}
+                      <a href={p.href} rel="noopener">{p.rotulo}</a>
+                    </>
+                  ))}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Em quem confiamos primeiro</h2>
+    <ol>
+      <li><strong>Dado oficial da instituição produtora:</strong> IBGE, Banco Central, Tesouro.</li>
+      <li><strong>Documento legal ou orçamentário:</strong> lei, projeto, relatório de execução.</li>
+      <li><strong>Avaliação independente com método publicado:</strong> IFI, TCU, Ipea, estudo acadêmico revisado por pares.</li>
+      <li><strong>Estudo de centro de pesquisa ou consultoria com método publicado:</strong> entra como estimativa, com o nome de quem fez.</li>
+      <li><strong>Imprensa:</strong> para fatos noticiosos datados e para achar a fonte original.</li>
+    </ol>
+
+    <h2>Quando as fontes divergem</h2>
+    <ul>
+      <li>Explicamos o motivo: definição, cobertura, data de revisão ou método diferentes.</li>
+      <li>Mostramos as duas quando ambas são legítimas, e dizemos qual usamos e por quê.</li>
+      <li>Usamos a versão mais recente de dados revisados, e avisamos se a revisão mudou a leitura.</li>
+    </ul>
+
+    <h2>Cuidados que sempre tomamos</h2>
+    <ul>
+      <li><strong>Governo central não é setor público consolidado.</strong> O dado do Tesouro cobre a União; o do Banco Central inclui estados, municípios e estatais.</li>
+      <li><strong>O Caged mudou em 2020.</strong> A série nova não se emenda direto com a antiga.</li>
+      <li><strong>A PNAD Contínua começa em 2012.</strong> Pesquisas anteriores têm métodos diferentes.</li>
+      <li><strong>Valores em reais de anos diferentes</strong> são corrigidos pela inflação antes da comparação, com o índice e a data informados.</li>
+      <li><strong>Dados preliminares</strong> são marcados como tal e atualizados quando revistos.</li>
+    </ul>
+  </div>
+</Base>

@@ -9,9 +9,10 @@ interface Props {
   titulo: string;
   descricao?: string;
   rascunho?: boolean;
+  emRevisao?: boolean;
 }
 
-const { titulo, descricao = 'Economia explicada com calma, com fontes e sem torcida.', rascunho = false } = Astro.props;
+const { titulo, descricao = 'Economia explicada com calma, com fontes e sem torcida.', rascunho = false, emRevisao = false } = Astro.props;
 const tituloCompleto = Astro.url.pathname === '/' ? 'Observa Brasil' : `${titulo} · Observa Brasil`;
 const canonico = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -30,7 +31,7 @@ const canonico = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={descricao} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
-    {rascunho && <meta name="robots" content="noindex" />}
+    {(rascunho || emRevisao) && <meta name="robots" content="noindex" />}
     <!-- Aplica o tema salvo (ou o do sistema) antes de pintar a página, sem piscar. -->
     <script is:inline>
       (function () {
@@ -51,6 +52,14 @@ const canonico = new URL(Astro.url.pathname, Astro.site);
         rascunho && (
           <p class="faixa-rascunho" role="note">
             <strong>Rascunho.</strong> Esta página só aparece no ambiente de desenvolvimento e não será publicada até ser aprovada.
+          </p>
+        )
+      }
+      {
+        emRevisao && (
+          <p class="faixa-rascunho faixa-revisao" role="note">
+            <strong>Versão em revisão.</strong> Este texto ainda não passou pelos revisores externos e pode mudar.
+            Achou um erro? <a href="/correcoes">Peça uma correção</a>.
           </p>
         )
       }

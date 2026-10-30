@@ -29,7 +29,7 @@ const analises = (await listar('analises')).sort(
             titulo={a.data.titulo}
             resumo={a.data.linha_fina}
             etiqueta={ROTULO[a.data.objeto]}
-            rascunho={a.data.status === 'rascunho'}
+            status={a.data.status}
           />
         ))}
       </div>

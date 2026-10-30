@@ -1,42 +1,137 @@
 ---
 import Base from '../layouts/Base.astro';
 import Aviso from '../components/editorial/Aviso.astro';
+
+// Versão pública de fase-0-fundacao/METODO.md. Mudou lá, mude aqui.
 ---
 
 <Base titulo="Método" descricao="Como o Observa Brasil analisa propostas, compara governos e trata a incerteza.">
   <header class="cabecalho">
-    <div class="ob-eyebrow">Método</div>
+    <div class="ob-eyebrow">Método<span class="ob-eyebrow-sep">·</span><span>versão 0.1</span></div>
     <h1 class="ob-headline">A mesma régua para todos</h1>
-    <p class="ob-deck">Como escolhemos temas, avaliamos evidências, comparamos governos e corrigimos erros.</p>
+    <p class="ob-deck">
+      Como escolhemos temas, avaliamos evidências, comparamos governos e corrigimos erros. Vale do mesmo jeito para
+      qualquer governo, partido ou pessoa.
+    </p>
   </header>
 
   <div class="artigo">
     <Aviso tipo="info" titulo="Versão em revisão">
-      O método completo está sendo revisado por pessoas de visões econômicas diferentes antes da publicação.
+      Este método ainda vai ser lido por revisores externos de visões econômicas diferentes. Mudanças serão registradas
+      nesta página.
     </Aviso>
 
     <h2>Princípios</h2>
     <ol>
-      <li><strong>Compreensão acima de veredito.</strong> O objetivo é entender o mecanismo, não concordar com uma conclusão.</li>
-      <li><strong>Mesma régua para todos.</strong> Molde, escalas e exigência não mudam conforme o autor da proposta.</li>
+      <li><strong>Compreensão acima de veredito.</strong> O objetivo é você entender o mecanismo, não concordar com uma conclusão.</li>
+      <li><strong>Mesma régua para todos.</strong> Molde, escalas e grau de exigência não mudam conforme o autor da proposta.</li>
       <li><strong>Peso proporcional à evidência.</strong> Equilíbrio não é dar espaço igual a argumentos de força desigual.</li>
-      <li><strong>Dizer o que não se sabe.</strong> Incerteza faz parte da resposta.</li>
-      <li><strong>Todo número tem endereço:</strong> o que mede, fonte, período e data de consulta.</li>
+      <li><strong>Dizer o que não se sabe.</strong> Incerteza é parte da resposta, não nota de rodapé.</li>
+      <li><strong>Todo número tem endereço:</strong> o que mede, fonte, série, período e data de consulta.</li>
+      <li><strong>Nada inventado.</strong> Nenhum número, fonte, citação ou link sem verificação. Quando não há dado, o texto diz que não há.</li>
     </ol>
 
     <h2>Tipos de afirmação</h2>
-    <p>Separamos <strong>fatos observados</strong>, <strong>estimativas</strong>, <strong>previsões</strong>, <strong>hipóteses</strong> e <strong>opiniões atribuídas</strong>, e marcamos cada uma no texto.</p>
+    <p>Toda frase com conteúdo factual pertence a um destes tipos, e o texto deixa claro qual é.</p>
+    <div class="tabela-rolagem">
+      <table>
+        <thead><tr><th scope="col">Tipo</th><th scope="col">O que é</th><th scope="col">Exemplo de redação</th></tr></thead>
+        <tbody>
+          <tr><td>Fato observado</td><td>Medido e publicado por quem produz a estatística</td><td>"O IPCA acumulado em 12 meses até setembro foi de 4,6% (IBGE)."</td></tr>
+          <tr><td>Estimativa</td><td>Cálculo sobre dados, com margem ou método próprio</td><td>"O custo foi estimado em R$ X pelo órgão Y, considerando Z."</td></tr>
+          <tr><td>Previsão</td><td>Projeção sobre o futuro</td><td>"A mediana das projeções do Boletim Focus daquela semana era X."</td></tr>
+          <tr><td>Hipótese</td><td>Mecanismo plausível, ainda não testado no caso</td><td>"Uma possibilidade é que…"</td></tr>
+          <tr><td>Opinião atribuída</td><td>Avaliação de uma pessoa ou instituição</td><td>"Para fulano, cargo, …", sempre com fonte</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <h2>Grau de evidência</h2>
-    <p>Todo elo de causa e efeito recebe um grau: forte, moderada, fraca, em disputa ou sem evidência. "Forte" exige vários estudos que comparem com um cenário sem a política, não só um antes e depois.</p>
+    <p>Todo elo de causa e efeito recebe um grau.</p>
+    <div class="tabela-rolagem">
+      <table>
+        <thead><tr><th scope="col">Grau</th><th scope="col">Quando usamos</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Forte</strong></td><td>Vários estudos de bom desenho, inclusive no Brasil, apontam na mesma direção</td></tr>
+          <tr><td><strong>Moderada</strong></td><td>Há estudos sólidos, mas de outros contextos, ou com resultados que variam</td></tr>
+          <tr><td><strong>Fraca</strong></td><td>Poucos estudos, desenho frágil ou só correlação</td></tr>
+          <tr><td><strong>Em disputa</strong></td><td>Evidência relevante nos dois sentidos; o texto mostra as duas</td></tr>
+          <tr><td><strong>Sem evidência</strong></td><td>Só o mecanismo teórico; o texto diz isso</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      "Estudo de bom desenho" é aquele que compara com um cenário sem a política: experimentos, quase-experimentos e
+      outras técnicas que constroem esse cenário. Uma comparação simples de antes e depois não basta para chegar a "forte".
+    </p>
+
+    <h2>Causa e efeito</h2>
+    <ul>
+      <li><strong>Nenhuma seta sem mecanismo escrito.</strong> Se não dá para explicar como A leva a B em uma ou duas frases, não há seta.</li>
+      <li><strong>Correlação não é causa.</strong> Duas séries que se movem juntas são descritas como "andaram juntas", nunca como "uma causou a outra".</li>
+      <li><strong>Toda relação tem condições.</strong> O texto diz quando o efeito fica mais forte, mais fraco ou se inverte.</li>
+      <li><strong>Fatores externos são nomeados:</strong> câmbio, preços internacionais, clima, juros de outros países, pandemia, guerra.</li>
+      <li><strong>Quem decidiu.</strong> Separamos governo federal, Congresso, Banco Central, estados e municípios, agências reguladoras, Judiciário e setor privado.</li>
+    </ul>
+
+    <h2>Como analisamos uma proposta ou declaração</h2>
+    <p>O roteiro é fixo, e nenhum ponto é pulado:</p>
+    <ol>
+      <li>A afirmação literal, com autor, data, contexto e link.</li>
+      <li>A tradução em medidas concretas, ou o aviso de que a fala é vaga demais para isso.</li>
+      <li>O cenário de referência: o que aconteceria sem a proposta.</li>
+      <li>Benefícios e mecanismos.</li>
+      <li>Custos, riscos e efeitos não intencionais.</li>
+      <li>Quem é afetado e em que prazo.</li>
+      <li>A evidência no Brasil.</li>
+      <li>Casos de outros países, só quando forem comparáveis.</li>
+      <li>As diferenças entre a proposta e os casos comparados.</li>
+      <li>Fatos, estimativas, previsões e hipóteses separados.</li>
+      <li>A conclusão em três partes: o que a evidência apoia, o que depende do desenho e da execução, e o que continua incerto.</li>
+    </ol>
+
+    <h2>Comparações entre governos</h2>
+    <ul>
+      <li>Período e data de corte declarados no topo.</li>
+      <li>Janelas equivalentes quando um período está incompleto, como 2026, ou aviso em destaque.</li>
+      <li>Quebras de série marcadas, como a mudança do Caged em 2020.</li>
+      <li>Condições herdadas e choques externos mostrados ao lado do resultado.</li>
+      <li>Mais de um indicador por tema, sem nota final nem ranking.</li>
+      <li><strong>Espelhamento:</strong> se um indicador favorece um governo, os outros indicadores do mesmo tema também aparecem, inclusive os desfavoráveis.</li>
+    </ul>
+
+    <h2>Como escolhemos os temas</h2>
+    <p>
+      O viés costuma estar mais no que se escolhe analisar do que na análise. Por isso, toda análise publicada entra numa
+      lista pública, com o motivo da escolha. Os critérios, em ordem, são: relevância para a vida das pessoas, alcance no
+      debate público, disponibilidade de dados e equilíbrio com as análises já publicadas. A cada 10 análises, publicamos
+      a distribuição por autor ou campo político.
+    </p>
+
+    <h2>Correções</h2>
+    <ul>
+      <li>Erro de fato é corrigido no texto, com nota datada no fim: "Corrigido em [data]: o texto dizia X; o correto é Y".</li>
+      <li>Erro que muda a conclusão ganha nota também no topo.</li>
+      <li>Toda correção entra na <a href="/correcoes">página pública de correções</a>.</li>
+      <li>Qualquer pessoa pode pedir uma correção. O pedido é respondido com evidência, aceito ou não.</li>
+    </ul>
+
+    <h2>Revisão</h2>
+    <p>
+      Todo conteúdo passa por revisão antes de ser considerado final. Temas sensíveis, como correntes de pensamento,
+      privatizações, comparações de governos e análises de falas, passam por revisão cruzada de alguém com visão
+      diferente da de quem escreveu. Enquanto isso não acontece, a página mostra o aviso "Versão em revisão".
+    </p>
 
     <h2>O que não fazemos</h2>
     <ul>
       <li>Selo de "verdadeiro" ou "falso".</li>
       <li>Ranking ou nota de governos.</li>
       <li>Recomendação de voto ou de investimento.</li>
+      <li>Foto de político como decoração.</li>
+      <li>Adjetivos de juízo, como "desastroso" ou "histórico", fora de citações atribuídas.</li>
     </ul>
 
-    <p><a href="/correcoes">Veja nossas correções e peça uma</a>.</p>
+    <p>Veja também <a href="/fontes">as fontes que usamos</a> e <a href="/correcoes">as correções já feitas</a>.</p>
   </div>
 </Base>

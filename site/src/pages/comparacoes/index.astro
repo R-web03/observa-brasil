@@ -24,7 +24,7 @@ const comparacoes = await listar('comparacoes');
             titulo={c.data.titulo}
             resumo={c.data.lados.map((l) => l.nome).join(' · ')}
             etiqueta="Comparação"
-            rascunho={c.data.status === 'rascunho'}
+            status={c.data.status}
           />
         ))}
       </div>

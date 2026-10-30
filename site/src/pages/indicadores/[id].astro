@@ -31,7 +31,7 @@ const ultimo = pontos.at(-1);
 const hoje = formatarData(new Date());
 ---
 
-<Base titulo={d.nome} descricao={d.o_que_mede} rascunho={d.status !== 'publicado' && d.status !== 'aprovado'}>
+<Base titulo={d.nome} descricao={d.o_que_mede} rascunho={d.status === 'rascunho'} emRevisao={d.status === 'em-revisao'}>
   <header class="cabecalho">
     <div class="ob-eyebrow">Indicador<span class="ob-eyebrow-sep">·</span><span>{d.instituicao}</span></div>
     <h1 class="ob-headline">{d.nome}</h1>
