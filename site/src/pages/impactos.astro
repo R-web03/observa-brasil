@@ -2,7 +2,10 @@
 import Base from '../layouts/Base.astro';
 import NotaMetodo from '../components/editorial/NotaMetodo.astro';
 import { CAMADAS, ESTUDOS, ROTULO_EFEITO } from '../lib/impactos';
-import { buscarGoverno } from '../lib/governos';
+import { GOVERNOS, buscarGoverno } from '../lib/governos';
+
+const ordem = (id: string) => GOVERNOS.findIndex((g) => g.id === id);
+const estudos = [...ESTUDOS].sort((a, b) => ordem(a.governo) - ordem(b.governo));
 ---
 
 <Base titulo="Pirâmide de impacto" descricao="Quem ganhou e quem pagou com cada decisão econômica, por faixa de renda, com o grau de evidência de cada efeito." emRevisao>
@@ -16,14 +19,14 @@ import { buscarGoverno } from '../lib/governos';
   </header>
 
   <nav class="impacto-escolha" aria-label="Escolha uma decisão">
-    {ESTUDOS.map((e) => <a class="ob-chip" href={`#${e.id}`}>{e.titulo}</a>)}
+    {estudos.map((e) => <a class="ob-chip" href={`#${e.id}`}>{e.titulo}</a>)}
   </nav>
 
   <div class="artigo largo">
     <NotaMetodo titulo="Como ler a pirâmide">
       <ul>
-        <li><strong>▲ Ganhou</strong>, <strong>▼ Pagou</strong>, <strong>◐ Misto</strong> (ganhou de um lado, pagou de outro) e <strong>? Incerto</strong> (não dá para saber a direção com o que existe hoje).</li>
-        <li>Cada efeito tem um <strong>grau de evidência</strong>: forte, moderada, fraca, em disputa ou sem evidência. "Forte" exige estudos que comparem com um cenário sem a decisão.</li>
+        <li><strong>▲ Ganhou</strong>, <strong>▼ Pagou</strong>, <strong>◐ Misto</strong> (ganhou de um lado, pagou de outro) e <strong>? Incerto</strong> (não dá para saber a direção com o que existe hoje) e <strong>– Pouco afetado</strong> (a decisão não mira essa faixa).</li>
+        <li>Cada efeito tem um <strong>grau de evidência</strong>: forte, moderada, fraca, em disputa ou sem evidência. "Forte" exige estudos que comparem com um cenário sem a decisão, ou um efeito que decorre diretamente da regra, como quem passa a ser isento de um imposto.</li>
         <li>As faixas de renda são aproximadas. Os estudos nem sempre usam os mesmos cortes.</li>
         <li>Mostramos o que se sabe, inclusive quando a resposta é "ainda não se sabe".</li>
       </ul>
@@ -31,7 +34,7 @@ import { buscarGoverno } from '../lib/governos';
   </div>
 
   {
-    ESTUDOS.map((e) => {
+    estudos.map((e) => {
       const g = buscarGoverno(e.governo);
       return (
         <section class="estudo" id={e.id} aria-labelledby={`${e.id}-t`}>
