@@ -13,7 +13,7 @@ const ativo = (href: string) => atual === href || atual.startsWith(`${href}/`);
 <header class="topo">
   <nav class="ob-nav ob-nav--glass" aria-label="Principal">
     <a class="ob-nav-brand" href="/">Observa<span>.</span>Brasil</a>
-    <ul>
+    <ul data-menu-principal>
       {
         LINKS.map((l) => (
           <li>
@@ -24,6 +24,7 @@ const ativo = (href: string) => atual === href || atual.startsWith(`${href}/`);
         ))
       }
     </ul>
+    <span class="menu-destaque" aria-hidden="true"></span>
     <a class="ob-nav-search" href="/busca">
       Buscar um tema
       <span class="ob-iconbtn ob-iconbtn--inverse" aria-hidden="true">
@@ -65,4 +66,73 @@ const ativo = (href: string) => atual === href || atual.startsWith(`${href}/`);
       /* sem armazenamento: vale só para esta visita */
     }
   }));
+
+  // Destaque do item atual: um único fundo que desliza de um item para outro.
+  // Cada clique é uma navegação nova, então a posição de saída fica no sessionStorage
+  // e a página seguinte começa dali. Sem JavaScript, vale o fundo do próprio design system.
+  const nav = document.querySelector<HTMLElement>('.ob-nav');
+  const lista = nav?.querySelector<HTMLElement>('[data-menu-principal]');
+  const destaque = nav?.querySelector<HTMLElement>('.menu-destaque');
+  const CHAVE = 'menu-destaque';
+
+  if (nav && lista && destaque) {
+    nav.classList.add('tem-destaque');
+    const atualLink = () => lista.querySelector<HTMLElement>('a[aria-current="page"]');
+
+    const colocar = (x: number, largura: number, visivel: boolean, animar: boolean) => {
+      destaque.classList.toggle('sem-transicao', !animar);
+      destaque.style.transform = `translateX(${x}px)`;
+      destaque.style.width = `${largura}px`;
+      destaque.style.opacity = visivel ? '1' : '0';
+    };
+    const posicaoDe = (alvo: HTMLElement) => {
+      const n = nav.getBoundingClientRect();
+      const r = alvo.getBoundingClientRect();
+      return { x: r.left - n.left, largura: r.width };
+    };
+    const irPara = (alvo: HTMLElement | null, animar: boolean) => {
+      if (!alvo) return colocar(0, 0, false, animar);
+      const p = posicaoDe(alvo);
+      colocar(p.x, p.largura, true, animar);
+    };
+
+    // Ponto de partida: onde o destaque estava na página anterior.
+    let anterior: { x: number; largura: number } | null = null;
+    try {
+      anterior = JSON.parse(sessionStorage.getItem(CHAVE) ?? 'null');
+    } catch {
+      /* sem armazenamento: o destaque só aparece, sem deslizar */
+    }
+    const alvo = atualLink();
+    if (anterior && anterior.largura > 0) {
+      colocar(anterior.x, anterior.largura, true, false);
+      destaque.getBoundingClientRect(); // fixa a posição inicial antes de animar
+      irPara(alvo, true);
+    } else if (alvo) {
+      const p = posicaoDe(alvo);
+      colocar(p.x, p.largura, false, false);
+      destaque.getBoundingClientRect();
+      colocar(p.x, p.largura, true, true); // primeira visita: surge com um fade curto
+    }
+
+    // No clique já começa a deslizar; a navegação segue normalmente, sem esperar.
+    lista.querySelectorAll<HTMLElement>('a').forEach((a) => a.addEventListener('click', () => irPara(a, true)));
+
+    // Guarda a posição visível (mesmo no meio da animação) ao sair da página.
+    window.addEventListener('pagehide', () => {
+      try {
+        const r = destaque.getBoundingClientRect();
+        const visivel = getComputedStyle(destaque).opacity !== '0' && r.width > 0;
+        if (visivel) sessionStorage.setItem(CHAVE, JSON.stringify({ x: r.left - nav.getBoundingClientRect().left, largura: r.width }));
+        else sessionStorage.removeItem(CHAVE);
+      } catch {
+        /* sem armazenamento */
+      }
+    });
+    // Voltar pelo navegador (cache de página) ou mudar a largura da janela: recoloca sem animar.
+    window.addEventListener('pageshow', (e) => { if (e.persisted) irPara(atualLink(), false); });
+    window.addEventListener('resize', () => irPara(atualLink(), false));
+    // A fonte do site chega depois do primeiro desenho e muda a largura dos itens: reajusta o alvo.
+    document.fonts?.ready.then(() => irPara(atualLink(), true));
+  }
 </script>

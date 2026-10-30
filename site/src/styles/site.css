@@ -83,6 +83,21 @@
 /* Busca na navegação: é um link, não deve aparecer sublinhado. */
 .ob-nav-search { text-decoration: none; }
 
+/* Destaque deslizante do menu (o JS do Nav posiciona; sem JS fica o fundo do design system). */
+.ob-nav { position: relative; }
+.menu-destaque {
+  position: absolute; left: 0; top: 50%; z-index: 0;
+  height: 44px; margin-top: -22px; width: 0; opacity: 0;
+  border-radius: var(--radius-pill); background: var(--chrome-raised);
+  pointer-events: none;
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1), width 240ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 160ms ease-out;
+}
+.menu-destaque.sem-transicao { transition: none; }
+.ob-nav.tem-destaque > ul { position: relative; z-index: 1; }
+/* O fundo é só do destaque: sem isso o hover pintaria o item novo na hora, antes do deslize. */
+.ob-nav.tem-destaque > ul a, .ob-nav.tem-destaque > ul a:hover { background: transparent; }
+@media (max-width: 640px) { .menu-destaque { display: none; } }
+
 .isca { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 
 /* Menu móvel: aparece só quando o design system esconde a lista de links (≤ 640px). */
