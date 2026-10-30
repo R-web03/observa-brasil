@@ -8,5 +8,6 @@ import Termo from './Termo.astro';
 import Pergunta from './Pergunta.astro';
 import GraficoIndicador from './GraficoIndicador.astro';
 import Resumo from './Resumo.astro';
+import ComparacaoJanela from './ComparacaoJanela.astro';
 
-export const componentesEditoriais = { Fonte, NotaMetodo, Efeito, Aviso, Afirmacao, Termo, Pergunta, GraficoIndicador, Resumo };
+export const componentesEditoriais = { Fonte, NotaMetodo, Efeito, Aviso, Afirmacao, Termo, Pergunta, GraficoIndicador, Resumo, ComparacaoJanela };

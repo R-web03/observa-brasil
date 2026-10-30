@@ -1,0 +1,170 @@
+---
+// Dois governos no mesmo gráfico, alinhados por "meses desde a posse".
+// Cores neutras e tipos de linha diferentes (sólida e tracejada), com o nome escrito
+// na ponta de cada linha: nenhuma cor representa governo. Linha-guia interativa
+// (mouse, toque, setas) mostra os dois valores do mesmo mês de mandato.
+import type { Ponto } from '../lib/dados';
+import { formatarNumero } from '../lib/formato';
+
+interface Props {
+  titulo: string;
+  unidade: string;
+  casas: number;
+  a: { nome: string; pontos: Ponto[] };
+  b: { nome: string; pontos: Ponto[] };
+}
+const { titulo, unidade, casas, a, b } = Astro.props;
+const L = 720, A = 280, M = { topo: 20, dir: 96, base: 30, esq: 52 };
+const n = Math.max(a.pontos.length, b.pontos.length);
+const todos = [...a.pontos, ...b.pontos].map((p) => p.valor);
+const minimo = Math.min(...todos, 0);
+const maximo = Math.max(...todos, 0);
+const folga = (maximo - minimo) * 0.08 || 1;
+const vMin = minimo < 0 ? minimo - folga : 0;
+const vMax = maximo + folga;
+const x = (i: number) => M.esq + (i / Math.max(n - 1, 1)) * (L - M.esq - M.dir);
+const y = (v: number) => M.topo + (1 - (v - vMin) / (vMax - vMin || 1)) * (A - M.topo - M.base);
+const caminho = (ps: Ponto[]) => ps.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(p.valor).toFixed(1)}`).join(' ');
+const marcas = [vMin < 0 ? vMin : 0, (vMin + vMax) / 2, vMax].map((v) => Number(v.toFixed(casas)));
+const ultA = a.pontos.at(-1), ultB = b.pontos.at(-1);
+// Rótulos na ponta das linhas: se ficarem perto demais, afasta um para cima e outro para baixo.
+let yRotA = ultA ? y(ultA.valor) + 4 : 0, yRotB = ultB ? y(ultB.valor) + 4 : 0;
+if (Math.abs(yRotA - yRotB) < 14) {
+  const meio = (yRotA + yRotB) / 2;
+  const aAcima = yRotA <= yRotB;
+  yRotA = meio + (aAcima ? -8 : 8);
+  yRotB = meio + (aAcima ? 8 : -8);
+}
+const id = `gc-${Math.abs(titulo.split('').reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 11))}`;
+---
+
+{
+  n > 1 && ultA && ultB && (
+    <figure class="ob-chart grafico-interativo">
+      <figcaption class="ob-chart-title" id={id}>{titulo}</figcaption>
+      <p class="ob-chart-sub">{unidade} · eixo: meses desde a posse</p>
+      <ul class="ob-legend">
+        <li><span class="sw sw--line comp-a" aria-hidden="true"></span>{a.nome} (linha sólida)</li>
+        <li><span class="sw sw--dash comp-b-leg" aria-hidden="true"></span>{b.nome} (linha tracejada)</li>
+      </ul>
+      <div
+        class="grafico-area"
+        data-comparado
+        data-a={JSON.stringify(a.pontos.map((p) => [p.data, p.valor]))}
+        data-b={JSON.stringify(b.pontos.map((p) => [p.data, p.valor]))}
+        data-nomes={JSON.stringify([a.nome, b.nome])}
+        data-geo={JSON.stringify({ L, A, M, n, vMin, vMax })}
+        data-casas={casas}
+      >
+        <svg viewBox={`0 0 ${L} ${A}`} role="img" aria-labelledby={id} tabindex="0">
+          <desc>{`${titulo}: ${a.nome} e ${b.nome} lado a lado, mês a mês desde a posse. Use as setas para percorrer os meses.`}</desc>
+          {marcas.map((m) => (
+            <g>
+              <line x1={M.esq} x2={L - M.dir} y1={y(m)} y2={y(m)} class:list={['grade-linha', { 'grade-zero': m === 0 }]} />
+              <text x={M.esq - 8} y={y(m) + 4} text-anchor="end">{formatarNumero(m, casas)}</text>
+            </g>
+          ))}
+          <path class="grafico-linha comp-linha-a" d={caminho(a.pontos)} pathLength="1" fill="none" stroke-width="2.5" />
+          <path class="comp-linha-b" d={caminho(b.pontos)} fill="none" stroke-width="2.5" stroke-dasharray="6 5" />
+          <text class="comp-rotulo" x={x(a.pontos.length - 1) + 8} y={yRotA}>{a.nome}</text>
+          <text class="comp-rotulo" x={x(b.pontos.length - 1) + 8} y={yRotB}>{b.nome}</text>
+          <text x={M.esq} y={A - 8}>mês 1</text>
+          <text x={L - M.dir} y={A - 8} text-anchor="end">mês {n}</text>
+          <g class="guia" aria-hidden="true">
+            <line class="guia-linha" x1="0" x2="0" y1={M.topo} y2={A - M.base} />
+            <circle class="guia-ponto guia-a" r="5" cx="0" cy="0" />
+            <circle class="guia-ponto guia-b" r="5" cx="0" cy="0" />
+          </g>
+        </svg>
+        <div class="guia-balao" aria-live="polite" hidden></div>
+      </div>
+    </figure>
+  )
+}
+
+<script>
+  const MESES = ['jan.', 'fev.', 'mar.', 'abr.', 'maio', 'jun.', 'jul.', 'ago.', 'set.', 'out.', 'nov.', 'dez.'];
+  type Geo = { L: number; A: number; M: { topo: number; dir: number; base: number; esq: number }; n: number; vMin: number; vMax: number };
+
+  for (const area of document.querySelectorAll<HTMLElement>('[data-comparado]')) {
+    const svg = area.querySelector('svg')!;
+    const guia = svg.querySelector<SVGGElement>('.guia')!;
+    const linha = guia.querySelector('line')!;
+    const pa = guia.querySelector<SVGCircleElement>('.guia-a')!;
+    const pb = guia.querySelector<SVGCircleElement>('.guia-b')!;
+    const balao = area.querySelector<HTMLElement>('.guia-balao')!;
+    const a = JSON.parse(area.dataset.a!) as [string, number][];
+    const b = JSON.parse(area.dataset.b!) as [string, number][];
+    const [nomeA, nomeB] = JSON.parse(area.dataset.nomes!) as [string, string];
+    const geo = JSON.parse(area.dataset.geo!) as Geo;
+    const casas = Number(area.dataset.casas);
+    const fmt = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
+    const formatar = (v: number) => (v < 0 ? '−' : '') + fmt.format(Math.abs(v));
+    const xDe = (i: number) => geo.M.esq + (i / Math.max(geo.n - 1, 1)) * (geo.L - geo.M.esq - geo.M.dir);
+    const yDe = (v: number) => geo.M.topo + (1 - (v - geo.vMin) / (geo.vMax - geo.vMin || 1)) * (geo.A - geo.M.topo - geo.M.base);
+    const rotulo = (d: string) => `${MESES[Number(d.slice(5, 7)) - 1]} ${d.slice(0, 4)}`;
+    let atual = -1;
+
+    const linhaTexto = (nome: string, p: [string, number] | undefined) => {
+      const s = document.createElement('span');
+      s.className = 'guia-data';
+      s.textContent = p ? `${nome} (${rotulo(p[0])}): ` : `${nome}: sem dado`;
+      if (p) {
+        const v = document.createElement('strong');
+        v.textContent = formatar(p[1]);
+        s.append(v);
+      }
+      return s;
+    };
+
+    const mostrar = (i: number) => {
+      atual = Math.max(0, Math.min(geo.n - 1, i));
+      const px = xDe(atual);
+      linha.setAttribute('x1', String(px));
+      linha.setAttribute('x2', String(px));
+      for (const [c, serie] of [[pa, a], [pb, b]] as const) {
+        const p = serie[atual];
+        c.style.display = p ? '' : 'none';
+        if (p) {
+          c.setAttribute('cx', String(px));
+          c.setAttribute('cy', String(yDe(p[1])));
+        }
+      }
+      guia.classList.add('visivel');
+      const titulo = document.createElement('span');
+      titulo.className = 'guia-data';
+      titulo.textContent = `Mês ${atual + 1} de governo`;
+      balao.replaceChildren(titulo, linhaTexto(nomeA, a[atual]), linhaTexto(nomeB, b[atual]));
+      balao.hidden = false;
+      const escala = svg.getBoundingClientRect().width / geo.L;
+      const larg = balao.offsetWidth;
+      balao.style.left = `${Math.min(Math.max(px * escala - larg / 2, 0), area.clientWidth - larg)}px`;
+      balao.style.top = `${Math.max(0, geo.M.topo * escala - 8)}px`;
+    };
+    const esconder = () => {
+      guia.classList.remove('visivel');
+      balao.hidden = true;
+    };
+    const indice = (clienteX: number) => {
+      const r = svg.getBoundingClientRect();
+      const vx = ((clienteX - r.left) / r.width) * geo.L;
+      return Math.round(((vx - geo.M.esq) / (geo.L - geo.M.esq - geo.M.dir)) * (geo.n - 1));
+    };
+    svg.addEventListener('pointermove', (e) => mostrar(indice(e.clientX)));
+    svg.addEventListener('pointerdown', (e) => mostrar(indice(e.clientX)));
+    svg.addEventListener('pointerleave', (e) => {
+      if (e.pointerType === 'mouse') esconder();
+    });
+    svg.addEventListener('focus', () => mostrar(atual < 0 ? geo.n - 1 : atual));
+    svg.addEventListener('blur', esconder);
+    svg.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') mostrar(atual - 1);
+      else if (e.key === 'ArrowRight') mostrar(atual + 1);
+      else if (e.key === 'Home') mostrar(0);
+      else if (e.key === 'End') mostrar(geo.n - 1);
+      else if (e.key === 'Escape') esconder();
+      else return;
+      e.preventDefault();
+    });
+  }
+</script>

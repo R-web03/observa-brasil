@@ -424,3 +424,15 @@ a.glossa:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .piramide { gap: 8px; }
 }
 .guia-balao[hidden] { display: none; }
+
+/* ---------- Comparação entre governos (cores neutras, linha sólida × tracejada) ---------- */
+.comp-linha-a { stroke: var(--ink); }
+.comp-linha-b { stroke: var(--ink-muted); }
+.comp-a { background: var(--ink); }
+.comp-b-leg { border-top-color: var(--ink-muted) !important; }
+.comp-rotulo { font-family: var(--font-mono) !important; font-size: 11px !important; fill: var(--ink) !important; }
+.guia-a { fill: var(--ink); }
+.guia-b { fill: var(--ink-muted); }
+.tabela-comparacao th[scope="rowgroup"] { font-weight: 700; vertical-align: top; min-width: 180px; border-bottom: 1px solid var(--border-strong); }
+.tabela-comparacao tr.tc-par td { border-bottom: 1px solid var(--border-strong); }
+.guia-balao .guia-data strong { font: italic 800 15px/1.2 var(--font-display); color: var(--ink); }

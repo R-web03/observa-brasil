@@ -1,0 +1,103 @@
+---
+// Compara dois governos na mesma janela de tempo: os primeiros N meses de cada um,
+// em que N é quanto o governo mais recente já tem de dados em cada indicador
+// (METODO.md, seção 6: "janelas equivalentes"). Dados anuais: os primeiros K anos.
+// Uso no MDX: <ComparacaoJanela a="bolsonaro" b="lula-3" />
+import GraficoComparado from '../GraficoComparado.astro';
+import { buscarGoverno, resumir, type Governo } from '../../lib/governos';
+import { indicadoresDeGoverno } from '../../lib/painel-governos';
+import { formatarMesAno, formatarNumero } from '../../lib/formato';
+import type { Ponto } from '../../lib/dados';
+
+interface Props {
+  a: string;
+  b: string;
+  graficos?: string[];
+}
+const { a: idA, b: idB, graficos = ['ipca-12-meses', 'desocupacao', 'selic-meta', 'salario-minimo-real', 'resultado-primario-pib', 'divida-bruta-pib'] } = Astro.props;
+const ga = buscarGoverno(idA);
+const gb = buscarGoverno(idB);
+if (!ga || !gb) throw new Error(`<ComparacaoJanela>: governo desconhecido (${idA}, ${idB})`);
+
+const meses = (de: string, ate: string) =>
+  (Number(ate.slice(0, 4)) - Number(de.slice(0, 4))) * 12 + Number(ate.slice(5, 7)) - Number(de.slice(5, 7));
+
+/** Primeiros N meses (ou K anos) do governo `g`. */
+function janela(pontos: Ponto[], g: Governo, tamanho: number, anual: boolean): Ponto[] {
+  const dentro = resumir(pontos, g, anual).pontos;
+  return anual ? dentro.slice(0, tamanho) : dentro.filter((p) => meses(g.inicio, p.data) < tamanho);
+}
+
+const indicadores = await indicadoresDeGoverno();
+const linhas = indicadores.map((ind) => {
+  const rb = resumir(ind.pontos, gb, ind.anual);
+  const ultimoB = rb.entregue;
+  const tamanho = ultimoB ? (ind.anual ? rb.pontos.length : meses(gb.inicio, ultimoB.data) + 1) : 0;
+  const ja = janela(ind.pontos, ga, tamanho, !!ind.anual);
+  const jb = janela(ind.pontos, gb, tamanho, !!ind.anual);
+  const media = (ps: Ponto[]) => (ps.length ? ps.reduce((s, p) => s + p.valor, 0) / ps.length : undefined);
+  return {
+    ind,
+    tamanho,
+    lados: [
+      { g: ga, herdado: resumir(ind.pontos, ga, ind.anual).herdado, fim: ja.at(-1), media: media(ja), pontos: ja },
+      { g: gb, herdado: rb.herdado, fim: jb.at(-1), media: media(jb), pontos: jb },
+    ],
+  };
+});
+const quando = (p: Ponto | undefined, anual?: boolean) => (p ? (anual ? p.data.slice(0, 4) : formatarMesAno(new Date(p.data))) : '');
+const v = (x: number | undefined, casas: number) => (x === undefined ? '—' : formatarNumero(x, casas));
+const janelaTexto = (tamanho: number, anual?: boolean) => (anual ? `primeiros ${tamanho} anos` : `primeiros ${tamanho} meses`);
+---
+
+<div class="tabela-rolagem">
+  <table class="tabela-governo tabela-comparacao">
+    <thead>
+      <tr><th scope="col">Indicador e janela</th><th scope="col">Governo</th><th scope="col">Herdado</th><th scope="col">No fim da janela</th><th scope="col">Média na janela</th></tr>
+    </thead>
+    <tbody>
+      {
+        linhas.map(({ ind, tamanho, lados }) =>
+          lados.map((l, i) => (
+            <tr class:list={{ 'tc-par': i === 1 }}>
+              {i === 0 && (
+                <th scope="rowgroup" rowspan="2">
+                  {ind.nome}
+                  <span class="tg-unidade">{ind.unidade}</span>
+                  <span class="tg-quando">{tamanho ? janelaTexto(tamanho, ind.anual) : 'sem dados'}</span>
+                </th>
+              )}
+              <td><strong>{l.g.nome}</strong></td>
+              <td>
+                <span class="tg-valor">{v(l.herdado?.valor, ind.casas)}</span>
+                <span class="tg-quando">{l.herdado ? quando(l.herdado, ind.anual) : 'série começa depois'}</span>
+              </td>
+              <td>
+                <span class="tg-valor">{v(l.fim?.valor, ind.casas)}</span>
+                <span class="tg-quando">{quando(l.fim, ind.anual)}</span>
+              </td>
+              <td><span class="tg-valor">{v(l.media, ind.casas)}</span></td>
+            </tr>
+          )),
+        )
+      }
+    </tbody>
+  </table>
+</div>
+
+{
+  graficos.map((id) => {
+    const linha = linhas.find((l) => l.ind.id === id);
+    if (!linha || linha.ind.anual) return null;
+    const [la, lb] = linha.lados;
+    return (
+      <GraficoComparado
+        titulo={`${linha.ind.nome}: ${janelaTexto(linha.tamanho)} de cada governo`}
+        unidade={linha.ind.unidade}
+        casas={linha.ind.casas}
+        a={{ nome: la!.g.nome, pontos: la!.pontos }}
+        b={{ nome: lb!.g.nome, pontos: lb!.pontos }}
+      />
+    );
+  })
+}
