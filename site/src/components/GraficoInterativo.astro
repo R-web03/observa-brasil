@@ -157,7 +157,7 @@ const ultimos = (anual ? pontos : pontos.slice(-24)).slice().reverse();
       d.className = 'guia-data';
       d.textContent = rotulo(data) + (gov ? ` · ${gov}` : '');
       const v = document.createElement('strong');
-      v.textContent = `${formatar(valor)} ${unidade.startsWith('%') ? unidade : ''}`.trim() + (preliminar ? ' (preliminar)' : '');
+      v.textContent = `${formatar(valor)}${unidade.startsWith('%') ? unidade.replace(/^% ?/, '% ') : ''}`.trim() + (preliminar ? ' (preliminar)' : '');
       balao.append(d, v);
       if (!unidade.startsWith('%')) {
         const u = document.createElement('span');

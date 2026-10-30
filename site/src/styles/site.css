@@ -160,6 +160,7 @@ figure { margin: 0; } /* o navegador recua figure em 40px por padrão */
 .porta-meta { margin-top: auto; font: 400 12px/18px var(--font-mono); color: var(--ink-subtle); }
 .porta:nth-child(2) .porta-etiqueta { color: var(--warm-ink); }
 .porta:nth-child(3) .porta-etiqueta { color: var(--effect-benefit); }
+.porta:nth-child(4) .porta-etiqueta { color: var(--effect-mixed); }
 
 .governos {
   list-style: none; margin: 0; padding: 0;
