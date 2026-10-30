@@ -22,6 +22,8 @@ A fase 1 (aulas 1 a 7 e cerca de 25 verbetes) só começa quando todos os itens 
 - [ ] Os 2 revisores leram o [METODO.md](METODO.md) e aprovaram, ou as objeções deles foram resolvidas
 - [x] Aula-piloto (aula 1) escrita no molde: `site/src/content/aulas/o-que-a-economia-estuda.mdx`
 - [ ] Aula-piloto revisada (ajustar o molde com o que a revisão mostrar antes das aulas 2 a 7)
+
+> 30 out. 2026: por decisão do responsável, as aulas 2 a 7 e 31 verbetes foram escritos sem esperar a revisão da piloto e publicados com status `em-revisao` (faixa de aviso, noindex). A revisão humana vale para todo o conjunto; o que ela mudar entra no molde e nas sete aulas.
 - [ ] Decisões em aberto da proposta respondidas: nome, quem assina, licença
 
 ## Decisões já tomadas
