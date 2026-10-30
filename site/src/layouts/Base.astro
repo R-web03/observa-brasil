@@ -11,9 +11,10 @@ interface Props {
   descricao?: string;
   rascunho?: boolean;
   emRevisao?: boolean;
+  imagem?: string; // caminho da imagem de compartilhamento (1200 x 630)
 }
 
-const { titulo, descricao = 'Economia explicada com calma, com fontes e sem torcida.', rascunho = false, emRevisao = false } = Astro.props;
+const { titulo, descricao = 'Economia explicada com calma, com fontes e sem torcida.', rascunho = false, emRevisao = false, imagem } = Astro.props;
 const tituloCompleto = Astro.url.pathname === '/' ? 'Observa Brasil' : `${titulo} · Observa Brasil`;
 const canonico = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -32,6 +33,11 @@ const canonico = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={descricao} />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
+    <meta property="og:url" content={canonico} />
+    {imagem && <meta property="og:image" content={new URL(imagem, Astro.site)} />}
+    {imagem && <meta property="og:image:width" content="1200" />}
+    {imagem && <meta property="og:image:height" content="630" />}
+    <meta name="twitter:card" content={imagem ? "summary_large_image" : "summary"} />
     {(rascunho || emRevisao) && <meta name="robots" content="noindex" />}
     <!-- Aplica o tema salvo (ou o do sistema) antes de pintar a página, sem piscar. -->
     <script is:inline>

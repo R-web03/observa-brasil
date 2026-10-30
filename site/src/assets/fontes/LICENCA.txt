@@ -1,0 +1,2 @@
+Archivo e IBM Plex Mono: SIL Open Font License 1.1 (Google Fonts).
+Usadas só para gerar as imagens de compartilhamento (src/pages/compartilhar).

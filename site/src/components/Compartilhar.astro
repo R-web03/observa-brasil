@@ -1,0 +1,46 @@
+---
+// Botões para mandar a página adiante. O link do WhatsApp funciona sem JavaScript;
+// "Copiar link" e o compartilhamento do celular aparecem só quando o navegador permite.
+interface Props {
+  titulo: string;
+  caminho: string; // ex.: /impactos/gasolina-2022
+  imagem?: string;
+}
+
+const { titulo, caminho, imagem } = Astro.props;
+const url = new URL(caminho, Astro.site).toString();
+const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${titulo}: quem ganhou e quem pagou, faixa de renda por faixa. ${url}`)}`;
+---
+
+<aside class="compartilhar" aria-label="Compartilhar">
+  <p class="compartilhar-titulo">Mande para quem precisa ver isso</p>
+  <div class="ob-row">
+    <a class="ob-btn ob-btn--primary" href={whatsapp} rel="noopener" target="_blank">Enviar no WhatsApp</a>
+    <button class="ob-btn ob-btn--secondary" type="button" data-compartilhar data-url={url} data-titulo={titulo} hidden>Compartilhar</button>
+    <button class="ob-btn ob-btn--secondary" type="button" data-copiar={url} hidden>Copiar link</button>
+    {imagem && <a class="ob-btn ob-btn--ghost" href={imagem} download>Baixar imagem</a>}
+  </div>
+</aside>
+
+<script>
+  for (const b of document.querySelectorAll<HTMLButtonElement>('[data-compartilhar]')) {
+    if (!navigator.share) continue;
+    b.hidden = false;
+    b.addEventListener('click', () => {
+      navigator.share({ title: b.dataset.titulo, url: b.dataset.url }).catch(() => {});
+    });
+  }
+  for (const b of document.querySelectorAll<HTMLButtonElement>('[data-copiar]')) {
+    if (!navigator.clipboard) continue;
+    b.hidden = false;
+    b.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(b.dataset.copiar!);
+        b.textContent = 'Link copiado';
+        setTimeout(() => (b.textContent = 'Copiar link'), 2000);
+      } catch {
+        b.textContent = 'Não deu para copiar';
+      }
+    });
+  }
+</script>

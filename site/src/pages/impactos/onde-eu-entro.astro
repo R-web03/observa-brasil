@@ -1,0 +1,155 @@
+---
+// A pirâmide do ponto de vista de uma família: escolhe-se a faixa (pela renda ou direto)
+// e aparece só a linha daquela faixa em cada decisão, em ordem de data.
+// Sem JavaScript, as cinco faixas aparecem uma embaixo da outra, com links de atalho.
+import Base from '../../layouts/Base.astro';
+import { CAMADAS, ESTUDOS, ROTULO_EFEITO, SALARIO_MINIMO, type Efeito } from '../../lib/impactos';
+import { buscarGoverno } from '../../lib/governos';
+
+const linha = [...ESTUDOS].sort((a, b) => a.inicio.localeCompare(b.inicio));
+const ORDEM_EFEITOS: Efeito[] = ['ganhou', 'pagou', 'misto', 'incerto', 'neutro'];
+const contar = (camada: (typeof CAMADAS)[number]['id']) =>
+  ORDEM_EFEITOS.map((ef) => ({ ef, n: linha.filter((e) => e.camadas[camada].efeito === ef).length })).filter((x) => x.n > 0);
+const meioSalario = Math.floor(SALARIO_MINIMO / 2).toLocaleString('pt-BR');
+---
+
+<Base titulo="Onde eu entro nisso?" descricao="Diga a renda da sua casa e veja, decisão por decisão, como cada política econômica desde 2003 chegou à sua faixa de renda." emRevisao imagem="/compartilhar/onde-eu-entro.png">
+  <header class="cabecalho">
+    <div class="ob-eyebrow"><a href="/impactos">Impactos</a></div>
+    <h1 class="ob-headline">Onde eu entro nisso?</h1>
+    <p class="ob-deck">
+      Em vez de ler todos os estudos, veja só a sua faixa de renda: o que cada decisão desde 2003 fez com famílias como a
+      sua, e o quanto se sabe sobre isso.
+    </p>
+  </header>
+
+  <form class="faixa-form" data-faixa-form data-salario-minimo={SALARIO_MINIMO}>
+    <div class="faixa-campos">
+      <label class="faixa-campo">
+        <span class="ob-field-label">Quanto entra na sua casa por mês, somando todo mundo?</span>
+        <span class="faixa-moeda"><span aria-hidden="true">R$</span><input class="faixa-input" name="renda" type="number" inputmode="numeric" min="0" step="50" placeholder="3000" required /></span>
+        <span class="ob-field-help">Salários, bicos, aposentadorias e benefícios, antes de pagar as contas.</span>
+      </label>
+      <label class="faixa-campo">
+        <span class="ob-field-label">Quantas pessoas moram na casa?</span>
+        <input class="faixa-input" name="pessoas" type="number" inputmode="numeric" min="1" max="20" step="1" value="3" required />
+      </label>
+    </div>
+    <div class="ob-row">
+      <button class="ob-btn ob-btn--primary ob-btn--lg" type="submit">Ver minha faixa</button>
+    </div>
+    <p class="ob-field-help">O cálculo é feito no seu aparelho. Nada do que você digita é enviado ou guardado por nós.</p>
+  </form>
+
+  <nav class="faixa-atalhos" aria-label="Ou escolha a faixa direto">
+    <span class="ob-field-label">Ou escolha direto:</span>
+    {CAMADAS.map((c) => <a class="ob-chip" href={`#faixa-${c.id}`} data-faixa-atalho={c.id}>{c.nome}</a>)}
+  </nav>
+
+  <div class="faixas" data-faixas>
+    {
+      CAMADAS.map((c) => (
+        <section class="faixa" id={`faixa-${c.id}`} data-faixa={c.id} aria-labelledby={`faixa-${c.id}-t`}>
+          <p class="ob-eyebrow">Sua faixa</p>
+          <h2 id={`faixa-${c.id}-t`} class="t-title-1">{c.nome}</h2>
+          <p class="faixa-quem">
+            <strong>{c.faixa}.</strong> {c.quem}
+          </p>
+          <p class="faixa-resumo">
+            Em {linha.length} decisões estudadas, de 2003 até hoje:{' '}
+            {contar(c.id).map((x, i) => (
+              <span class:list={['faixa-conta', `efeito-texto--${x.ef}`]}>
+                {i > 0 && ' · '}
+                <span aria-hidden="true">{ROTULO_EFEITO[x.ef].icone}</span> {ROTULO_EFEITO[x.ef].texto.toLowerCase()} em {x.n}
+              </span>
+            ))}
+            .
+          </p>
+          <p class="ob-field-help">Isso não é um placar de governos: as decisões têm tamanhos e durações muito diferentes, e o grau de evidência varia. Leia cada uma.</p>
+          <ol class="faixa-linha">
+            {linha.map((e) => {
+              const ef = e.camadas[c.id];
+              const r = ROTULO_EFEITO[ef.efeito];
+              const g = buscarGoverno(e.governo);
+              return (
+                <li class:list={['faixa-item', `efeito--${ef.efeito}`]}>
+                  <span class="faixa-quando">
+                    {e.inicio.slice(0, 4)} · {g?.nome}
+                  </span>
+                  <a class="faixa-titulo" href={`/impactos/${e.id}`}>{e.titulo}</a>
+                  <span class="camada-efeito">
+                    <span aria-hidden="true">{r.icone}</span> {r.texto}
+                  </span>
+                  <p class="faixa-curto">{ef.curto}</p>
+                  <details>
+                    <summary>Como chega na sua casa</summary>
+                    <p>{ef.detalhe}</p>
+                    <p class="camada-evidencia">Grau de evidência: <strong>{ef.evidencia}</strong></p>
+                  </details>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+
+  <p class="ob-field-help faixa-nota">
+    As faixas usam o salário mínimo de 2026 (R$ {SALARIO_MINIMO.toLocaleString('pt-BR')}). A faixa de pobreza segue o
+    corte do Cadastro Único: até meio salário mínimo por pessoa (R$ {meioSalario}). As demais são pela renda total da
+    família. Veja o <a href="/metodo">método</a>.
+  </p>
+</Base>
+
+<script>
+  // Mesma regra de camadaDaRenda (lib/impactos.ts), repetida aqui para não levar os estudos ao navegador.
+  const camadaDaRenda = (renda: number, pessoas: number, sm: number) => {
+    if (renda / pessoas <= sm / 2) return 'pobreza';
+    const n = renda / sm;
+    return n <= 2 ? 'base' : n <= 5 ? 'media-baixa' : n <= 15 ? 'media' : 'alta';
+  };
+
+  const form = document.querySelector<HTMLFormElement>('[data-faixa-form]');
+  const faixas = document.querySelector<HTMLElement>('[data-faixas]');
+  const secoes = [...document.querySelectorAll<HTMLElement>('[data-faixa]')];
+  const atalhos = [...document.querySelectorAll<HTMLAnchorElement>('[data-faixa-atalho]')];
+
+  const mostrar = (id: string, rolar: boolean) => {
+    const alvo = secoes.find((s) => s.dataset.faixa === id);
+    if (!faixas || !alvo) return;
+    faixas.classList.add('faixas--uma');
+    for (const s of secoes) s.hidden = s !== alvo;
+    for (const a of atalhos) a.setAttribute('aria-current', String(a.dataset.faixaAtalho === id));
+    history.replaceState(null, '', `#faixa-${id}`);
+    try {
+      localStorage.setItem('minha-faixa', id);
+    } catch {}
+    if (rolar) alvo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  form?.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const dados = new FormData(form);
+    const renda = Number(dados.get('renda'));
+    const pessoas = Math.max(1, Number(dados.get('pessoas')) || 1);
+    if (!Number.isFinite(renda) || renda < 0) return;
+    mostrar(camadaDaRenda(renda, pessoas, Number(form.dataset.salarioMinimo)), true);
+  });
+
+  for (const a of atalhos) {
+    a.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      mostrar(a.dataset.faixaAtalho!, true);
+    });
+  }
+
+  // Abre direto na faixa do link (#faixa-base) ou na última escolhida neste aparelho.
+  const doLink = location.hash.startsWith('#faixa-') ? location.hash.slice(7) : null;
+  let salva: string | null = null;
+  try {
+    salva = localStorage.getItem('minha-faixa');
+  } catch {}
+  const inicial = doLink ?? salva;
+  if (inicial) mostrar(inicial, Boolean(doLink));
+</script>

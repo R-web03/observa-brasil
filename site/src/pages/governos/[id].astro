@@ -141,7 +141,7 @@ const GRAFICOS = ['pib-crescimento', 'ipca-12-meses', 'desocupacao', 'salario-mi
             <a href="/impactos"> pirâmide de impacto</a>, com o grau de evidência.
           </p>
           <ol class="linha-do-tempo">
-            {contexto.decisoes.map((d) => (
+            {[...contexto.decisoes].sort((a, b) => a.data.localeCompare(b.data)).map((d) => (
               <li>
                 <span class="ldt-data">{dataDecisao(d.data)}</span>
                 <strong class="ldt-titulo">{d.titulo}</strong>
@@ -151,7 +151,7 @@ const GRAFICOS = ['pib-crescimento', 'ipca-12-meses', 'desocupacao', 'salario-mi
                   {d.norma && ' · '}
                   {d.quemDecidiu}
                 </span>
-                {d.impacto && <a class="ldt-impacto" href={`/impactos#${d.impacto}`}>Ver quem ganhou e quem pagou →</a>}
+                {d.impacto && <a class="ldt-impacto" href={`/impactos/${d.impacto}`}>Ver quem ganhou e quem pagou →</a>}
               </li>
             ))}
           </ol>

@@ -1,0 +1,25 @@
+---
+// Versão compacta da pirâmide para listas: uma barra por faixa, com o ícone do efeito.
+// A cor nunca é a única pista: cada barra tem ícone e o nome do efeito para leitores de tela.
+import { CAMADAS, ROTULO_EFEITO, type Estudo } from '../lib/impactos';
+
+interface Props {
+  estudo: Estudo;
+}
+
+const { estudo } = Astro.props;
+---
+
+<ul class="mini-piramide" aria-label="Efeito em cada faixa de renda">
+  {
+    CAMADAS.map((c, i) => {
+      const ef = estudo.camadas[c.id].efeito;
+      return (
+        <li class:list={['mini-camada', `mini-camada--${i}`, `efeito--${ef}`]}>
+          <span aria-hidden="true">{ROTULO_EFEITO[ef].icone}</span>
+          <span class="ob-sr">{c.nome}: {ROTULO_EFEITO[ef].texto}</span>
+        </li>
+      );
+    })
+  }
+</ul>

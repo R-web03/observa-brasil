@@ -68,7 +68,9 @@ export const CONTEXTO: Record<string, Contexto> = {
       { data: '2021-02', titulo: 'Autonomia do Banco Central', oQueFaz: 'Deu mandatos fixos ao presidente e aos diretores do Banco Central, não coincidentes com o do presidente da República.', norma: 'Lei Complementar 179/2021', quemDecidiu: 'Congresso aprovou; Executivo sancionou' },
       { data: '2021-07', titulo: 'Privatização da Eletrobras', oQueFaz: 'Autorizou a venda de ações que tirou da União o controle da maior empresa de energia do país, concluída em junho de 2022.', norma: 'Lei 14.182/2021', quemDecidiu: 'Executivo propôs; Congresso aprovou', impacto: 'privatizacao-eletrobras' },
       { data: '2021-12', titulo: 'Auxílio Brasil', oQueFaz: 'Substituiu o Bolsa Família por um novo programa de transferência de renda.', norma: 'Lei 14.284/2021', quemDecidiu: 'Executivo propôs; Congresso aprovou' },
+      { data: '2021-12', titulo: 'Limite para pagar precatórios', oQueFaz: 'Criou um teto anual para pagar dívidas da União reconhecidas pela Justiça; o que passava do limite ficava para depois. Abriu espaço no orçamento para o Auxílio Brasil de R$ 400.', norma: 'Emenda Constitucional 114/2021', quemDecidiu: 'Executivo apoiou; Congresso aprovou', impacto: 'contas-2023' },
       { data: '2022-06', titulo: 'Teto do ICMS sobre combustíveis, energia e telecomunicações', oQueFaz: 'Limitou a alíquota do ICMS, imposto dos estados, sobre esses itens, considerados essenciais.', norma: 'Lei Complementar 194/2022', quemDecidiu: 'Congresso aprovou; Executivo sancionou', impacto: 'teto-icms-2022' },
+      { data: '2022-06', titulo: 'Impostos federais zerados na gasolina e no etanol', oQueFaz: 'Zerou PIS/Cofins e Cide sobre gasolina e etanol até o fim de 2022, no pico do preço do petróleo.', norma: 'Lei Complementar 194/2022', quemDecidiu: 'Congresso aprovou; Executivo sancionou', impacto: 'gasolina-2022' },
     ],
   },
   'lula-3': {
@@ -77,7 +79,9 @@ export const CONTEXTO: Record<string, Contexto> = {
       'Enchentes no Rio Grande do Sul em maio de 2024.',
     ],
     decisoes: [
-      { data: '2023-05', titulo: 'Mudança na política de preços da Petrobras', oQueFaz: 'A Petrobras deixou de seguir automaticamente a paridade com os preços internacionais nos reajustes de combustíveis.', quemDecidiu: 'Petrobras (empresa estatal)' },
+      { data: '2023-05', titulo: 'Mudança na política de preços da Petrobras', oQueFaz: 'A Petrobras deixou de seguir automaticamente a paridade com os preços internacionais nos reajustes de combustíveis.', quemDecidiu: 'Petrobras (empresa estatal)', impacto: 'gasolina-2023' },
+      { data: '2023-03', titulo: 'Volta dos impostos federais sobre a gasolina', oQueFaz: 'Depois de prorrogar a isenção até fevereiro, voltou a cobrar PIS/Cofins sobre gasolina e etanol em duas etapas, em março e no fim de junho de 2023.', norma: 'Medida Provisória 1.163/2023', quemDecidiu: 'Executivo', impacto: 'gasolina-2023' },
+      { data: '2022-12', titulo: 'PEC da Transição', oQueFaz: 'Aprovada antes da posse, a pedido do governo eleito: autorizou até R$ 145 bilhões de gastos acima do teto em 2023, para manter o benefício de R$ 600 e aumentar o salário mínimo, entre outros.', norma: 'Emenda Constitucional 126/2022', quemDecidiu: 'Governo eleito propôs; Congresso aprovou', impacto: 'contas-2023' },
       { data: '2023-06', titulo: 'Volta do Bolsa Família', oQueFaz: 'Recriou o Bolsa Família no lugar do Auxílio Brasil, com valor mínimo por família e adicionais por criança.', norma: 'Lei 14.601/2023', quemDecidiu: 'Executivo propôs; Congresso aprovou', impacto: 'bolsa-familia-2023' },
       { data: '2023-08', titulo: 'Nova regra de valorização do salário mínimo', oQueFaz: 'Voltou a reajustar o mínimo pela inflação mais o crescimento do PIB de dois anos antes.', norma: 'Lei 14.663/2023', quemDecidiu: 'Executivo propôs; Congresso aprovou' },
       { data: '2023-08', titulo: 'Arcabouço fiscal', oQueFaz: 'Substituiu o teto de gastos por uma regra em que a despesa cresce acima da inflação, mas limitada a uma parte do crescimento da receita, com metas de resultado primário.', norma: 'Lei Complementar 200/2023', quemDecidiu: 'Executivo propôs; Congresso aprovou' },
@@ -90,6 +94,9 @@ export const CONTEXTO: Record<string, Contexto> = {
 // Texto oficial de cada norma no Planalto. Endereços e datas conferidos em 30 out. 2026.
 const P = 'https://www.planalto.gov.br/ccivil_03/';
 export const LINK_NORMA: Record<string, string> = {
+  'Emenda Constitucional 114/2021': `${P}constituicao/emendas/emc/emc114.htm`,
+  'Emenda Constitucional 126/2022': `${P}constituicao/emendas/emc/emc126.htm`,
+  'Medida Provisória 1.163/2023': `${P}_ato2023-2026/2023/mpv/mpv1163.htm`,
   'Emenda Constitucional 41/2003': `${P}constituicao/emendas/emc/emc41.htm`,
   'Lei 10.820/2003': `${P}leis/2003/l10.820.htm`,
   'Lei 10.836/2004': `${P}_ato2004-2006/2004/lei/l10.836.htm`,

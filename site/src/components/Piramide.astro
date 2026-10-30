@@ -1,0 +1,39 @@
+---
+// A pirâmide de um estudo: uma camada por faixa de renda, do topo à pobreza.
+// Cada camada abre (details) para mostrar como a decisão chega ao bolso e o grau de evidência.
+import { CAMADAS, ROTULO_EFEITO, type Estudo } from '../lib/impactos';
+
+interface Props {
+  estudo: Estudo;
+}
+
+const { estudo } = Astro.props;
+---
+
+<div class="piramide" role="list" aria-label={`Efeitos por faixa de renda: ${estudo.titulo}`}>
+  {
+    CAMADAS.map((c, i) => {
+      const ef = estudo.camadas[c.id];
+      const r = ROTULO_EFEITO[ef.efeito];
+      return (
+        <details class:list={['camada', `camada--${i}`, `efeito--${ef.efeito}`]} role="listitem">
+          <summary>
+            <span class="camada-nome">
+              {c.nome}
+              <small>{c.faixa}</small>
+            </span>
+            <span class="camada-efeito">
+              <span aria-hidden="true">{r.icone}</span> {r.texto}
+            </span>
+            <span class="camada-curto">{ef.curto}</span>
+          </summary>
+          <div class="camada-detalhe">
+            <p>{ef.detalhe}</p>
+            <p class="camada-quem">Quem está aqui: {c.quem}</p>
+            <p class="camada-evidencia">Grau de evidência: <strong>{ef.evidencia}</strong></p>
+          </div>
+        </details>
+      );
+    })
+  }
+</div>

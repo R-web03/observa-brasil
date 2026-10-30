@@ -1,0 +1,63 @@
+---
+import Base from '../../layouts/Base.astro';
+import NotaMetodo from '../../components/editorial/NotaMetodo.astro';
+import MiniPiramide from '../../components/MiniPiramide.astro';
+import { CAMADAS, ESTUDOS } from '../../lib/impactos';
+import { GOVERNOS } from '../../lib/governos';
+
+// Agrupa os estudos por governo, na ordem dos mandatos, e dentro de cada um pela data.
+const grupos = GOVERNOS.map((g) => ({
+  g,
+  estudos: ESTUDOS.filter((e) => e.governo === g.id).sort((a, b) => a.inicio.localeCompare(b.inicio)),
+})).filter((x) => x.estudos.length > 0);
+---
+
+<Base titulo="Pirâmide de impacto" descricao="Quem ganhou e quem pagou com cada decisão econômica, por faixa de renda, com o grau de evidência de cada efeito." emRevisao imagem="/compartilhar/impactos.png">
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Impactos</div>
+    <h1 class="ob-headline">Quem ganhou e quem pagou</h1>
+    <p class="ob-deck">
+      A mesma decisão chega diferente em cada faixa de renda. Escolha uma decisão para ver a pirâmide inteira: como o
+      efeito chega ao bolso, passo a passo, quanto foi decisão do governo e quanto veio de antes ou de fora.
+    </p>
+  </header>
+
+  <a class="ob-card ob-card--link chamada-faixa" href="/impactos/onde-eu-entro">
+    <span class="porta-etiqueta">Novo</span>
+    <span class="porta-titulo">Onde eu entro nisso?</span>
+    <span class="porta-meta">Diga a renda da sua casa e veja só a sua faixa, decisão por decisão, de 2003 até hoje →</span>
+  </a>
+
+  <div class="artigo largo">
+    <NotaMetodo titulo="Como ler a pirâmide">
+      <ul>
+        <li>São cinco faixas, do topo à pobreza: {CAMADAS.map((c) => c.nome.toLowerCase()).join(', ')}. A de pobreza é a do Cadastro Único: até meio salário mínimo por pessoa da casa.</li>
+        <li><strong>▲ Ganhou</strong>, <strong>▼ Pagou</strong>, <strong>◐ Misto</strong> (ganhou de um lado, pagou de outro), <strong>? Incerto</strong> (não dá para saber a direção com o que existe hoje) e <strong>– Pouco afetado</strong>.</li>
+        <li>Cada efeito tem um <strong>grau de evidência</strong>: forte, moderada, fraca, em disputa ou sem evidência.</li>
+        <li>Mostramos o que se sabe, inclusive quando a resposta é "ainda não se sabe". A pirâmide não dá nota a governo nenhum.</li>
+      </ul>
+    </NotaMetodo>
+  </div>
+
+  {
+    grupos.map(({ g, estudos }) => (
+      <section class="secao" aria-labelledby={`gov-${g.id}`}>
+        <div class="secao-topo">
+          <h2 id={`gov-${g.id}`} class="t-title-1">{g.nome}</h2>
+          <a class="secao-link" href={`/governos/${g.id}`}>Ver o governo →</a>
+        </div>
+        <ul class="grade grade--3 grade--estudos">
+          {estudos.map((e) => (
+            <li>
+              <a class="ob-card ob-card--link estudo-cartao" href={`/impactos/${e.id}`}>
+                <span class="porta-etiqueta">{e.quando}</span>
+                <span class="porta-titulo">{e.titulo}</span>
+                <MiniPiramide estudo={e} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</Base>
