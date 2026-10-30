@@ -9,6 +9,7 @@ import { listar } from '../../lib/conteudo';
 import { observacoes } from '../../lib/dados';
 import { formatarData, formatarMesAno } from '../../lib/formato';
 import { buscarSerie } from '../../lib/ingestao/series';
+import { corDaSerie } from '../../lib/cores';
 
 export async function getStaticPaths() {
   return (await listar('indicadores')).map((indicador) => ({ params: { id: indicador.id }, props: { indicador } }));
@@ -45,6 +46,7 @@ const hoje = formatarData(new Date());
           descricao={`Série de ${formatarMesAno(new Date(primeiro.data))} a ${formatarMesAno(new Date(ultimo.data))}.`}
           pontos={pontos}
           unidade={d.unidade}
+          cor={corDaSerie(indicador.id)}
         >
           <Fonte
             fonte={`${d.instituicao}, ${d.serie}`}

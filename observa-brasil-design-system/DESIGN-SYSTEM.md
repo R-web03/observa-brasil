@@ -1,4 +1,4 @@
-# Observa Brasil — Design System
+# Observa Brasil — Design System (direção Grafite Metálico)
 
 ## Como usar
 
@@ -22,19 +22,26 @@ Coloque esta pasta no projeto e diga: "Siga o design system em `observa-brasil-d
 
 ---
 
-## Direção visual: Grafite em Camadas
+## Direção visual: Grafite Metálico (out. 2026)
 
-Um painel de vidro escuro onde o país é explicado com calma. A página é carvão (`bg`), as seções são painéis um tom acima (`surface`) e os cartões, mais um tom acima (`surface-soft`) — a profundidade vem dessas camadas, não de efeitos. Tudo que se clica é uma pílula ou um círculo. Texto em marfim (`ink`), uma pílula clara (`inverse`) para a ação principal e um único fio de cor, o azul elétrico (`accent`), para favoritos, a aba ativa e a série em foco.
+Substitui a direção "Grafite em Camadas". Nasceu do símbolo olho-losango: metal escovado sobre ladrilho quase preto.
 
-**Grafite** é o tema principal. **Claro** (papel quente, cartões brancos, navegação grafite) usa os mesmos tokens e componentes — para leitura longa de dia, impressão e quem prefere fundo claro.
+- **Fundo quase preto** (`bg` #08080A), painéis um tom acima (`surface` #121315) e filetes finos de 1px (`border`) separando blocos. A profundidade vem dos filetes e das camadas, não de sombras coloridas.
+- **Títulos grossos e inclinados** (Archivo 800 itálico, `font-display`), com espaçamento negativo. **Rótulos técnicos em máquina de escrever** (IBM Plex Mono, maiúsculas espaçadas): sobretítulos, fontes, datas, unidades.
+- **Metal** (`--metal`) só em dois lugares: o símbolo e, no máximo, um trecho de título por página.
+- **Cor nos dados.** A interface é monocromática; a cor mora nos gráficos e indicadores, com uma cor fixa por indicador (`chart-1…5`). O azul `accent` marca links e foco.
+- Controles em **retângulo arredondado** (`radius-control` 12px), não pílula. Etiquetas (`ob-tag`) continuam pílulas.
+
+**Grafite** é o tema principal. **Claro** (cinza frio, cartões brancos, navegação grafite) usa os mesmos tokens e componentes.
 
 Princípios:
 
-1. **O conteúdo manda.** Camadas, pílulas e cor servem à leitura; nada decorativo disputa atenção com um número ou uma frase.
-2. **Neutro de verdade.** Nenhuma cor representa partido, governo ou lado. Vermelho e verde só aparecem como mensagens de sistema.
+1. **O conteúdo manda.** Metal, cor e animação servem à leitura; nada decorativo disputa atenção com um número ou uma frase.
+2. **Neutro de verdade.** Nenhuma cor representa partido, governo ou lado. Nenhum governo ganha destaque visual sobre outro.
 3. **Todo número tem endereço.** Fonte, período, unidade e método acompanham cada dado.
 4. **Dizer o que se sabe e o que não se sabe.** Incerteza é um componente, não uma nota de rodapé escondida.
 5. **Significado nunca só pela cor.** Cor + símbolo + palavra.
+6. **Nada de número que não existe.** Sem contadores animados nem esqueletos com valores falsos: um número só aparece quando é o valor real.
 
 ## Conteúdo e voz
 
@@ -48,79 +55,57 @@ Princípios:
 
 ## Cor
 
-Contraste (WCAG 2.1) listado como `bg` / `surface` / `surface-soft`.
+A fonte da verdade dos valores é `tokens.css` (os dois temas). Principais papéis:
 
-| Papel | Token | Grafite | Claro | Função | Contraste (Grafite · Claro) |
-|---|---|---|---|---|---|
-| Fundo | `bg` | #2A2A28 | #F3F1ED | página | — |
-| Painel | `surface` | #363633 | #FFFFFF | painéis, cartões soltos, gráficos | — |
-| Cartão | `surface-soft` | #42423F | #E9E7E2 | cartões no painel, pílulas, trilhos | — |
-| Vidro | `surface-glass` | 72% #3E3E3B | 72% branco | navegação fixa com blur | — |
-| Texto | `ink` | #F3F1ED | #292A28 | texto e números | 12,8/10,8/8,9 · 12,8/14,4/11,7 |
-| Texto secundário | `ink-muted` | #B3B2AC | #63645F | linha fina, legendas, eixos | 6,8/5,7/4,7 · 5,3/6,0/4,8 |
-| Borda | `border` | #4A4A46 | #D8D6D0 | divisórias, contorno de pílulas | decorativa |
-| Borda de controle | `border-strong` | #929189 | #7A7974 | campos, eixos, hover | 4,5/3,8/3,2 · 3,9/4,4/3,5 |
-| Pílula de contraste | `inverse` / `inverse-ink` | #EDEBE6 / #292A28 | #292A28 / #F3F1ED | botão primário, tooltip, destaque | 12,1 · 12,8 |
-| Navegação | `chrome` / `chrome-raised` | #363633 / #42423F | #292A28 / #353632 | barra principal | `chrome-muted` ≥4,7 |
-| Destaque | `accent` | #5B8CFF | #2F5FD8 | favorito, aba ativa, série em foco | marcas: 4,6/3,8/3,2 · 5,0/5,6/4,5 |
-| Destaque legível | `accent-ink` / `on-accent` | #8FB0FF / #10172E | #2A55C4 / #FFFFFF | texto azul, botão de destaque | 6,7/5,7/4,7 · 5,8/6,6/5,3 |
-| Acento quente | `warm` / `warm-ink` | #D08B6A / #E3A98C | #A86A4D / #8F563B | citação, incerteza | texto 7,1/6,0/5,0 · 5,2/5,9 |
-| Sucesso | `success` | #7BC0A0 | #2F6B4F | só feedback de sistema | 6,8 · 5,6 |
-| Atenção | `warning` | #E0B060 | #8A5A00 | dado provisório, falha parcial | 7,2 · 5,3 |
-| Erro | `error` | #F08A80 | #A93A32 | erro de sistema/formulário | 5,9 · 5,6 |
-| Informação | `info` | #8DB8D8 | #2E5E7E | atualização, mudança de método | 6,8 · 6,2 |
+| Papel | Token | Grafite | Claro |
+|---|---|---|---|
+| Fundo | `bg` | #08080A | #F4F5F6 |
+| Painel | `surface` | #121315 | #FFFFFF |
+| Cartão/realce | `surface-soft` | #1A1B1E | #ECEEF0 |
+| Faixa rebaixada | `surface-sunken` | #0D0D0F | #E6E8EB |
+| Texto | `ink` | #E6E8EB | #0E0F11 |
+| Texto secundário | `ink-muted` | #A9AEB4 | #4E535A |
+| Rótulo técnico | `ink-subtle` | #8E949B | #686D74 |
+| Filete | `border` | #222428 | #DFE2E5 |
+| Filete forte | `border-strong` | #44474C | #8E949B |
+| Ação principal | `inverse` | #E6E8EB | #121315 |
+| Navegação | `chrome` | #121315 | #121315 |
+| Destaque | `accent` / `accent-ink` | #3987E5 / #86B6EF | #2A78D6 / #1C5CAB |
+| Metal | `metal` | gradiente prata | gradiente grafite |
 
-Origem dos valores: a paleta proposta virou o tema Claro, com `ink-muted` ajustado de #696A66 para #63645F (o original dava 4,4:1 em `surface-soft`), `accent` e `warm` mantidos como cores de marca com pares legíveis `accent-ink`/`warm-ink`, e `border-strong` criada para controles. O tema Grafite segue a referência de painel escuro: camadas que clareiam a cada nível, texto marfim. O acento é o azul elétrico do ícone de referência: #5B8CFF no escuro, #2F5FD8 no claro (que substituíram o rosa queimado da paleta inicial).
-
-Regras:
-
-- Proporção aproximada por tela: 85% camadas neutras, 10% pílulas `inverse`, até 5% `accent`.
-- `accent` aparece no máximo em três lugares por tela.
-- Texto colorido só em `accent-ink`, `warm-ink` ou nas cores de estado sobre seus `*-soft`; símbolos dentro de círculos de estado em `on-status`.
-- Cores de estado (`success`, `warning`, `error`, `info`) só para mensagens do sistema e avisos reais — nunca para dado político ou econômico.
+A navegação (`chrome`) é escura nos dois temas, como o ladrilho do símbolo.
 
 ## Cores de dados
 
-- **Categóricas** `chart-1` petróleo, `chart-2` ocre, `chart-3` ameixa, `chart-4` sálvia, `chart-5` argila. No Grafite são as versões clareadas (≥4:1 em `bg` e `surface`); no Claro, as escuras (≥3:1). Terrosas e dessaturadas para não lembrar bandeira, partido ou semáforo. Use na ordem; a partir de três séries, rotule diretamente.
-- **Foco + contexto**: uma série em `accent` (azul da marca) ou `chart-1`, o resto em `chart-context`. Não use `accent` e `chart-1` como duas séries diferentes no mesmo gráfico: são azuis próximos.
-- **Sequencial** `seq-1`→`seq-5` para intensidade; no Grafite a escala vai do escuro (menor) ao claro (maior). Os passos próximos do fundo ficam abaixo de 3:1: separe as células com 1px de `surface`.
-- **Divergente** `div-low-2`→`div-high-2` (terracota ↔ azul, centro `div-mid`) para acima/abaixo de uma referência nomeada. "Abaixo" não significa "ruim".
-- **Efeitos para as pessoas**: `effect-benefit` (azul-petróleo esverdeado ▲ Benefício — distinto do azul da marca, para que a cor da marca nunca signifique "bom"), `effect-harm` (terracota ▼ Prejuízo), `effect-mixed` (ameixa ◐ Efeito misto), `effect-uncertain` (cinza tracejado ? Incerto). Sempre os três sinais juntos e sempre "para quem".
-- Nunca associe uma cor fixa a um partido, candidato ou governo; quando for inevitável comparar partidos, use `chart-1…5` em ordem alfabética e rótulos diretos.
-- Todo gráfico carrega `SourceLine` (fonte, período, unidade, atualização) e, quando houver escolhas de cálculo, `MethodNote`.
+- **Categóricas** `chart-1` azul, `chart-2` laranja, `chart-3` verde-água, `chart-4` âmbar, `chart-5` magenta. Cada tema tem seus próprios passos, validados contra o próprio fundo (`surface`): no Grafite, todas ≥3:1; no Claro, verde-água, âmbar e magenta ficam abaixo de 3:1, então todo gráfico leva rótulo direto ou tabela ("Ver dados"). Use nesta ordem: ela foi escolhida para ser distinguível com daltonismo.
+- **A cor segue o indicador, nunca a posição.** IPCA = `chart-1`, Selic = `chart-2`, desocupação = `chart-3`, dívida bruta = `chart-4` (mapa em `site/src/lib/cores.ts`). O mesmo indicador tem a mesma cor em qualquer página.
+- **Sequencial** `seq-1`→`seq-5`: um só tom de azul, do mais fraco ao mais forte.
+- **Divergente** `div-low-2`→`div-high-2` (vermelho ↔ azul, centro cinza `div-mid`) para acima/abaixo de uma referência nomeada. "Abaixo" não significa "ruim".
+- **Efeitos para as pessoas**: `effect-benefit` ▲ Benefício, `effect-harm` ▼ Prejuízo, `effect-mixed` ◐ Efeito misto, `effect-uncertain` ? Incerto (tracejado). Sempre os três sinais juntos e sempre "para quem".
+- Nunca associe uma cor fixa a um partido, candidato ou governo.
+- Linhas de 2px, sem eixo duplo, grade recessiva (`chart-grid`). Todo gráfico carrega `SourceLine` e, quando houver escolhas de cálculo, `MethodNote`.
 
 ## Tipografia
 
-Três famílias do Google Fonts, carregadas em `components/bundle.css`:
+Duas famílias do Google Fonts, carregadas em `components.css`:
 
-- `sans` **Plus Jakarta Sans** — a voz da interface: texto corrido, títulos de cartão e gráfico, rótulos, botões, números (sempre `tabular-nums`). Geométrica e arredondada como a referência, mas com boa leitura em parágrafos.
-- `serif` **Newsreader** — só o editorial: título de análise (`display`, `title-1`), linha fina (`deck`) e citação. É o que separa uma análise de uma vitrine.
-- `mono` **IBM Plex Mono** — apenas metadados técnicos (`meta`).
+- **Archivo**: `font-display` (800 itálico) para títulos e números de destaque; `font-sans` (400–800) para texto, botões e rótulos. `font-serif` ficou como apelido de Archivo, por compatibilidade.
+- **IBM Plex Mono** (`font-mono`): sobretítulos, rótulos de indicador, fontes, datas e eixos de gráfico.
 
 | Estilo | Família | Tamanho/linha | Peso | Uso |
 |---|---|---|---|---|
-| `display` | serif | 52/56 (36/40 no celular) | 500 | título de capa |
-| `title-1` | serif | 40/46 (30/36) | 500 | título de análise |
-| `title-2` | sans | 28/35 | 600 | seção, cabeçalho de painel |
-| `title-3` | sans | 22/29 | 600 | cartão, gráfico |
-| `deck` | serif | 21/31 | 400 | linha fina |
-| `quote` | serif itálico | 24/34 | 400 | citação |
-| `body-lg` | sans | 19/31 | 400 | texto de análise (desktop) |
-| `body` | sans | 17/27 | 400 | texto (celular), cartões |
-| `body-sm` | sans | 15/23 | 400 | notas, tooltip |
-| `caption` | sans | 13/19 | 400 | fonte, legenda (mínimo) |
-| `eyebrow` | sans | 12/16, +0,08em, maiúsculas | 700 | editoria |
-| `label` | sans | 14/20 | 600 | rótulos, abas, cabeçalhos |
-| `button` | sans | 15/20 | 600 | botões |
-| `figure-xl` | sans | 44/48 | 600 | número de indicador |
-| `figure` | sans | 24/30 | 600 | números secundários |
-| `data` | sans | 15/22 | 400 | células numéricas |
-| `meta` | mono | 12/18 | 400 | metadados |
+| `display` | display itálico | 76/0,98 (44 no celular) | 800 | título de capa |
+| `title-1` | display itálico | 40/1,05 (32) | 800 | título de página e de seção da capa |
+| `title-2` | display itálico | 32/1,1 | 800 | seção dentro do texto |
+| `title-3` | sans | 24/1,2 | 800 | cartão |
+| `deck` | sans | 20/31 | 400 | linha fina |
+| `body` | sans | 17–18/1,65 | 400 | texto corrido |
+| `eyebrow` | mono | 13/16, +0,14em, maiúsculas | 400 | sobretítulo |
+| `figure-xl` | display itálico | 44/48 | 800 | número de indicador |
+| `meta` | mono | 12/18 | 400 | fonte, data, unidade |
 
-- Largura de leitura `measure` = 68ch (60–75 caracteres por linha). Nunca texto corrido na largura total.
-- Altura de linha: 1,6 para texto, 1,1–1,25 para títulos. Texto claro sobre escuro: nunca abaixo de peso 400.
-- Títulos com `text-wrap: balance`; parágrafos com `text-wrap: pretty`.
-- Nada abaixo de 13px.
+- Títulos com espaçamento negativo (−0,02 a −0,04em) e `text-wrap: balance`.
+- Largura de leitura `measure` = 68ch. Nada abaixo de 12px.
 
 ## Espaço, grade e layout
 
@@ -135,11 +120,9 @@ Três famílias do Google Fonts, carregadas em `components/bundle.css`:
 
 ## Forma e profundidade
 
-- Raios: `radius-pill` para tudo que se clica (botões, chips, abas, busca, etiquetas de seção) e círculos para `IconButton` · `radius-lg` 24 cartões · `radius-xl` 32 painéis · `radius-md` 18 notas e avisos · `radius-sm` 12 miniaturas e campos de formulário longo · `radius-xs` 8 etiquetas e tooltip.
-- Raio interno = raio externo − vão (painel 32 com vão 12 → cartão 24).
-- Profundidade pela camada: `bg` → `surface` → `surface-soft`, cada uma mais clara no Grafite. Sombras: `elevation-1` (no Grafite, um filete de luz interno no topo), `elevation-2` para painéis e hover, `elevation-3` só para camadas flutuantes.
-- Vidro (`surface-glass` + blur 16px) só na navegação fixa e em painéis que flutuam sobre conteúdo rolando; nunca atrás de texto longo. Sem gradientes, sem brilho, sem sombras coloridas.
-- Divisórias: 1px `border` entre itens; 2px `ink` para abrir seção ou cabeçalho de tabela.
+- Raios: `radius-control` 12 para botões e busca · `radius-sm` 10 para botão-ícone, itens de menu e destaque da navegação · `radius-md` 16 notas · `radius-lg` 20 cartões e gráficos · `radius-xl` 28 blocos de chamada · `radius-pill` só para etiquetas.
+- Profundidade por filete (`border`) e camada; sombras escuras e neutras. O ladrilho do símbolo é o único elemento com brilho.
+- Fundo de grade fina (120px) só atrás do topo da capa, sumindo nas bordas.
 
 ## Estados de interação
 

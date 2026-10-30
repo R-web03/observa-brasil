@@ -1,0 +1,28 @@
+---
+// Linha pequena, sem eixos, ao lado de um número. Decorativa: o número e a data ao lado
+// já dizem o que importa, então fica fora da leitura de tela.
+import type { Ponto } from '../lib/dados';
+
+interface Props {
+  pontos: Ponto[];
+  cor: string;
+}
+const { pontos, cor } = Astro.props;
+const L = 240, A = 40;
+const valores = pontos.map((p) => p.valor);
+const min = Math.min(...valores);
+const max = Math.max(...valores);
+const x = (i: number) => (i / Math.max(pontos.length - 1, 1)) * L;
+const y = (v: number) => 3 + (1 - (v - min) / (max - min || 1)) * (A - 6);
+const caminho = pontos.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(p.valor).toFixed(1)}`).join(' ');
+const ultimo = pontos.at(-1);
+---
+
+{
+  pontos.length > 1 && ultimo && (
+    <svg class="minigrafico" viewBox={`-4 0 ${L + 8} ${A}`} aria-hidden="true">
+      <path class="grafico-linha" d={caminho} pathLength="1" fill="none" stroke={cor} stroke-width="2" stroke-linejoin="round" />
+      <circle cx={x(pontos.length - 1)} cy={y(ultimo.valor)} r="3.5" fill={cor} />
+    </svg>
+  )
+}

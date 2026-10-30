@@ -1,46 +1,156 @@
 ---
 import Base from '../layouts/Base.astro';
-import Cartao from '../components/Cartao.astro';
+import Marca from '../components/Marca.astro';
+import Minigrafico from '../components/Minigrafico.astro';
 import { listar, url } from '../lib/conteudo';
+import { mensal, observacoes } from '../lib/dados';
+import { corDaSerie } from '../lib/cores';
+import { formatarData, formatarMesAno, formatarNumero } from '../lib/formato';
 
 const aulas = (await listar('aulas')).sort((a, b) => a.data.numero - b.data.numero);
 const primeira = aulas[0];
-const analises = (await listar('analises')).slice(0, 3);
+const fichas = new Set((await listar('indicadores')).map((i) => i.id));
+
+// Painel de indicadores: valores reais do banco (BCB e IBGE), lidos no build.
+// Sem banco configurado ou sem dados, o painel simplesmente não aparece.
+const tresAnos = new Date();
+tresAnos.setUTCFullYear(tresAnos.getUTCFullYear() - 3);
+const desde = tresAnos.toISOString().slice(0, 10);
+
+const PAINEL = [
+  { id: 'ipca-12-meses', rotulo: 'Inflação · 12 meses', unidade: '%', casas: 1, fonte: 'IPCA · IBGE', quando: (d: Date) => formatarMesAno(d) },
+  { id: 'selic-meta', rotulo: 'Juros básicos', unidade: '% ao ano', casas: 2, fonte: 'Meta Selic · Banco Central', quando: (d: Date) => `desde ${formatarData(d)}` },
+  { id: 'desocupacao', rotulo: 'Desemprego', unidade: '%', casas: 1, fonte: 'PNAD Contínua · IBGE', quando: (d: Date) => `trimestre até ${formatarMesAno(d)}` },
+  { id: 'divida-bruta-pib', rotulo: 'Dívida pública bruta', unidade: '% do PIB', casas: 1, fonte: 'DBGG · Banco Central', quando: (d: Date) => formatarMesAno(d) },
+];
+
+const painel = (
+  await Promise.all(
+    PAINEL.map(async (p) => {
+      const pontos = await observacoes(p.id, desde);
+      const ultimo = pontos.at(-1);
+      if (!ultimo) return null;
+      // Na Selic, a data que importa é a da última mudança da meta, não a do último dia coletado.
+      let vigente = ultimo;
+      if (p.id === 'selic-meta') {
+        for (let i = pontos.length - 1; i >= 0 && pontos[i]!.valor === ultimo.valor; i--) vigente = pontos[i]!;
+      }
+      return { ...p, ultimo, quando: p.quando(new Date(vigente.data)), mensal: mensal(pontos), href: fichas.has(p.id) ? `/indicadores/${p.id}` : null };
+    }),
+  )
+).filter((p) => p !== null);
+
+const portas = [
+  { href: primeira ? url('aulas', primeira.id) : '/curso', etiqueta: 'Curso · 11 aulas', titulo: 'Economia do zero, uma aula por vez', meta: 'Comece pela aula 1' },
+  { href: '/conceitos', etiqueta: 'Conceitos', titulo: 'Inflação, juros, dívida: o que cada palavra quer dizer', meta: 'Glossário em linguagem simples' },
+  { href: '/metodo', etiqueta: 'Método', titulo: 'A mesma régua para todos os governos', meta: 'Como checamos cada número' },
+];
+
+// Mandatos presidenciais desde 2003. Todos com o mesmo peso visual: nenhum governo é destacado.
+const governos = [
+  { nome: 'Lula 1 e 2', periodo: '2003 — 2010' },
+  { nome: 'Dilma', periodo: '2011 — 2016' },
+  { nome: 'Temer', periodo: '2016 — 2018' },
+  { nome: 'Bolsonaro', periodo: '2019 — 2022' },
+  { nome: 'Lula 3', periodo: '2023 — atual' },
+];
 ---
 
-<Base titulo="Início">
-  <header class="cabecalho">
-    <div class="ob-eyebrow">Economia, com calma</div>
-    <h1 class="ob-headline">Entenda a economia que mexe com a sua vida</h1>
-    <p class="ob-deck">
-      Um curso leve para quem nunca estudou economia, e um método para examinar decisões públicas com fontes e sem
-      torcida.
-    </p>
-  </header>
-
-  <section class="portas" aria-label="Por onde começar">
-    <a class="ob-card ob-card--link" href={primeira ? url('aulas', primeira.id) : '/curso'}>
-      <span class="ob-tag ob-tag--section">Curso</span>
-      <h2 class="t-title-3">Começar pelo básico</h2>
-      <p class="t-body">Onze aulas curtas, em sequência, do que a economia estuda até como avaliar uma proposta.</p>
-    </a>
-    <a class="ob-card ob-card--link" href="/busca">
-      <span class="ob-tag ob-tag--section">Busca</span>
-      <h2 class="t-title-3">Ir direto ao tema</h2>
-      <p class="t-body">Pergunte como você perguntaria a alguém: "por que a gasolina subiu?", "o que é a Selic?".</p>
-    </a>
+<Base titulo="Início" descricao="Política e economia, explicadas pelo que mudam na sua vida. Com dados, fontes e sem torcida.">
+  <section class="heroi">
+    <div class="heroi-texto">
+      <span class="ob-eyebrow">Educação e análise · Brasil</span>
+      <h1 class="t-display">Política e economia, explicadas pelo que <span class="metal">mudam na sua vida.</span></h1>
+      <p class="heroi-deck">
+        Sem torcida e sem jargão. A gente olha os dados, explica as decisões e mostra o efeito no seu bolso, no seu
+        trabalho e na sua cidade.
+      </p>
+      <div class="ob-row">
+        <a class="ob-btn ob-btn--primary ob-btn--lg" href={primeira ? url('aulas', primeira.id) : '/curso'}>Começar pelo curso</a>
+        <a class="ob-btn ob-btn--secondary ob-btn--lg" href="/comparacoes">Ver governos</a>
+      </div>
+    </div>
+    <div class="heroi-marca">
+      <Marca grande sufixo="heroi" rotulo="Símbolo do Observa Brasil" />
+    </div>
   </section>
 
   {
-    analises.length > 0 && (
-      <section aria-labelledby="recentes">
-        <h2 id="recentes" class="t-title-2">Análises recentes</h2>
-        <div class="grade">
-          {analises.map((a) => (
-            <Cartao href={url('analises', a.id)} titulo={a.data.titulo} resumo={a.data.linha_fina} etiqueta="Análise" />
-          ))}
-        </div>
+    painel.length > 0 && (
+      <section class="painel" aria-labelledby="painel-titulo">
+        <h2 id="painel-titulo" class="ob-sr">Indicadores mais recentes</h2>
+        <ul class="painel-lista">
+          {painel.map((p) => {
+            const conteudo = (
+              <>
+                <span class="painel-rotulo">
+                  <svg class="painel-cor" viewBox="0 0 10 10" aria-hidden="true"><rect width="10" height="10" rx="3" fill={corDaSerie(p.id)} /></svg>
+                  {p.rotulo}
+                </span>
+                <span class="painel-valor">
+                  {formatarNumero(p.ultimo.valor, p.casas)}
+                  <small>{p.unidade}</small>
+                </span>
+                <Minigrafico pontos={p.mensal} cor={corDaSerie(p.id)} />
+                <span class="painel-meta">
+                  {p.fonte} · {p.quando}
+                  {p.ultimo.preliminar && ' · preliminar'}
+                </span>
+              </>
+            );
+            return <li>{p.href ? <a href={p.href}>{conteudo}</a> : <div>{conteudo}</div>}</li>;
+          })}
+        </ul>
       </section>
     )
   }
+
+  <section class="secao" aria-labelledby="comecar">
+    <div class="secao-topo">
+      <h2 id="comecar" class="t-title-1">Por onde começar</h2>
+      <a class="secao-link" href="/busca">Buscar um tema →</a>
+    </div>
+    <div class="grade grade--3">
+      {
+        portas.map((p) => (
+          <a class="ob-card ob-card--link porta" href={p.href}>
+            <span class="porta-etiqueta">{p.etiqueta}</span>
+            <span class="porta-titulo">{p.titulo}</span>
+            <span class="porta-meta">{p.meta}</span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="secao" aria-labelledby="governos">
+    <div class="secao-topo secao-topo--coluna">
+      <h2 id="governos" class="t-title-1">Governos</h2>
+      <p class="secao-deck">
+        Cada governo com os mesmos indicadores e o mesmo método. As comparações estão em preparação e saem depois do
+        curso.
+      </p>
+    </div>
+    <ul class="governos">
+      {
+        governos.map((g) => (
+          <li class="governo">
+            <span class="governo-periodo">{g.periodo}</span>
+            <span class="governo-nome">{g.nome}</span>
+            <span class="governo-estado">Em preparação</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="secao">
+    <div class="chamada">
+      <div class="chamada-texto">
+        <h2 class="t-title-1">Uma aula por vez, no seu ritmo.</h2>
+        <p class="secao-deck">Aulas curtas, com exemplos do dia a dia e um teste rápido no fim. Sem cadastro.</p>
+      </div>
+      <a class="ob-btn ob-btn--primary ob-btn--lg" href="/curso">Ver o curso</a>
+    </div>
+  </section>
 </Base>

@@ -1,139 +1,143 @@
-/* Observa Brasil — tokens. Tema padrão: Grafite. Para o tema Claro: <html data-theme="light"> */
+/* Observa Brasil — tokens (direção Grafite Metálico, out. 2026). Tema padrão: Grafite. Para o tema Claro: <html data-theme="light"> */
 :root,
 [data-theme="grafite"] {
   color-scheme: dark;
-  --bg: #2a2a28;
-  --surface: #363633;
-  --surface-soft: #42423f;
-  --surface-sunken: #30302e;
-  --surface-glass: rgba(62,62,59,0.72);
-  --ink: #f3f1ed;
-  --ink-muted: #b3b2ac;
-  --ink-disabled: #6e6e69;
-  --border: #4a4a46;
-  --border-strong: #929189;
-  --inverse: #edebe6;
+  --bg: #08080a;
+  --surface: #121315;
+  --surface-soft: #1a1b1e;
+  --surface-sunken: #0d0d0f;
+  --surface-glass: rgba(18,19,21,0.78);
+  --ink: #e6e8eb;
+  --ink-muted: #a9aeb4;
+  --ink-subtle: #8e949b;
+  --ink-disabled: #5e6369;
+  --border: #222428;
+  --border-strong: #44474c;
+  --inverse: #e6e8eb;
   --inverse-raised: #ffffff;
-  --inverse-ink: #292a28;
-  --inverse-muted: #63645f;
-  --inverse-accent: #2a55c4;
-  --chrome: #363633;
-  --chrome-raised: #42423f;
-  --chrome-ink: #f3f1ed;
-  --chrome-muted: #b3b2ac;
-  --chrome-accent: #8fb0ff;
-  --accent: #5b8cff;
-  --accent-ink: #8fb0ff;
-  --accent-soft: #26324f;
-  --on-accent: #10172e;
-  --warm: #d08b6a;
-  --warm-ink: #e3a98c;
-  --warm-soft: #45362e;
-  --focus: #f3f1ed;
-  --focus-inverse: #292a28;
-  --success: #7bc0a0;
-  --success-soft: #23362d;
-  --warning: #e0b060;
-  --warning-soft: #3d3220;
-  --error: #f08a80;
-  --error-soft: #432826;
-  --info: #8db8d8;
-  --info-soft: #233241;
-  --on-status: #1f1f1e;
-  --chart-1: #8db8d8;
-  --chart-2: #d9ae62;
-  --chart-3: #c49ac0;
-  --chart-4: #86bfb6;
-  --chart-5: #d99a7a;
-  --chart-context: #8a8984;
-  --chart-grid: #42423f;
-  --chart-axis: #929189;
-  --seq-1: #2e4250;
-  --seq-2: #3f6379;
-  --seq-3: #5f8aa3;
-  --seq-4: #8db8d8;
-  --seq-5: #cfe2ee;
-  --div-low-2: #e3a98c;
-  --div-low-1: #8e6450;
-  --div-mid: #42423f;
-  --div-high-1: #4f7a93;
-  --div-high-2: #9cc6e0;
-  --effect-benefit: #6cc4c4;
-  --effect-harm: #ee9a6e;
-  --effect-mixed: #c3a8da;
-  --effect-uncertain: #b3b2ac;
+  --inverse-ink: #08080a;
+  --inverse-muted: #3a3d42;
+  --inverse-accent: #1c5cab;
+  --chrome: #121315;
+  --chrome-raised: #25272b;
+  --chrome-ink: #e6e8eb;
+  --chrome-muted: #a9aeb4;
+  --chrome-accent: #6da7ec;
+  --accent: #3987e5;
+  --accent-ink: #86b6ef;
+  --accent-soft: #14233a;
+  --on-accent: #08080a;
+  --warm: #d95926;
+  --warm-ink: #f08a5d;
+  --warm-soft: #2e1a12;
+  --focus: #e6e8eb;
+  --focus-inverse: #08080a;
+  --success: #4cc38a;
+  --success-soft: #0f2a1d;
+  --warning: #f0b43c;
+  --warning-soft: #2e2410;
+  --error: #f07a78;
+  --error-soft: #331616;
+  --info: #6da7ec;
+  --info-soft: #14233a;
+  --on-status: #08080a;
+  --metal: linear-gradient(100deg, #ffffff 0%, #a3a9b0 45%, #f6f7f8 70%, #8a9097 100%);
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
+  --chart-4: #c98500;
+  --chart-5: #d55181;
+  --chart-context: #5e6369;
+  --chart-grid: #222428;
+  --chart-axis: #44474c;
+  --seq-1: #104281;
+  --seq-2: #1c5cab;
+  --seq-3: #2a78d6;
+  --seq-4: #5598e7;
+  --seq-5: #9ec5f4;
+  --div-low-2: #e66767;
+  --div-low-1: #8c3a3a;
+  --div-mid: #2a2c30;
+  --div-high-1: #1c5cab;
+  --div-high-2: #6da7ec;
+  --effect-benefit: #3fc1a0;
+  --effect-harm: #f08a5d;
+  --effect-mixed: #b9a6f2;
+  --effect-uncertain: #a9aeb4;
   --elevation-0: none;
-  --elevation-1: 0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.25);
-  --elevation-2: 0 1px 0 rgba(255,255,255,0.05) inset, 0 8px 24px rgba(0,0,0,0.30);
-  --elevation-3: 0 2px 6px rgba(0,0,0,0.30), 0 20px 48px rgba(0,0,0,0.40);
+  --elevation-1: 0 1px 0 rgba(255,255,255,0.05) inset, 0 1px 2px rgba(0,0,0,0.5);
+  --elevation-2: 0 1px 0 rgba(255,255,255,0.06) inset, 0 12px 32px rgba(0,0,0,0.55);
+  --elevation-3: 0 2px 6px rgba(0,0,0,0.5), 0 24px 56px rgba(0,0,0,0.65);
 }
 
 [data-theme="light"] {
   color-scheme: light;
-  --bg: #f3f1ed;
+  --bg: #f4f5f6;
   --surface: #ffffff;
-  --surface-soft: #e9e7e2;
-  --surface-sunken: #e2e0da;
-  --surface-glass: rgba(255,255,255,0.72);
-  --ink: #292a28;
-  --ink-muted: #63645f;
-  --ink-disabled: #a9a8a2;
-  --border: #d8d6d0;
-  --border-strong: #7a7974;
-  --inverse: #292a28;
-  --inverse-raised: #353632;
-  --inverse-ink: #f3f1ed;
-  --inverse-muted: #b3b2ac;
-  --inverse-accent: #8fb0ff;
-  --chrome: #292a28;
-  --chrome-raised: #353632;
-  --chrome-ink: #f3f1ed;
-  --chrome-muted: #b3b2ac;
-  --chrome-accent: #8fb0ff;
-  --accent: #2f5fd8;
-  --accent-ink: #2a55c4;
-  --accent-soft: #e3eafb;
+  --surface-soft: #eceef0;
+  --surface-sunken: #e6e8eb;
+  --surface-glass: rgba(18,19,21,0.86);
+  --ink: #0e0f11;
+  --ink-muted: #4e535a;
+  --ink-subtle: #686d74;
+  --ink-disabled: #a3a9b0;
+  --border: #dfe2e5;
+  --border-strong: #8e949b;
+  --inverse: #121315;
+  --inverse-raised: #25272b;
+  --inverse-ink: #e6e8eb;
+  --inverse-muted: #a9aeb4;
+  --inverse-accent: #86b6ef;
+  --chrome: #121315;
+  --chrome-raised: #2c2e33;
+  --chrome-ink: #e6e8eb;
+  --chrome-muted: #a9aeb4;
+  --chrome-accent: #86b6ef;
+  --accent: #2a78d6;
+  --accent-ink: #1c5cab;
+  --accent-soft: #e3edfc;
   --on-accent: #ffffff;
-  --warm: #a86a4d;
-  --warm-ink: #8f563b;
-  --warm-soft: #f2e5dd;
-  --focus: #292a28;
-  --focus-inverse: #f3f1ed;
-  --success: #2f6b4f;
-  --success-soft: #e3eee7;
+  --warm: #c2471a;
+  --warm-ink: #a33c15;
+  --warm-soft: #fbe9e1;
+  --focus: #0e0f11;
+  --focus-inverse: #e6e8eb;
+  --success: #12704a;
+  --success-soft: #e1f2e9;
   --warning: #8a5a00;
-  --warning-soft: #f5ead3;
-  --error: #a93a32;
-  --error-soft: #f6e2df;
-  --info: #2e5e7e;
-  --info-soft: #e1eaf0;
+  --warning-soft: #f8edd3;
+  --error: #b42d2d;
+  --error-soft: #f9e3e3;
+  --info: #1c5cab;
+  --info-soft: #e3edfc;
   --on-status: #ffffff;
-  --chart-1: #2e5266;
-  --chart-2: #9c7230;
-  --chart-3: #7d5a7a;
-  --chart-4: #4f7d77;
-  --chart-5: #a86a4d;
-  --chart-context: #a9a8a2;
-  --chart-grid: #e2e0da;
-  --chart-axis: #7a7974;
-  --seq-1: #dce5ea;
-  --seq-2: #a9bfcc;
-  --seq-3: #6f8fa4;
-  --seq-4: #3f6379;
-  --seq-5: #1f3a4a;
-  --div-low-2: #8f563b;
-  --div-low-1: #d2a88f;
-  --div-mid: #e9e7e2;
-  --div-high-1: #9db8c8;
-  --div-high-2: #2e6b8a;
-  --effect-benefit: #1f6f73;
-  --effect-harm: #a3542f;
-  --effect-mixed: #6e5c7e;
-  --effect-uncertain: #63645f;
+  --metal: linear-gradient(100deg, #0e0f11 0%, #5e6369 45%, #1a1b1e 70%, #6e747b 100%);
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
+  --chart-4: #eda100;
+  --chart-5: #e87ba4;
+  --chart-context: #a3a9b0;
+  --chart-grid: #e6e8eb;
+  --chart-axis: #8e949b;
+  --seq-1: #cde2fb;
+  --seq-2: #86b6ef;
+  --seq-3: #3987e5;
+  --seq-4: #1c5cab;
+  --seq-5: #0d366b;
+  --div-low-2: #b42d2d;
+  --div-low-1: #eba3a3;
+  --div-mid: #eceef0;
+  --div-high-1: #9ec5f4;
+  --div-high-2: #1c5cab;
+  --effect-benefit: #0f7a63;
+  --effect-harm: #b34a1b;
+  --effect-mixed: #6250d6;
+  --effect-uncertain: #4e535a;
   --elevation-0: none;
-  --elevation-1: 0 1px 2px rgba(41,42,40,0.06);
-  --elevation-2: 0 1px 2px rgba(41,42,40,0.05), 0 6px 16px rgba(41,42,40,0.07);
-  --elevation-3: 0 2px 6px rgba(41,42,40,0.07), 0 16px 40px rgba(41,42,40,0.12);
+  --elevation-1: 0 1px 2px rgba(14,15,17,0.06);
+  --elevation-2: 0 1px 2px rgba(14,15,17,0.05), 0 8px 20px rgba(14,15,17,0.08);
+  --elevation-3: 0 2px 6px rgba(14,15,17,0.08), 0 18px 44px rgba(14,15,17,0.14);
 }
 
 :root {
@@ -146,11 +150,12 @@
   --space-7: 48px;
   --space-8: 64px;
   --space-9: 96px;
-  --radius-xs: 8px;
-  --radius-sm: 12px;
-  --radius-md: 18px;
-  --radius-lg: 24px;
-  --radius-xl: 32px;
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-control: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
   --radius-pill: 999px;
   --measure: 68ch;
   --content-text: 720px;
@@ -162,31 +167,32 @@
   --bp-md: 960px;
   --bp-lg: 1280px;
   --tap-target: 44px;
-  --font-serif: "Newsreader", "Source Serif 4", Georgia, serif;
-  --font-sans: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Archivo", "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Archivo", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Archivo", "Segoe UI", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 /* Estilos de texto */
-.t-display { font-family: var(--font-serif); font-size: 52px; line-height: 56px; font-weight: 500; letter-spacing: -0.015em; }
-.t-title-1 { font-family: var(--font-serif); font-size: 40px; line-height: 46px; font-weight: 500; letter-spacing: -0.01em; }
-.t-title-2 { font-family: var(--font-sans); font-size: 28px; line-height: 35px; font-weight: 600; letter-spacing: -0.01em; }
-.t-title-3 { font-family: var(--font-sans); font-size: 22px; line-height: 29px; font-weight: 600; letter-spacing: -0.01em; }
-.t-deck { font-family: var(--font-serif); font-size: 21px; line-height: 31px; font-weight: 400; }
-.t-quote { font-family: var(--font-serif); font-size: 24px; line-height: 34px; font-weight: 400; font-style: italic; }
+.t-display { font-family: var(--font-display); font-size: 76px; line-height: 0.98; font-weight: 800; font-style: italic; letter-spacing: -0.04em; }
+.t-title-1 { font-family: var(--font-display); font-size: 40px; line-height: 1.05; font-weight: 800; font-style: italic; letter-spacing: -0.03em; }
+.t-title-2 { font-family: var(--font-display); font-size: 32px; line-height: 1.1; font-weight: 800; font-style: italic; letter-spacing: -0.03em; }
+.t-title-3 { font-family: var(--font-sans); font-size: 24px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; }
+.t-deck { font-family: var(--font-sans); font-size: 20px; line-height: 31px; font-weight: 400; }
+.t-quote { font-family: var(--font-sans); font-size: 24px; line-height: 34px; font-weight: 500; font-style: italic; }
 .t-body-lg { font-family: var(--font-sans); font-size: 19px; line-height: 31px; font-weight: 400; }
 .t-body { font-family: var(--font-sans); font-size: 17px; line-height: 27px; font-weight: 400; }
 .t-body-sm { font-family: var(--font-sans); font-size: 15px; line-height: 23px; font-weight: 400; }
 .t-caption { font-family: var(--font-sans); font-size: 13px; line-height: 19px; font-weight: 400; }
-.t-eyebrow { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.t-eyebrow { font-family: var(--font-mono); font-size: 13px; line-height: 16px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase; }
 .t-label { font-family: var(--font-sans); font-size: 14px; line-height: 20px; font-weight: 600; }
 .t-button { font-family: var(--font-sans); font-size: 15px; line-height: 20px; font-weight: 600; }
-.t-figure-xl { font-family: var(--font-sans); font-size: 44px; line-height: 48px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums lining-nums; }
+.t-figure-xl { font-family: var(--font-display); font-size: 44px; line-height: 48px; font-weight: 800; font-style: italic; letter-spacing: -0.02em; font-variant-numeric: tabular-nums lining-nums; }
 .t-figure { font-family: var(--font-sans); font-size: 24px; line-height: 30px; font-weight: 600; font-variant-numeric: tabular-nums lining-nums; }
 .t-data { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 400; font-variant-numeric: tabular-nums lining-nums; }
 .t-meta { font-family: var(--font-mono); font-size: 12px; line-height: 18px; font-weight: 400; font-variant-numeric: tabular-nums lining-nums; }
 @media (max-width: 640px) {
-  .t-display { font-size: 36px; line-height: 40px; }
-  .t-title-1 { font-size: 30px; line-height: 36px; }
+  .t-display { font-size: 44px; line-height: 1; }
+  .t-title-1 { font-size: 32px; line-height: 1.05; }
   .t-body-lg { font-size: 17px; line-height: 27px; }
 }

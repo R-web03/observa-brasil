@@ -3,16 +3,17 @@
 // com um losango como pupila, em metal escovado sobre ladrilho escuro.
 // Os ids dos gradientes levam um sufixo por instância para o símbolo poder repetir na página.
 interface Props {
-  tamanho?: number;
   sufixo?: string;
+  grande?: boolean;
+  rotulo?: string;
 }
-const { tamanho = 32, sufixo = 'nav' } = Astro.props;
+const { sufixo = 'nav', grande = false, rotulo } = Astro.props;
 const claro = `marca-claro-${sufixo}`;
 const escuro = `marca-escuro-${sufixo}`;
 ---
 
-<span class="marca" aria-hidden="true">
-  <svg width={tamanho} height={tamanho} viewBox="0 0 100 100">
+<span class:list={['marca', { 'marca--grande': grande }]} aria-hidden={rotulo ? undefined : 'true'}>
+  <svg viewBox="0 0 100 100" role={rotulo ? 'img' : undefined} aria-label={rotulo}>
     <defs>
       <linearGradient id={claro} x1="0.1" y1="0" x2="0.9" y2="1">
         <stop offset="0" stop-color="#FFFFFF" /><stop offset="0.28" stop-color="#E4E7EA" /><stop offset="0.5" stop-color="#8A9097" /><stop offset="0.62" stop-color="#F6F7F8" /><stop offset="1" stop-color="#A3A9B0" />

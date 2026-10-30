@@ -25,3 +25,10 @@ export async function observacoes(serieId: string, desde?: string): Promise<Pont
   }
   return pontos;
 }
+
+// Último valor de cada mês, para minigráficos. Séries diárias (Selic) viram mensais.
+export function mensal(pontos: Ponto[]): Ponto[] {
+  const porMes = new Map<string, Ponto>();
+  for (const p of pontos) porMes.set(p.data.slice(0, 7), p);
+  return [...porMes.values()];
+}
