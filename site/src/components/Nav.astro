@@ -56,15 +56,30 @@ const ativo = (href: string) => atual === href || atual.startsWith(`${href}/`);
 <script>
   // Troca entre Grafite e Claro e lembra a escolha (localStorage pode falhar: modo privado).
   // Há dois botões: um na barra (computador) e um dentro do menu (celular).
+  // O tema novo se abre num círculo a partir do botão (View Transitions); onde não houver suporte, troca direto.
+  const semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)');
   document.querySelectorAll<HTMLButtonElement>('[data-alternar-tema]').forEach((botao) => botao.addEventListener('click', () => {
     const raiz = document.documentElement;
     const novo = raiz.getAttribute('data-theme') === 'light' ? 'grafite' : 'light';
-    raiz.setAttribute('data-theme', novo);
-    try {
-      localStorage.setItem('tema', novo);
-    } catch {
-      /* sem armazenamento: vale só para esta visita */
-    }
+    const trocar = () => {
+      raiz.setAttribute('data-theme', novo);
+      try {
+        localStorage.setItem('tema', novo);
+      } catch {
+        /* sem armazenamento: vale só para esta visita */
+      }
+    };
+    if (!('startViewTransition' in document) || semMovimento.matches) return trocar();
+    const r = botao.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const raio = Math.hypot(Math.max(cx, innerWidth - cx), Math.max(cy, innerHeight - cy));
+    document.startViewTransition(trocar).ready.then(() => {
+      raiz.animate(
+        { clipPath: [`circle(0px at ${cx}px ${cy}px)`, `circle(${raio}px at ${cx}px ${cy}px)`] },
+        { duration: 480, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' },
+      );
+    });
   }));
 
   // Destaque do item atual: um único fundo que desliza de um item para outro.
@@ -79,10 +94,14 @@ const ativo = (href: string) => atual === href || atual.startsWith(`${href}/`);
     nav.classList.add('tem-destaque');
     const atualLink = () => lista.querySelector<HTMLElement>('a[aria-current="page"]');
 
+    // Usa left e right (e não transform) para as duas bordas andarem em tempos diferentes:
+    // a borda da frente chega primeiro e a de trás alcança, como no vídeo de referência.
     const colocar = (x: number, largura: number, visivel: boolean, animar: boolean) => {
+      const xAtual = parseFloat(destaque.style.left);
       destaque.classList.toggle('sem-transicao', !animar);
-      destaque.style.transform = `translateX(${x}px)`;
-      destaque.style.width = `${largura}px`;
+      destaque.classList.toggle('vai-esquerda', x < xAtual);
+      destaque.style.left = `${x}px`;
+      destaque.style.right = `${nav.getBoundingClientRect().width - x - largura}px`;
       destaque.style.opacity = visivel ? '1' : '0';
     };
     const posicaoDe = (alvo: HTMLElement) => {

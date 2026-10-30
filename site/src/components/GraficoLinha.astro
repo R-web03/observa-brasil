@@ -40,7 +40,7 @@ const ultimos = pontos.slice(-24).reverse();
             </text>
           </g>
         ))}
-        <path d={caminho} fill="none" stroke="var(--accent)" stroke-width="2" />
+        <path class="grafico-linha" d={caminho} pathLength="1" fill="none" stroke="var(--accent)" stroke-width="2" />
         <text x={M.esq} y={A - 8} font-size="12" fill="var(--ink-muted)">{formatarMesAno(new Date(pontos[0]!.data))}</text>
         <text x={L - M.dir} y={A - 8} text-anchor="end" font-size="12" fill="var(--ink-muted)">
           {formatarMesAno(new Date(pontos.at(-1)!.data))}

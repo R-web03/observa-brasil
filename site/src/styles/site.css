@@ -68,6 +68,7 @@
 .artigo th { border-bottom: 2px solid var(--ink); }
 .artigo a { color: var(--accent-ink); }
 .tabela-rolagem { overflow-x: auto; }
+figure { margin: 0; } /* o navegador recua figure em 40px por padrão */
 
 .lista-correcoes { margin-top: var(--space-7); padding-top: var(--space-5); border-top: 1px solid var(--border); font: 400 15px/23px var(--font-sans); }
 .lista-correcoes h2 { font: 600 17px/24px var(--font-sans); }
@@ -87,10 +88,14 @@
 .ob-nav { position: relative; }
 .menu-destaque {
   position: absolute; left: 0; top: 50%; z-index: 0;
-  height: 44px; margin-top: -22px; width: 0; opacity: 0;
+  height: 44px; margin-top: -22px; right: 100%; opacity: 0;
   border-radius: var(--radius-pill); background: var(--chrome-raised);
   pointer-events: none;
-  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1), width 240ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 160ms ease-out;
+  /* Indo para a direita, a borda direita lidera; a esquerda chega um pouco depois. */
+  transition: left 300ms cubic-bezier(0.3, 0.7, 0.2, 1), right 190ms cubic-bezier(0.3, 0.7, 0.2, 1), opacity 160ms ease-out;
+}
+.menu-destaque.vai-esquerda {
+  transition: left 190ms cubic-bezier(0.3, 0.7, 0.2, 1), right 300ms cubic-bezier(0.3, 0.7, 0.2, 1), opacity 160ms ease-out;
 }
 .menu-destaque.sem-transicao { transition: none; }
 .ob-nav.tem-destaque > ul { position: relative; z-index: 1; }
@@ -137,6 +142,21 @@
 @media (min-width: 960px) {
   .topo, .pagina, .rodape { padding-left: var(--gutter-desktop, 32px); padding-right: var(--gutter-desktop, 32px); }
 }
+
+/* Troca de tema: o navegador não faz o fade padrão; o JS abre o tema novo num círculo. */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
+/* Entrada da página: os blocos sobem e ganham foco em sequência curta (nada passa de ~0,5 s). */
+@keyframes entrar { from { opacity: 0; transform: translateY(10px); filter: blur(4px); } }
+.pagina > *, .grade > *, .portas > * { animation: entrar 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.pagina > :nth-child(2), .grade > :nth-child(2), .portas > :nth-child(2) { animation-delay: 50ms; }
+.pagina > :nth-child(3), .grade > :nth-child(3), .portas > :nth-child(3) { animation-delay: 100ms; }
+.pagina > :nth-child(4), .grade > :nth-child(4), .portas > :nth-child(4) { animation-delay: 150ms; }
+.pagina > :nth-child(n+5), .grade > :nth-child(n+5), .portas > :nth-child(n+5) { animation-delay: 200ms; }
+
+/* Gráfico: a linha se desenha da esquerda para a direita. Fora da animação ela fica inteira. */
+@keyframes desenhar { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.grafico-linha { stroke-dasharray: 1; animation: desenhar 1100ms cubic-bezier(0.4, 0, 0.2, 1) 150ms both; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
