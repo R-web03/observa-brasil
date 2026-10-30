@@ -436,3 +436,6 @@ a.glossa:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .tabela-comparacao th[scope="rowgroup"] { font-weight: 700; vertical-align: top; min-width: 180px; border-bottom: 1px solid var(--border-strong); }
 .tabela-comparacao tr.tc-par td { border-bottom: 1px solid var(--border-strong); }
 .guia-balao .guia-data strong { font: italic 800 15px/1.2 var(--font-display); color: var(--ink); }
+
+.efeito--neutro { border-left: 4px solid var(--border-strong); }
+.efeito--neutro .camada-efeito { color: var(--ink-subtle); }

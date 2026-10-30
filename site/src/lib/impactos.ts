@@ -3,7 +3,7 @@
 // com fonte; quando não há estimativa confiável, o texto diz isso. Sem nota ao governo.
 // Status: em revisão (exige revisão cruzada antes de aprovar).
 
-export type Efeito = 'ganhou' | 'pagou' | 'misto' | 'incerto';
+export type Efeito = 'ganhou' | 'pagou' | 'misto' | 'incerto' | 'neutro';
 export type Evidencia = 'forte' | 'moderada' | 'fraca' | 'em disputa' | 'sem evidência';
 export type Camada = 'alta' | 'media' | 'media-baixa' | 'base';
 
@@ -19,6 +19,7 @@ export const ROTULO_EFEITO: Record<Efeito, { icone: string; texto: string }> = {
   pagou: { icone: '▼', texto: 'Pagou' },
   misto: { icone: '◐', texto: 'Misto' },
   incerto: { icone: '?', texto: 'Incerto' },
+  neutro: { icone: '–', texto: 'Pouco afetado' },
 };
 
 export type EfeitoNaCamada = {
@@ -148,6 +149,8 @@ export const ESTUDOS: Estudo[] = [
       'A União deixou de controlar a maior empresa de energia do país, por meio de uma venda de ações. A lei também previu dinheiro para reduzir tarifas e obrigou a contratação de novas usinas térmicas a gás. Se a conta de luz ficou mais cara ou mais barata por causa disso é um ponto em disputa.',
     fatos: [
       'A Lei 14.182 é de 12 jul. 2021. A oferta de ações que tirou da União o controle da empresa foi concluída em jun. 2022.',
+      'Na sanção da lei, o ministro de Minas e Energia previu queda de 5% a 7% na tarifa de energia com o conjunto das medidas (Poder360, 13 jul. 2021).',
+      'Em maio de 2022, deputados pediram que a Aneel recalculasse o impacto nas tarifas, afirmando que a simulação do governo não trazia memória de cálculo (eixos, 17 maio 2022).',
       'A lei destinou parte do dinheiro da operação à Conta de Desenvolvimento Energético (CDE), um fundo do setor elétrico, para reduzir tarifas ao longo de vários anos.',
       'A mesma lei obrigou a contratação de usinas térmicas a gás em regiões definidas no texto, um custo que entra nas tarifas ao longo do tempo.',
       'Em 2021 e começo de 2022, a conta de luz já estava mais cara por causa da crise hídrica, com a bandeira tarifária de escassez hídrica. Isso mistura os efeitos.',
@@ -184,6 +187,63 @@ export const ESTUDOS: Estudo[] = [
     fontes: [
       { nome: 'Planalto: Lei 14.182/2021', url: 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2021/lei/l14182.htm' },
       { nome: 'Aneel: tarifas e bandeiras tarifárias', url: 'https://www.gov.br/aneel' },
+      { nome: 'Poder360: previsão do ministro na sanção', url: 'https://www.poder360.com.br/governo/usinas-termeletricas-a-gas-reduzirao-tarifa-de-energia-diz-albuquerque/' },
+      { nome: 'eixos: pedido de novo cálculo à Aneel', url: 'https://eixos.com.br/deputados-da-oposicao-se-unem-para-impedir-privatizacao-da-eletrobras/' },
+    ],
+  },
+  {
+    id: 'auxilio-emergencial-2020',
+    titulo: 'O Auxílio Emergencial na pandemia',
+    governo: 'bolsonaro',
+    quando: 'abr. 2020 a out. 2021',
+    quemDecidiu: 'Congresso aprovou; Executivo sancionou (Lei 13.982/2020)',
+    resumo:
+      'Na pandemia, o governo pagou um auxílio mensal a trabalhadores informais, autônomos e desempregados. Foi a maior transferência de renda da história do país, e a extrema pobreza caiu em 2020 mesmo com a economia encolhendo. Quando o auxílio diminuiu, em 2021, ela voltou a subir.',
+    fatos: [
+      'A Lei 13.982 é de 2 abr. 2020. As primeiras parcelas foram de R$ 600, e de R$ 1.200 para mães chefes de família. No fim de 2020 caíram para R$ 300; em 2021, a nova rodada pagou de R$ 150 a R$ 375.',
+      'Segundo o IBGE, a proporção de pessoas em extrema pobreza caiu de 6,8% em 2019 para 5,7% em 2020. Sem os benefícios sociais, teria chegado a 12,9% em 2020 (simulação do IBGE).',
+      'Em 2021, com o auxílio menor e para menos pessoas, a extrema pobreza subiu para 8,4% (IBGE).',
+      'O PIB encolheu 3,3% em 2020 (IBGE), e a dívida bruta chegou a 87,7% do PIB em out. 2020 (Banco Central), puxada pelos gastos da pandemia.',
+    ],
+    camadas: {
+      alta: { efeito: 'neutro', curto: 'Não recebia; a conta veio pela dívida pública.', detalhe: 'Essa faixa não tinha direito ao auxílio. O custo foi pago com aumento da dívida do governo, que é de todos.', evidencia: 'forte' },
+      media: { efeito: 'neutro', curto: 'Em geral, não recebia diretamente.', detalhe: 'A maior parte dessa faixa ficou acima do limite de renda. Pode ter se beneficiado indiretamente, se o consumo sustentado pelo auxílio segurou vendas e empregos, mas esse efeito não está medido por faixa.', evidencia: 'fraca' },
+      'media-baixa': { efeito: 'ganhou', curto: 'Informais e autônomos dessa faixa receberam.', detalhe: 'O limite de renda (até meio salário mínimo por pessoa ou até 3 salários mínimos por família) incluiu parte dessa faixa, sobretudo quem trabalhava sem carteira e perdeu renda.', evidencia: 'moderada' },
+      base: { efeito: 'ganhou', curto: 'A renda de quem tinha quase nada aumentou; a extrema pobreza caiu.', detalhe: 'Para muitas famílias da base, R$ 600 era mais do que a renda que tinham antes da pandemia. É o que explica a queda da extrema pobreza em 2020, segundo o IBGE, mesmo com o PIB caindo.', evidencia: 'forte' },
+    },
+    quemPaga: 'Contas públicas: o auxílio foi pago com aumento da dívida do governo federal, junto com os outros gastos da pandemia.',
+    naoSabemos:
+      'Quanto o auxílio evitou de perda de empregos e de falências, por sustentar o consumo, ainda é estimado de formas diferentes por pesquisadores. A simulação do IBGE mostra só o efeito direto na renda, sem considerar mudanças de comportamento. Atenção: o IBGE mudou a linha de pobreza depois desta edição, então estes números não se comparam diretamente com os de 2023.',
+    fontes: [
+      { nome: 'Planalto: Lei 13.982/2020', url: 'https://www.planalto.gov.br/ccivil_03/_ato2019-2022/2020/lei/l13982.htm' },
+      { nome: 'IBGE: Síntese de Indicadores Sociais (dados de 2020)', url: 'https://agenciadenoticias.ibge.gov.br/agencia-noticias/32420-mesmo-com-beneficios-emergenciais-1-em-cada-4-brasileiros-vivia-em-situacao-de-pobreza-em-2020.html' },
+    ],
+  },
+  {
+    id: 'bolsa-familia-2023',
+    titulo: 'A volta do Bolsa Família',
+    governo: 'lula-3',
+    quando: 'mar. a jun. 2023',
+    quemDecidiu: 'Executivo propôs; Congresso aprovou (Lei 14.601/2023)',
+    resumo:
+      'O Bolsa Família voltou no lugar do Auxílio Brasil, com valor mínimo de R$ 600 por família e adicionais por criança. Em 2023, a extrema pobreza chegou ao menor nível desde 2012. O IBGE atribui essa queda principalmente aos benefícios sociais, e a queda da pobreza mais ampla principalmente ao mercado de trabalho.',
+    fatos: [
+      'A Lei 14.601 é de 19 jun. 2023. O valor mínimo de R$ 600 por família já era pago pelo Auxílio Brasil desde ago. 2022; a novidade foram os adicionais, como R$ 150 por criança de até 6 anos.',
+      'Segundo o IBGE, a extrema pobreza caiu de 5,9% em 2022 para 4,4% em 2023, o menor nível da série iniciada em 2012. Sem os programas sociais, teria sido 11,2% em 2023 (simulação do IBGE).',
+      'No mesmo período, o desemprego caiu de 7,9% para 7,4% (trimestres até dez. 2022 e dez. 2023, IBGE), o que também aumentou a renda das famílias mais pobres.',
+    ],
+    camadas: {
+      alta: { efeito: 'neutro', curto: 'Não recebe; a conta sai do orçamento federal.', detalhe: 'O programa é pago com impostos, e é uma das maiores despesas do orçamento federal.', evidencia: 'forte' },
+      media: { efeito: 'neutro', curto: 'Não recebe diretamente.', detalhe: 'Essa faixa está acima do limite de renda do programa. Efeitos indiretos, como mais consumo no comércio local, não estão medidos por faixa.', evidencia: 'fraca' },
+      'media-baixa': { efeito: 'neutro', curto: 'Em geral, acima do limite de renda.', detalhe: 'O limite de entrada é baixo (renda por pessoa de até R$ 218 por mês). Famílias dessa faixa só recebem se a renda por pessoa cair muito, como numa perda de emprego.', evidencia: 'moderada' },
+      base: { efeito: 'ganhou', curto: 'Renda maior para famílias com crianças pequenas; menos extrema pobreza.', detalhe: 'O adicional por criança aumentou a renda das famílias com filhos pequenos, que estão entre as mais pobres. O IBGE estima que, sem os programas sociais, a extrema pobreza seria mais que o dobro em 2023.', evidencia: 'forte' },
+    },
+    quemPaga: 'Orçamento federal, ou seja, os contribuintes. O programa disputa espaço com outras despesas dentro da regra fiscal.',
+    naoSabemos:
+      'Quanto da queda da extrema pobreza em 2023 vem do Bolsa Família em si, e não do conjunto dos benefícios (que inclui aposentadorias e o BPC) e do mercado de trabalho, não é separado nas publicações do IBGE. Os efeitos de longo prazo sobre escola e saúde das crianças ainda não podem ser medidos.',
+    fontes: [
+      { nome: 'Planalto: Lei 14.601/2023', url: 'https://www.planalto.gov.br/ccivil_03/_ato2023-2026/2023/lei/l14601.htm' },
+      { nome: 'IBGE: Síntese de Indicadores Sociais 2024 (dados de 2023)', url: 'https://agenciadenoticias.ibge.gov.br/' },
     ],
   },
 ];

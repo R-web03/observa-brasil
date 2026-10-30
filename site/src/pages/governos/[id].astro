@@ -4,7 +4,7 @@ import GraficoInterativo from '../../components/GraficoInterativo.astro';
 import Aviso from '../../components/editorial/Aviso.astro';
 import NotaMetodo from '../../components/editorial/NotaMetodo.astro';
 import { GOVERNOS, resumir, type Governo } from '../../lib/governos';
-import { CONTEXTO } from '../../lib/governos-contexto';
+import { CONTEXTO, LINK_NORMA } from '../../lib/governos-contexto';
 import { indicadoresDeGoverno } from '../../lib/painel-governos';
 import { corDaSerie } from '../../lib/cores';
 import { formatarData, formatarMesAno, formatarNumero } from '../../lib/formato';
@@ -146,7 +146,11 @@ const GRAFICOS = ['pib-crescimento', 'ipca-12-meses', 'desocupacao', 'salario-mi
                 <span class="ldt-data">{dataDecisao(d.data)}</span>
                 <strong class="ldt-titulo">{d.titulo}</strong>
                 <span>{d.oQueFaz}</span>
-                <span class="ldt-meta">{[d.norma, d.quemDecidiu].filter(Boolean).join(' · ')}</span>
+                <span class="ldt-meta">
+                  {d.norma && (LINK_NORMA[d.norma] ? <a href={LINK_NORMA[d.norma]} rel="noopener">{d.norma}</a> : d.norma)}
+                  {d.norma && ' · '}
+                  {d.quemDecidiu}
+                </span>
                 {d.impacto && <a class="ldt-impacto" href={`/impactos#${d.impacto}`}>Ver quem ganhou e quem pagou →</a>}
               </li>
             ))}

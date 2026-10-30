@@ -63,7 +63,7 @@ export const CONTEXTO: Record<string, Contexto> = {
     decisoes: [
       { data: '2019-09', titulo: 'Lei da Liberdade Econômica', oQueFaz: 'Reduziu exigências de alvarás e licenças para atividades de baixo risco e mudou regras de registro de empresas.', norma: 'Lei 13.874/2019', quemDecidiu: 'Executivo propôs; Congresso aprovou' },
       { data: '2019-11', titulo: 'Reforma da Previdência', oQueFaz: 'Fixou idade mínima para aposentadoria no INSS e no serviço público federal e mudou o cálculo dos benefícios.', norma: 'Emenda Constitucional 103/2019', quemDecidiu: 'Executivo propôs; Congresso aprovou' },
-      { data: '2020-04', titulo: 'Auxílio Emergencial', oQueFaz: 'Pagamento mensal temporário a trabalhadores informais, autônomos e desempregados durante a pandemia.', norma: 'Lei 13.982/2020', quemDecidiu: 'Congresso aprovou; Executivo sancionou' },
+      { data: '2020-04', titulo: 'Auxílio Emergencial', oQueFaz: 'Pagamento mensal temporário a trabalhadores informais, autônomos e desempregados durante a pandemia.', norma: 'Lei 13.982/2020', quemDecidiu: 'Congresso aprovou; Executivo sancionou', impacto: 'auxilio-emergencial-2020' },
       { data: '2021-02', titulo: 'Autonomia do Banco Central', oQueFaz: 'Deu mandatos fixos ao presidente e aos diretores do Banco Central, não coincidentes com o do presidente da República.', norma: 'Lei Complementar 179/2021', quemDecidiu: 'Congresso aprovou; Executivo sancionou' },
       { data: '2021-07', titulo: 'Privatização da Eletrobras', oQueFaz: 'Autorizou a venda de ações que tirou da União o controle da maior empresa de energia do país, concluída em junho de 2022.', norma: 'Lei 14.182/2021', quemDecidiu: 'Executivo propôs; Congresso aprovou', impacto: 'privatizacao-eletrobras' },
       { data: '2021-12', titulo: 'Auxílio Brasil', oQueFaz: 'Substituiu o Bolsa Família por um novo programa de transferência de renda.', norma: 'Lei 14.284/2021', quemDecidiu: 'Executivo propôs; Congresso aprovou' },
@@ -77,10 +77,37 @@ export const CONTEXTO: Record<string, Contexto> = {
     ],
     decisoes: [
       { data: '2023-05', titulo: 'Mudança na política de preços da Petrobras', oQueFaz: 'A Petrobras deixou de seguir automaticamente a paridade com os preços internacionais nos reajustes de combustíveis.', quemDecidiu: 'Petrobras (empresa estatal)' },
-      { data: '2023-06', titulo: 'Volta do Bolsa Família', oQueFaz: 'Recriou o Bolsa Família no lugar do Auxílio Brasil, com valor mínimo por família e adicionais por criança.', norma: 'Lei 14.601/2023', quemDecidiu: 'Executivo propôs; Congresso aprovou' },
+      { data: '2023-06', titulo: 'Volta do Bolsa Família', oQueFaz: 'Recriou o Bolsa Família no lugar do Auxílio Brasil, com valor mínimo por família e adicionais por criança.', norma: 'Lei 14.601/2023', quemDecidiu: 'Executivo propôs; Congresso aprovou', impacto: 'bolsa-familia-2023' },
       { data: '2023-08', titulo: 'Nova regra de valorização do salário mínimo', oQueFaz: 'Voltou a reajustar o mínimo pela inflação mais o crescimento do PIB de dois anos antes.', norma: 'Lei 14.663/2023', quemDecidiu: 'Executivo propôs; Congresso aprovou' },
       { data: '2023-08', titulo: 'Arcabouço fiscal', oQueFaz: 'Substituiu o teto de gastos por uma regra em que a despesa cresce acima da inflação, mas limitada a uma parte do crescimento da receita, com metas de resultado primário.', norma: 'Lei Complementar 200/2023', quemDecidiu: 'Executivo propôs; Congresso aprovou' },
       { data: '2023-12', titulo: 'Reforma tributária do consumo', oQueFaz: 'Aprovou a troca gradual de cinco tributos sobre consumo por dois novos (CBS e IBS), com transição entre 2026 e 2033.', norma: 'Emenda Constitucional 132/2023', quemDecidiu: 'Congresso aprovou, a partir de propostas que já tramitavam' },
     ],
   },
+};
+
+// Texto oficial de cada norma no Planalto. Endereços e datas conferidos em 30 out. 2026.
+const P = 'https://www.planalto.gov.br/ccivil_03/';
+export const LINK_NORMA: Record<string, string> = {
+  'Emenda Constitucional 41/2003': `${P}constituicao/emendas/emc/emc41.htm`,
+  'Lei 10.820/2003': `${P}leis/2003/l10.820.htm`,
+  'Lei 10.836/2004': `${P}_ato2004-2006/2004/lei/l10.836.htm`,
+  'Lei 11.977/2009': `${P}_ato2007-2010/2009/lei/l11977.htm`,
+  'Lei 12.382/2011': `${P}_ato2011-2014/2011/lei/l12382.htm`,
+  'Lei 12.546/2011': `${P}_ato2011-2014/2011/lei/l12546.htm`,
+  'Lei 12.783/2013': `${P}_ato2011-2014/2013/lei/l12783.htm`,
+  'Emenda Constitucional 95/2016': `${P}constituicao/emendas/emc/emc95.htm`,
+  'Lei 13.429/2017': `${P}_ato2015-2018/2017/lei/l13429.htm`,
+  'Lei 13.467/2017': `${P}_ato2015-2018/2017/lei/l13467.htm`,
+  'Lei 13.483/2017': `${P}_ato2015-2018/2017/lei/l13483.htm`,
+  'Lei 13.874/2019': `${P}_ato2019-2022/2019/lei/l13874.htm`,
+  'Emenda Constitucional 103/2019': `${P}constituicao/emendas/emc/emc103.htm`,
+  'Lei 13.982/2020': `${P}_ato2019-2022/2020/lei/l13982.htm`,
+  'Lei Complementar 179/2021': `${P}leis/lcp/lcp179.htm`,
+  'Lei 14.182/2021': `${P}_ato2019-2022/2021/lei/l14182.htm`,
+  'Lei 14.284/2021': `${P}_ato2019-2022/2021/lei/l14284.htm`,
+  'Lei Complementar 194/2022': `${P}leis/lcp/lcp194.htm`,
+  'Lei 14.601/2023': `${P}_ato2023-2026/2023/lei/l14601.htm`,
+  'Lei 14.663/2023': `${P}_ato2023-2026/2023/lei/l14663.htm`,
+  'Lei Complementar 200/2023': `${P}leis/lcp/lcp200.htm`,
+  'Emenda Constitucional 132/2023': `${P}constituicao/emendas/emc/emc132.htm`,
 };
