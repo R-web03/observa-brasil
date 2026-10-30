@@ -1,0 +1,91 @@
+---
+// Panorama de "Investigar um tema": cada caso apresentado pela pergunta, separado em
+// decisões, resultados e omissões, com filtro por assunto. Sem JavaScript, tudo aparece.
+import Base from '../../layouts/Base.astro';
+import { ASSUNTOS, ROTULO_TIPO_TEMA, TEMAS, type TipoTema } from '../../lib/temas';
+import { buscarGoverno } from '../../lib/governos';
+
+const tipos = Object.keys(ROTULO_TIPO_TEMA) as TipoTema[];
+const assuntos = ASSUNTOS.filter((a) => TEMAS.some((t) => t.assunto === a));
+---
+
+<Base titulo="Investigar um tema" descricao="Decisões, políticas e resultados do poder público, um de cada vez: o que foi feito, por quê, quem sentiu e o que não se sabe.">
+  <nav class="trilha" aria-label="Você está em">
+    <ol><li><a href="/">Início</a></li><li aria-current="page">Investigar um tema</li></ol>
+  </nav>
+  <header class="cabecalho">
+    <p class="ob-eyebrow">Investigar um tema</p>
+    <h1 class="ob-headline">Uma decisão de cada vez</h1>
+    <p class="ob-deck">
+      O que foi decidido, por quem e com que justificativa; por quais caminhos chegou à vida das pessoas; e o que ainda não
+      se sabe. Sem presumir motivos.
+    </p>
+  </header>
+
+  <div class="filtro-temas" role="group" aria-label="Filtrar por assunto" hidden data-filtro>
+    <button class="ob-chip" type="button" aria-pressed="true" data-assunto="">Todos</button>
+    {assuntos.map((a) => <button class="ob-chip" type="button" aria-pressed="false" data-assunto={a}>{a}</button>)}
+  </div>
+
+  {
+    tipos.map((tipo) => {
+      const lista = TEMAS.filter((t) => t.tipo === tipo);
+      return (
+        <section class="secao secao--temas" aria-labelledby={`tipo-${tipo}`} data-grupo>
+          <div class="secao-topo secao-topo--coluna">
+            <h2 id={`tipo-${tipo}`} class="t-title-2">{ROTULO_TIPO_TEMA[tipo].nome}</h2>
+            <p class="secao-deck">{ROTULO_TIPO_TEMA[tipo].explica}</p>
+          </div>
+          <ul class="grade grade--3 temas">
+            {lista.map((t) => {
+              const g = t.governo ? buscarGoverno(t.governo) : undefined;
+              const corpo = (
+                <>
+                  <span class="porta-etiqueta">{t.assunto}</span>
+                  <span class="tema-pergunta">{t.pergunta}</span>
+                  <span class="porta-meta">
+                    {t.href ? `${t.quando}${g ? ` · ${g.nome}` : ''}` : 'Em pesquisa: ainda sem números publicados'}
+                  </span>
+                  {t.formatoNovo && <span class="ob-tag ob-tag--accent tema-selo">formato novo</span>}
+                </>
+              );
+              return (
+                <li data-assunto={t.assunto}>
+                  {t.href ? (
+                    <a class="ob-card ob-card--link tema-cartao" href={t.href}>{corpo}</a>
+                  ) : (
+                    <div class="ob-card tema-cartao tema-cartao--futuro">{corpo}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      );
+    })
+  }
+
+  <p class="ob-field-help nota-temas">
+    Casos "em pesquisa" ainda não têm página: só publicamos depois de reunir as decisões, as justificativas da época e as
+    estimativas, com autor e limites. Quer sugerir um tema? <a href="/correcoes">Escreva para a gente</a>.
+  </p>
+</Base>
+
+<script>
+  const filtro = document.querySelector<HTMLElement>('[data-filtro]');
+  if (filtro) {
+    filtro.hidden = false;
+    const botoes = [...filtro.querySelectorAll<HTMLButtonElement>('[data-assunto]')];
+    const itens = [...document.querySelectorAll<HTMLElement>('li[data-assunto]')];
+    const grupos = [...document.querySelectorAll<HTMLElement>('[data-grupo]')];
+    for (const b of botoes) {
+      b.addEventListener('click', () => {
+        const assunto = b.dataset.assunto;
+        for (const o of botoes) o.setAttribute('aria-pressed', String(o === b));
+        for (const li of itens) li.hidden = Boolean(assunto) && li.dataset.assunto !== assunto;
+        // Grupo sem nenhum caso do assunto some, para não deixar títulos vazios.
+        for (const g of grupos) g.hidden = !g.querySelector('li[data-assunto]:not([hidden])');
+      });
+    }
+  }
+</script>

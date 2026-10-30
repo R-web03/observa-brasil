@@ -1,0 +1,42 @@
+---
+// Moldura comum aos moldes de aula e de análise: trilha de volta ao panorama,
+// a pergunta como título, o índice das camadas ao lado e o conteúdo em camadas.
+import Base from '../../layouts/Base.astro';
+import Percurso from './Percurso.astro';
+
+interface Props {
+  titulo: string; // a pergunta
+  descricao: string;
+  trilha: { href: string; rotulo: string }[]; // do panorama até a seção; a página atual entra no fim
+  tipo: string; // "Aula de conceito", "Análise de decisão"
+  meta: string[]; // linha curta de contexto: tempo de leitura, período, quem decidiu
+  etapas: readonly { id: string; rotulo: string }[];
+  imagem?: string;
+}
+const { titulo, descricao, trilha, tipo, meta, etapas, imagem } = Astro.props;
+const secao = trilha.at(-1)!;
+---
+
+<Base titulo={titulo} descricao={descricao} emRevisao imagem={imagem}>
+  <nav class="trilha" aria-label="Você está em">
+    <ol>
+      {trilha.map((t) => <li><a href={t.href}>{t.rotulo}</a></li>)}
+      <li aria-current="page">{tipo}</li>
+    </ol>
+  </nav>
+
+  <header class="cabecalho molde-cabecalho">
+    <p class="ob-eyebrow">{tipo}</p>
+    <h1 class="ob-headline">{titulo}</h1>
+    <p class="molde-meta">
+      {meta.map((m, i) => <>{i > 0 && <span class="ob-eyebrow-sep">·</span>}{m}</>)}
+    </p>
+  </header>
+
+  <div class="molde">
+    <Percurso etapas={etapas} panorama={{ href: secao.href, rotulo: `Voltar a ${secao.rotulo}` }} />
+    <div class="molde-conteudo">
+      <slot />
+    </div>
+  </div>
+</Base>

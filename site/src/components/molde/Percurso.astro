@@ -1,0 +1,53 @@
+---
+// Índice das camadas da página: diz em que parte a pessoa está, deixa pular para qualquer
+// uma e sempre mostra o caminho de volta ao panorama. No computador fica fixo ao lado;
+// no celular vira uma faixa rolável no topo. Sem JavaScript, funciona como lista de links.
+interface Props {
+  etapas: readonly { id: string; rotulo: string }[];
+  panorama: { href: string; rotulo: string };
+}
+const { etapas, panorama } = Astro.props;
+---
+
+<nav class="percurso" aria-label="Partes desta página" data-percurso>
+  <a class="percurso-volta" href={panorama.href}>← {panorama.rotulo}</a>
+  <ol>
+    {
+      etapas.map((e, i) => (
+        <li>
+          <a href={`#${e.id}`} data-percurso-link={e.id}>
+            <span class="percurso-n" aria-hidden="true">{i + 1}</span>
+            {e.rotulo}
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<script>
+  // Marca a parte que está na tela. Sem suporte a IntersectionObserver, a lista só não acompanha.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-percurso-link]')];
+  const secoes = links.map((a) => document.getElementById(a.dataset.percursoLink!)).filter((s): s is HTMLElement => s !== null);
+  if ('IntersectionObserver' in window && secoes.length > 0) {
+    const visiveis = new Set<string>();
+    const marcar = () => {
+      const atual = secoes.find((s) => visiveis.has(s.id))?.id;
+      for (const a of links) {
+        if (a.dataset.percursoLink === atual) a.setAttribute('aria-current', 'step');
+        else a.removeAttribute('aria-current');
+      }
+    };
+    const obs = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) {
+          if (e.isIntersecting) visiveis.add(e.target.id);
+          else visiveis.delete(e.target.id);
+        }
+        marcar();
+      },
+      { rootMargin: '-30% 0px -55% 0px' },
+    );
+    for (const s of secoes) obs.observe(s);
+  }
+</script>

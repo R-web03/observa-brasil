@@ -1,0 +1,29 @@
+---
+// Fim de toda aula e análise: um próximo passo recomendado, outras saídas e o panorama.
+// A recomendação é só uma sugestão; a pessoa pode sair do percurso quando quiser.
+interface Link {
+  href: string;
+  titulo: string;
+}
+interface Props {
+  proximo: Link & { porque: string };
+  outros: Link[];
+  panorama: Link;
+}
+const { proximo, outros, panorama } = Astro.props;
+---
+
+<div class="continuar">
+  <a class="ob-card ob-card--link continuar-proximo" href={proximo.href}>
+    <span class="porta-etiqueta">Próximo passo sugerido</span>
+    <span class="porta-titulo">{proximo.titulo}</span>
+    <span class="continuar-porque">{proximo.porque}</span>
+  </a>
+  <div class="continuar-outros">
+    <p class="ob-field-label">Ou siga por outro lado</p>
+    <ul>
+      {outros.map((o) => <li><a href={o.href}>{o.titulo}</a></li>)}
+    </ul>
+    <a class="ob-btn ob-btn--secondary" href={panorama.href}>← {panorama.titulo}</a>
+  </div>
+</div>

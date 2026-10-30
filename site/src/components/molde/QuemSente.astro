@@ -1,0 +1,29 @@
+---
+// Quem sente o efeito, por situação de vida: ter financiamento, depender de transporte,
+// trabalhar no setor afetado, receber um benefício. A renda entra, mas não é a única régua.
+// Cada cartão diz se o impacto é direto ou indireto, quando chega e o que se sabe dele.
+// Não ordenamos por "mais prejudicado": sem uma medida comum, essa ordem seria opinião.
+import { NATUREZA, ROTULO_TIPO, type Situacao } from '../../lib/moldes';
+
+interface Props {
+  situacoes: Situacao[];
+}
+const { situacoes } = Astro.props;
+---
+
+<ul class="quem-sente">
+  {
+    situacoes.map((s) => (
+      <li class:list={['situacao', `natureza--${s.natureza}`]}>
+        <p class="situacao-nome">{s.situacao}</p>
+        <p class="situacao-como">{s.como}</p>
+        {s.exemplo && <p class="situacao-exemplo">{s.exemplo}</p>}
+        <p class="situacao-meta">
+          <span>{ROTULO_TIPO[s.tipo]}</span>
+          <span>Chega {s.quando}</span>
+          <span class="situacao-natureza">{NATUREZA[s.natureza].rotulo}</span>
+        </p>
+      </li>
+    ))
+  }
+</ul>

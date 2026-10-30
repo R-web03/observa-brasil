@@ -1,0 +1,223 @@
+---
+// Análise de decisão pública no molde em camadas (protótipo).
+// Números vêm do estudo verificado em lib/impactos.ts (id gasolina-2022) e do estudo do
+// teto do ICMS. O que ainda não foi pesquisado aparece marcado, sem número inventado.
+import Moldura from '../../components/molde/Moldura.astro';
+import Etapa from '../../components/molde/Etapa.astro';
+import MapaDeCaminhos from '../../components/molde/MapaDeCaminhos.astro';
+import QuemSente from '../../components/molde/QuemSente.astro';
+import Afirmacoes from '../../components/molde/Afirmacoes.astro';
+import ParaContinuar from '../../components/molde/ParaContinuar.astro';
+import APesquisar from '../../components/molde/APesquisar.astro';
+import GraficoInterativo from '../../components/GraficoInterativo.astro';
+import { ESTUDOS, ROTULO_ORIGEM } from '../../lib/impactos';
+import { SERIES_ESTATICAS } from '../../lib/series-estaticas';
+import { CAMADAS_ANALISE, type Caminho, type Fator, type Situacao } from '../../lib/moldes';
+
+const e = ESTUDOS.find((x) => x.id === 'gasolina-2022')!;
+const pontos = SERIES_ESTATICAS['gasolina-real'] ?? [];
+
+const fatores: Fator[] = [
+  { id: 'petroleo', nome: 'Petróleo lá fora', texto: 'Subiu com a guerra no 1º semestre de 2022 e caiu no 2º. Nenhum governo controla.' },
+  { id: 'cambio', nome: 'Dólar', texto: 'O petróleo é cotado em dólar. Dólar mais alto encarece o combustível aqui.' },
+  { id: 'ppi', nome: 'Regra de preço da Petrobras', texto: 'Desde 2016, o preço nas refinarias seguia o de importação. Por isso subia e caía junto com o de fora.' },
+  { id: 'icms', nome: 'ICMS dos estados', texto: 'A mesma lei limitou o imposto estadual, que também caiu. É difícil separar o efeito de cada imposto.' },
+  { id: 'margens', nome: 'Postos e distribuidoras', texto: 'Quanto da queda chega à bomba depende das margens de quem vende, que variam de cidade para cidade.' },
+  { id: 'diesel', nome: 'Diesel', texto: 'Caminhão e ônibus usam diesel, não gasolina. O diesel teve regras e preços próprios em 2022.' },
+];
+
+const caminhos: Caminho[] = [
+  {
+    id: 'bomba',
+    nome: 'Na bomba',
+    partida: 'Impostos federais zerados (jun. 2022)',
+    paradas: [
+      { titulo: 'Impostos e preço na refinaria caem', como: 'Saem PIS/Cofins e Cide: cerca de R$ 0,58 por litro na gasolina da bomba, pelo nosso cálculo. Ao mesmo tempo, a Petrobras reduz o preço acompanhando o petróleo.', natureza: 'observado', fonte: 'Lei Complementar 194/2022; Abicom', fatores: ['petroleo', 'cambio', 'ppi', 'icms'] },
+      { titulo: 'O litro vai de R$ 7,39 a R$ 4,93', como: 'Média nacional da ANP, da semana de 19 a 25 jun. à de 18 a 24 dez. 2022. A maior parte da queda não veio dos impostos federais.', natureza: 'observado', fonte: 'ANP', fatores: ['margens'] },
+      { titulo: 'Sobra dinheiro para quem abastece', como: 'Quanto sobra depende de quantos litros a pessoa usa. Para quem não tem carro, quase nada por este caminho.', natureza: 'observado' },
+    ],
+  },
+  {
+    id: 'inflacao',
+    nome: 'Na inflação',
+    partida: 'Impostos federais zerados (jun. 2022)',
+    paradas: [
+      { titulo: 'A gasolina cai no IPCA', como: 'O preço da gasolina no índice caiu 15,48% em jul., 11,64% em ago. e 8,33% em set. 2022.', natureza: 'observado', fonte: 'IBGE, IPCA', fatores: ['petroleo', 'icms'] },
+      { titulo: 'A inflação do mês fica negativa', como: 'Como a gasolina pesa muito no índice, o IPCA foi de −0,68% em jul., −0,36% em ago. e −0,29% em set. 2022.', natureza: 'observado', fonte: 'IBGE, IPCA' },
+      { titulo: 'O salário perde menos valor', como: 'Com preços mais baixos, a renda compra um pouco mais, para todo mundo, inclusive quem não abastece. O efeito durou enquanto durou o desconto.', natureza: 'provavel' },
+    ],
+  },
+  {
+    id: 'frete',
+    nome: 'No frete e na comida',
+    partida: 'Impostos federais zerados (jun. 2022)',
+    paradas: [
+      { titulo: 'O frete fica mais barato?', como: 'O transporte de carga no Brasil roda principalmente com diesel, não com gasolina. Este caminho passa pelo diesel, que tinha regra própria.', natureza: 'hipotese', fatores: ['diesel', 'cambio'], aPesquisar: 'a tributação do diesel em 2022 (Lei Complementar 192/2022) e o preço do diesel na ANP no mesmo período' },
+      { titulo: 'A comida fica mais barata?', como: 'Preço de alimento depende também de safra, clima, dólar e preço lá fora. Não encontramos medida de quanto o combustível explicou em 2022.', natureza: 'em-disputa', fatores: ['diesel', 'cambio', 'petroleo'], aPesquisar: 'estudos sobre o repasse do preço do combustível para os alimentos no Brasil, com o tamanho e o prazo estimados' },
+    ],
+  },
+  {
+    id: 'contas',
+    nome: 'Nas contas públicas',
+    partida: 'Impostos federais zerados (jun. 2022)',
+    paradas: [
+      { titulo: 'A União deixa de arrecadar', como: 'A desoneração de gasolina e etanol em 2022 foi estimada em pelo menos R$ 35,2 bilhões. Não encontramos o valor final oficial.', natureza: 'observado', fonte: 'Valor Econômico, citado por eixos', aPesquisar: 'o valor oficial da renúncia, nos demonstrativos da Receita Federal' },
+      { titulo: 'Os estados perdem ICMS', como: 'Pelo teto do ICMS na mesma lei. Os estados estimaram a perda em R$ 45 bilhões de jun. a dez. 2022; é a conta deles.', natureza: 'observado', fonte: 'Comsefaz', fatores: ['icms'] },
+      { titulo: 'A União compensa R$ 27 bilhões', como: 'Depois de acordo homologado no Supremo, uma lei de 2023 fixou a compensação, paga até 2025, pelo governo seguinte.', natureza: 'observado', fonte: 'Lei Complementar 201/2023' },
+      { titulo: 'Escolas, saúde e polícia sentem?', como: 'Os estados ficaram meses com menos receita. Não há medida do efeito nos serviços.', natureza: 'hipotese' },
+    ],
+  },
+  {
+    id: 'depois',
+    nome: 'No ano seguinte',
+    partida: 'Impostos federais zerados (jun. 2022)',
+    paradas: [
+      { titulo: 'O desconto tinha data para acabar', como: 'A lei valia até 31 dez. 2022. Renovar custaria bilhões; voltar a cobrar subiria o preço.', natureza: 'observado', fonte: 'Lei Complementar 194/2022' },
+      { titulo: 'O governo seguinte decide', como: 'Prorrogou até fev. 2023 e depois voltou a cobrar em etapas. É outra decisão, analisada à parte.', natureza: 'observado', fonte: 'Medidas Provisórias 1.157 e 1.163/2023' },
+    ],
+  },
+];
+
+const situacoes: Situacao[] = [
+  { situacao: 'Tem carro e roda todo dia', como: 'Sentiu na bomba em poucas semanas.', exemplo: '100 litros por mês: R$ 739 em jun. e R$ 493 em dez. 2022. Uns R$ 58 da diferença foram os impostos federais.', tipo: 'direto', quando: 'na hora', natureza: 'observado' },
+  { situacao: 'Trabalha com moto ou aplicativo', como: 'O combustível é custo de trabalho: cada real a menos no litro vira renda.', exemplo: 'Moto de 30 litros por mês: R$ 74 a menos no mesmo período.', tipo: 'direto', quando: 'na hora', natureza: 'observado' },
+  { situacao: 'Não tem carro', como: 'Ganha pouco pela bomba. Ganhou pela inflação negativa de jul. a set. 2022, que vale para todos os preços.', tipo: 'indireto', quando: 'em meses', natureza: 'provavel' },
+  { situacao: 'Anda de ônibus', como: 'Ônibus usa diesel, e a tarifa depende de contrato com a prefeitura. Não medimos efeito deste caso na passagem.', tipo: 'indireto', quando: 'em meses', natureza: 'hipotese' },
+  { situacao: 'Depende de escola, posto de saúde ou polícia do estado', como: 'O estado perdeu ICMS por meses até a compensação. O efeito nos serviços não foi medido.', tipo: 'indireto', quando: 'em anos', natureza: 'hipotese' },
+  { situacao: 'Paga impostos, ou seja, todo mundo', como: 'A conta saiu dos cofres públicos: da União, que deixou de arrecadar, e dos estados.', tipo: 'indireto', quando: 'em anos', natureza: 'observado' },
+];
+---
+
+<Moldura
+  titulo="Zerar os impostos da gasolina em 2022 baixou o preço para quem?"
+  descricao="O litro caiu de R$ 7,39 para R$ 4,93 no 2º semestre de 2022. Veja quanto foi imposto, quanto foi petróleo, quem sentiu e quem pagou."
+  trilha={[{ href: '/', rotulo: 'Início' }, { href: '/temas', rotulo: 'Investigar um tema' }]}
+  tipo="Análise de decisão"
+  meta={['jun. a dez. 2022', 'Governo Bolsonaro', 'Leitura de 7 min']}
+  etapas={CAMADAS_ANALISE}
+  imagem="/compartilhar/gasolina-2022.png"
+>
+  <Etapa id="resposta" n={1} rotulo="Resposta rápida" titulo="Para quem abastece, sim. Mas a maior parte da queda não veio do imposto">
+    <p class="resposta-rapida">
+      Entre junho e dezembro de 2022, o litro da gasolina caiu de <strong>R$ 7,39 para R$ 4,93</strong>. Os impostos
+      federais zerados explicam cerca de <strong>R$ 0,58</strong> por litro. O resto veio do ICMS menor e da queda do
+      petróleo, repassada pela Petrobras.
+    </p>
+    <ul class="resposta-pontos">
+      <li><strong>Quem sentiu na hora:</strong> quem abastece, sobretudo quem trabalha com o veículo.</li>
+      <li><strong>Quem pagou:</strong> os cofres da União e dos estados, ou seja, todos os contribuintes.</li>
+      <li><strong>O que ficou para depois:</strong> o desconto acabava em 31 de dezembro de 2022.</li>
+    </ul>
+  </Etapa>
+
+  <Etapa id="o-que-aconteceu" n={2} rotulo="O que aconteceu" titulo="Uma lei de junho, com data para acabar">
+    <ol class="linha-do-tempo">
+      <li><span class="ldt-data">fev. 2022</span><span class="ldt-titulo">A Rússia invade a Ucrânia e o petróleo dispara</span></li>
+      <li><span class="ldt-data">jun. 2022</span><span class="ldt-titulo">O litro passa de R$ 7 na média do país</span><span class="ldt-meta">ANP, semana de 19 a 25 jun.</span></li>
+      <li><span class="ldt-data">23 jun. 2022</span><span class="ldt-titulo">Lei Complementar 194: impostos federais zerados até dezembro e teto no ICMS</span></li>
+      <li><span class="ldt-data">31 dez. 2022</span><span class="ldt-titulo">Fim previsto do desconto federal</span></li>
+      <li><span class="ldt-data">2023</span><span class="ldt-titulo">O governo seguinte prorroga, depois volta a cobrar; lei fixa a compensação aos estados</span></li>
+    </ol>
+    <dl class="quem-decide">
+      <div><dt>Congresso</dt><dd>Aprovou a lei complementar.</dd></div>
+      <div><dt>Presidência</dt><dd>Sancionou a lei.</dd></div>
+      <div><dt>Petrobras</dt><dd>Definia o preço nas refinarias.</dd></div>
+      <div><dt>Estados</dt><dd>Cobram o ICMS e perderam receita com o teto.</dd></div>
+    </dl>
+  </Etapa>
+
+  <Etapa id="por-que" n={3} rotulo="Por que foi decidido" titulo="O que foi dito, o que estava documentado e o que se discute">
+    <p>
+      Separamos cada afirmação pelo seu tipo. Uma justificativa oficial não é um fato, e coincidência de datas não é prova de
+      motivo.
+    </p>
+    <Afirmacoes
+      itens={[
+        { tipo: 'fato', texto: 'O petróleo havia subido com a guerra, e a regra da Petrobras levava essa alta para a bomba.', fonte: 'ANP; IBGE' },
+        { tipo: 'fato', texto: 'A decisão foi tomada a pouco mais de três meses da eleição de outubro de 2022. É um fato do calendário; sozinho, não prova o motivo de ninguém.' },
+        { tipo: 'justificativa', texto: 'As razões apresentadas pelos autores e relatores da lei na época.', aPesquisar: true },
+        { tipo: 'justificativa', texto: 'A posição do Ministério da Economia sobre o custo e a duração do desconto.', aPesquisar: true },
+        { tipo: 'disputa', texto: 'Os estados contestaram as perdas de ICMS. A disputa terminou em acordo homologado no Supremo e na compensação de 2023.', fonte: 'Lei Complementar 201/2023' },
+        { tipo: 'interpretacao', texto: 'Avaliações de economistas sobre o custo-benefício de baixar o preço para todos em vez de ajudar só quem mais precisa.', aPesquisar: true },
+      ]}
+    />
+    <Fragment slot="mais">
+      <p><strong>Alternativas que eram conhecidas na época.</strong> Uma análise justa mostra o que mais estava na mesa, sem dizer qual seria melhor.</p>
+      <APesquisar
+        titulo="Alternativas a verificar antes de publicar"
+        itens={[
+          'Propostas de um fundo para amortecer o preço dos combustíveis em discussão no Congresso em 2022 (verificar número do projeto, autor e tramitação).',
+          'Auxílios para grupos específicos, como motoristas e caminhoneiros, aprovados no mesmo ano (verificar a emenda constitucional e os valores).',
+          'Mudança na regra de preço da Petrobras, que só aconteceu em 2023 (verificar se foi proposta em 2022 e por quem).',
+        ]}
+      />
+    </Fragment>
+  </Etapa>
+
+  <Etapa id="caminhos" n={4} rotulo="Caminhos do efeito" titulo="Por onde a decisão chegou, ou não, à sua vida">
+    <p>
+      A mesma decisão segue por vários caminhos ao mesmo tempo. Escolha um. Os fatores ao lado podem aumentar, diminuir ou
+      até inverter cada ligação.
+    </p>
+    <MapaDeCaminhos caminhos={caminhos} fatores={fatores} />
+  </Etapa>
+
+  <Etapa id="quem-sente" n={5} rotulo="Quem sente e como" titulo="Ter carro pesa mais que a faixa de renda">
+    <QuemSente situacoes={situacoes} />
+    <p class="nota-medida">
+      Os valores são de exemplos hipotéticos, com preços médios da ANP. Não dizemos quem "ganhou mais": em reais, quem roda
+      mais; como parte da renda, depende de quanto a família ganha e de quanto gasta com combustível, e isso não medimos.
+      Para a leitura por faixa de renda, veja <a href="/impactos/gasolina-2022">a pirâmide deste caso</a>.
+    </p>
+  </Etapa>
+
+  <Etapa id="dados" n={6} rotulo="O que os dados mostram" titulo="A gasolina descontada a inflação, desde 2003">
+    {
+      pontos.length > 1 && e.grafico && (
+        <GraficoInterativo titulo={e.grafico.titulo} descricao={e.grafico.descricao} pontos={pontos} unidade={e.grafico.unidade} casas={e.grafico.casas} cor="var(--chart-3)" destacar={e.governo}>
+          <p class="ob-chart-foot">{e.grafico.descricao} Fonte: IBGE, IPCA. Cálculo do Observa Brasil.</p>
+        </GraficoInterativo>
+      )
+    }
+    {
+      e.origens && (
+        <ul class="origens">
+          {e.origens.map((o) => (
+            <li class:list={['origem', `origem--${o.origem}`]}>
+              <span class="origem-tipo">{ROTULO_ORIGEM[o.origem]}</span>
+              <span class="origem-titulo">{o.titulo}</span>
+              <p>{o.texto}</p>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+    <Fragment slot="mais">
+      <ul>{e.fatos.map((f) => <li>{f}</li>)}</ul>
+    </Fragment>
+    <Fragment slot="fontes">
+      <ul class="lista-fontes">{e.fontes.map((f) => <li><a href={f.url} rel="noopener">{f.nome}</a></li>)}</ul>
+    </Fragment>
+  </Etapa>
+
+  <Etapa id="incerto" n={7} rotulo="O que ainda é incerto" titulo="Quanto custaria o litro sem a lei? Ninguém sabe">
+    <ul>
+      <li><strong>O preço sem a desoneração</strong> depende do que a Petrobras teria feito. Por isso não mostramos um número "e se".</li>
+      <li><strong>O efeito no frete e na comida</strong> passa pelo diesel e não foi medido para este caso.</li>
+      <li><strong>O efeito nos serviços dos estados</strong> durante os meses sem compensação também não foi medido.</li>
+    </ul>
+    <APesquisar itens={['Estimativas publicadas do preço sem a lei, com autor, hipóteses e limites de cada uma. Se houver mais de uma, mostrar todas lado a lado.']} />
+  </Etapa>
+
+  <Etapa id="continuar" n={8} rotulo="Para continuar" titulo="Para onde ir agora">
+    <ParaContinuar
+      proximo={{ href: '/impactos/gasolina-2023', titulo: 'Por que a gasolina subiu quando os impostos voltaram, em 2023?', porque: 'É a outra metade desta história: a decisão que o governo seguinte teve de tomar.' }}
+      outros={[
+        { href: '/impactos/teto-icms-2022', titulo: 'Tema: o teto do ICMS, da mesma lei' },
+        { href: '/curso/inflacao-e-poder-de-compra', titulo: 'Aula: por que o mesmo salário compra menos com o tempo?' },
+        { href: '/comparar#mesmo-tema', titulo: 'Comparar: combustíveis em 2022 e em 2023' },
+      ]}
+      panorama={{ href: '/temas', titulo: 'Voltar a todos os temas' }}
+    />
+  </Etapa>
+</Moldura>

@@ -1,0 +1,33 @@
+---
+// Lista de afirmações sobre um caso, cada uma com o seu tipo escrito na frente.
+// Serve para nunca misturar a justificativa oficial com o fato, nem a leitura de um
+// pesquisador com o que está em disputa. Item sem fonte verificada vai com aPesquisar.
+interface Afirmacao {
+  tipo: 'justificativa' | 'fato' | 'interpretacao' | 'disputa';
+  texto: string;
+  fonte?: string;
+  aPesquisar?: boolean;
+}
+interface Props {
+  itens: Afirmacao[];
+}
+const ROTULO = {
+  justificativa: 'Justificativa oficial',
+  fato: 'Fato documentado',
+  interpretacao: 'Interpretação',
+  disputa: 'Em disputa',
+};
+const { itens } = Astro.props;
+---
+
+<ul class="afirmacoes">
+  {
+    itens.map((a) => (
+      <li class:list={['afirmacao-item', `afirmacao--${a.tipo}`, { 'afirmacao--falta': a.aPesquisar }]}>
+        <span class="afirmacao-tipo">{ROTULO[a.tipo]}{a.aPesquisar && ' · a pesquisar'}</span>
+        <p>{a.texto}</p>
+        {a.fonte && <p class="afirmacao-fonte">Fonte: {a.fonte}</p>}
+      </li>
+    ))
+  }
+</ul>

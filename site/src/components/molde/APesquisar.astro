@@ -1,0 +1,16 @@
+---
+// Marca o que ainda precisa de pesquisa e verificação antes de publicar.
+// Fica visível de propósito: no protótipo, um buraco honesto vale mais que um número inventado.
+interface Props {
+  itens: string[];
+  titulo?: string;
+}
+const { itens, titulo = 'Precisa de pesquisa antes de publicar' } = Astro.props;
+---
+
+<aside class="a-pesquisar" role="note">
+  <p class="a-pesquisar-titulo">{titulo}</p>
+  <ul>
+    {itens.map((i) => <li>{i}</li>)}
+  </ul>
+</aside>

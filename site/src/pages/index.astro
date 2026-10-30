@@ -1,16 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
-import Marca from '../components/Marca.astro';
 import Minigrafico from '../components/Minigrafico.astro';
-import { listar, url } from '../lib/conteudo';
+import { listar } from '../lib/conteudo';
 import { mensal, observacoes } from '../lib/dados';
 import { corDaSerie } from '../lib/cores';
 import { formatarData, formatarMesAno, formatarNumero } from '../lib/formato';
+import { INTENCOES } from '../lib/temas';
+import { CAMADAS_AULA } from '../lib/moldes';
 
-const aulas = (await listar('aulas')).sort((a, b) => a.data.numero - b.data.numero);
-const primeira = aulas[0];
 const fichas = new Set((await listar('indicadores')).map((i) => i.id));
-const totalConceitos = (await listar('verbetes')).length;
 
 // Painel de indicadores: valores reais do banco (BCB e IBGE), lidos no build.
 // Sem banco configurado ou sem dados, o painel simplesmente não aparece.
@@ -41,120 +39,144 @@ const painel = (
   )
 ).filter((p) => p !== null);
 
-const portas = [
-  { href: primeira ? url('aulas', primeira.id) : '/curso', etiqueta: `Curso · ${aulas.length} de 11 aulas`, titulo: 'Economia do zero, uma aula por vez', meta: 'Comece pela aula 1' },
-  { href: '/conceitos', etiqueta: 'Conceitos', titulo: 'Inflação, juros, dívida: o que cada palavra quer dizer', meta: `${totalConceitos} termos em linguagem simples` },
-  { href: '/governos', etiqueta: 'Governos', titulo: 'Cada governo com a mesma régua, de 2003 até hoje', meta: 'O que herdou, o que entregou, o que veio de fora' },
-  { href: '/impactos', etiqueta: 'Impactos', titulo: 'Quem ganhou e quem pagou com cada decisão', meta: 'A pirâmide, faixa de renda por faixa' },
-];
+// As três entradas, cada uma com perguntas de exemplo que levam direto ao conteúdo.
+const EXEMPLOS: Record<string, { href: string; texto: string }[]> = {
+  aprender: [
+    { href: '/aprender/selic', texto: 'O que muda para mim quando a Selic sobe?' },
+    { href: '/curso/inflacao-e-poder-de-compra', texto: 'Por que o mesmo salário compra menos com o tempo?' },
+    { href: '/curso/tributos-orcamento-e-divida', texto: 'De onde vem e para onde vai o dinheiro do governo?' },
+  ],
+  investigar: [
+    { href: '/temas/gasolina-2022', texto: 'Zerar os impostos da gasolina baixou o preço para quem?' },
+    { href: '/impactos/privatizacao-eletrobras', texto: 'O que a privatização da Eletrobras muda na conta de luz?' },
+    { href: '/impactos/onde-eu-entro', texto: 'Onde a minha família entra em cada decisão?' },
+  ],
+  comparar: [
+    { href: '/comparar#mesmo-tema', texto: 'O imposto da gasolina em 2022 e em 2023' },
+    { href: '/comparacoes/bolsonaro-e-lula-3', texto: 'Bolsonaro e Lula 3, nos mesmos meses de mandato' },
+    { href: '/governos', texto: 'Cada governo desde 2003, com a mesma régua' },
+  ],
+};
 
-// Mandatos presidenciais desde 2003. Todos com o mesmo peso visual: nenhum governo é destacado.
-const governos = [
-  { id: 'lula-1-2', nome: 'Lula 1 e 2', periodo: '2003 — 2010' },
-  { id: 'dilma', nome: 'Dilma', periodo: '2011 — 2016' },
-  { id: 'temer', nome: 'Temer', periodo: '2016 — 2018' },
-  { id: 'bolsonaro', nome: 'Bolsonaro', periodo: '2019 — 2022' },
-  { id: 'lula-3', nome: 'Lula 3', periodo: '2023 — atual' },
+// Perguntas que alguém faria, levando ao ponto exato da resposta. Sem página: em pesquisa.
+const PERGUNTAS = [
+  { href: '/aprender/selic', pergunta: 'O que muda para mim quando a Selic sobe?', tipo: 'Aula' },
+  { href: '/temas/gasolina-2022#rota-frete', pergunta: 'Por que o preço da gasolina pode afetar o preço dos alimentos?', tipo: 'Tema' },
+  { href: '/impactos/privatizacao-eletrobras', pergunta: 'O que acontece quando uma estatal é privatizada?', tipo: 'Tema' },
+  { href: undefined, pergunta: 'Como uma decisão sobre a compra de vacinas pode afetar a população?', tipo: 'Em pesquisa' },
 ];
 ---
 
 <Base titulo="Início" descricao="Política e economia, explicadas pelo que mudam na sua vida. Com dados, fontes e sem torcida.">
-  <section class="heroi">
+  <section class="heroi heroi--compacto">
     <div class="heroi-texto">
       <span class="ob-eyebrow">Educação e análise · Brasil</span>
       <h1 class="t-display">Política e economia, explicadas pelo que <span class="metal">mudam na sua vida.</span></h1>
-      <p class="heroi-deck">
-        Sem torcida e sem jargão. A gente olha os dados, explica as decisões e mostra o efeito no seu bolso, no seu
-        trabalho e na sua cidade.
-      </p>
-      <div class="ob-row">
-        <a class="ob-btn ob-btn--primary ob-btn--lg" href={primeira ? url('aulas', primeira.id) : '/curso'}>Começar pelo curso</a>
-        <a class="ob-btn ob-btn--secondary ob-btn--lg" href="/governos">Ver governos</a>
-      </div>
-    </div>
-    <div class="heroi-marca">
-      <Marca grande sufixo="heroi" rotulo="Símbolo do Observa Brasil" />
+      <p class="heroi-deck">Escolha por onde começar. Nenhum caminho é obrigatório, e dá para voltar a esta página de qualquer lugar.</p>
     </div>
   </section>
 
-  {
-    painel.length > 0 && (
-      <section class="painel" aria-labelledby="painel-titulo">
-        <h2 id="painel-titulo" class="ob-sr">Indicadores mais recentes</h2>
-        <ul class="painel-lista">
-          {painel.map((p) => {
-            const conteudo = (
-              <>
-                <span class="painel-rotulo">
-                  <svg class="painel-cor" viewBox="0 0 10 10" aria-hidden="true"><rect width="10" height="10" rx="3" fill={corDaSerie(p.id)} /></svg>
-                  {p.rotulo}
-                </span>
-                <span class="painel-valor">
-                  {formatarNumero(p.ultimo.valor, p.casas)}
-                  <small>{p.unidade}</small>
-                </span>
-                <Minigrafico pontos={p.mensal} cor={corDaSerie(p.id)} />
-                <span class="painel-meta">
-                  {p.fonte} · {p.quando}
-                  {p.ultimo.preliminar && ' · preliminar'}
-                </span>
-              </>
-            );
-            return <li>{p.href ? <a href={p.href}>{conteudo}</a> : <div>{conteudo}</div>}</li>;
-          })}
-        </ul>
-      </section>
-    )
-  }
+  <section class="intencoes" aria-label="Por onde começar">
+    {
+      INTENCOES.map((it, i) => (
+        <article class:list={['intencao', `intencao--${it.id}`]} aria-labelledby={`intencao-${it.id}`}>
+          <span class="intencao-n" aria-hidden="true">{i + 1}</span>
+          <h2 class="intencao-titulo" id={`intencao-${it.id}`}>
+            <a href={it.href}>{it.titulo}</a>
+          </h2>
+          <p class="intencao-promessa">{it.promessa}</p>
+          <ul class="intencao-exemplos" aria-label="Por exemplo">
+            {EXEMPLOS[it.id]!.map((x) => (
+              <li><a href={x.href}>{x.texto}</a></li>
+            ))}
+          </ul>
+          <a class="intencao-acao" href={it.href}>{it.acao} →</a>
+        </article>
+      ))
+    }
+  </section>
 
-  <section class="secao" aria-labelledby="comecar">
+  <section class="secao" aria-labelledby="perguntas-t">
     <div class="secao-topo">
-      <h2 id="comecar" class="t-title-1">Por onde começar</h2>
-      <a class="secao-link" href="/busca">Buscar um tema →</a>
+      <h2 id="perguntas-t" class="t-title-1">Perguntas que as pessoas fazem</h2>
+      <a class="secao-link" href="/busca">Buscar outra →</a>
     </div>
-    <div class="grade grade--3">
+    <ul class="perguntas-casa">
       {
-        portas.map((p) => (
-          <a class="ob-card ob-card--link porta" href={p.href}>
-            <span class="porta-etiqueta">{p.etiqueta}</span>
-            <span class="porta-titulo">{p.titulo}</span>
-            <span class="porta-meta">{p.meta}</span>
-          </a>
-        ))
-      }
-    </div>
-  </section>
-
-  <section class="secao" aria-labelledby="governos">
-    <div class="secao-topo secao-topo--coluna">
-      <h2 id="governos" class="t-title-1">Governos</h2>
-      <p class="secao-deck">
-        Cada governo com os mesmos indicadores e o mesmo método: o que herdou, o que entregou, o que veio de fora e o que
-        foi decidido.
-      </p>
-    </div>
-    <ul class="governos">
-      {
-        governos.map((g) => (
+        PERGUNTAS.map((p) => (
           <li>
-            <a class="governo governo--link" href={`/governos/${g.id}`}>
-              <span class="governo-periodo">{g.periodo}</span>
-              <span class="governo-nome">{g.nome}</span>
-              <span class="governo-estado">Ver os números →</span>
-            </a>
+            {p.href ? (
+              <a class="pergunta-linha-casa" href={p.href}>
+                <span class="pergunta-tipo">{p.tipo}</span>
+                <span class="pergunta-texto-casa">{p.pergunta}</span>
+                <span class="pergunta-seta" aria-hidden="true">→</span>
+              </a>
+            ) : (
+              <span class="pergunta-linha-casa pergunta-linha-casa--futura">
+                <span class="pergunta-tipo">{p.tipo}</span>
+                <span class="pergunta-texto-casa">{p.pergunta}</span>
+              </span>
+            )}
           </li>
         ))
       }
     </ul>
   </section>
 
-  <section class="secao">
-    <div class="chamada">
-      <div class="chamada-texto">
-        <h2 class="t-title-1">Uma aula por vez, no seu ritmo.</h2>
-        <p class="secao-deck">Aulas curtas, com exemplos do dia a dia e um teste rápido no fim. Sem cadastro.</p>
-      </div>
-      <a class="ob-btn ob-btn--primary ob-btn--lg" href="/curso">Ver o curso</a>
+  <section class="secao" aria-labelledby="formato-t">
+    <div class="secao-topo secao-topo--coluna">
+      <h2 id="formato-t" class="t-title-1">Toda aula segue a mesma ordem</h2>
+      <p class="secao-deck">Primeiro o essencial, em poucas frases. O resto fica guardado para quem quiser ir mais fundo. As análises de decisão seguem a mesma ideia e acrescentam o que aconteceu e por que foi decidido.</p>
     </div>
+    <ol class="formato">
+      {
+        CAMADAS_AULA.map((c, i) => (
+          <li class:list={['formato-passo', { 'formato-passo--essencial': i < 2 }]}>
+            <span class="formato-n" aria-hidden="true">{i + 1}</span>
+            {c.rotulo}
+          </li>
+        ))
+      }
+    </ol>
   </section>
+
+  {
+    painel.length > 0 && (
+      <section class="secao" aria-labelledby="painel-titulo">
+        <div class="secao-topo">
+          <h2 id="painel-titulo" class="t-title-1">Os números de agora</h2>
+          <a class="secao-link" href="/indicadores">Todos os indicadores →</a>
+        </div>
+        <div class="painel">
+          <ul class="painel-lista">
+            {painel.map((p) => {
+              const conteudo = (
+                <>
+                  <span class="painel-rotulo">
+                    <svg class="painel-cor" viewBox="0 0 10 10" aria-hidden="true"><rect width="10" height="10" rx="3" fill={corDaSerie(p.id)} /></svg>
+                    {p.rotulo}
+                  </span>
+                  <span class="painel-valor">
+                    {formatarNumero(p.ultimo.valor, p.casas)}
+                    <small>{p.unidade}</small>
+                  </span>
+                  <Minigrafico pontos={p.mensal} cor={corDaSerie(p.id)} />
+                  <span class="painel-meta">
+                    {p.fonte} · {p.quando}
+                    {p.ultimo.preliminar && ' · preliminar'}
+                  </span>
+                </>
+              );
+              return <li>{p.href ? <a href={p.href}>{conteudo}</a> : <div>{conteudo}</div>}</li>;
+            })}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <p class="como-trabalhamos">
+    Como trabalhamos: <a href="/metodo">o método</a> · <a href="/fontes">as fontes</a> · <a href="/correcoes">as correções</a>. Sem
+    nota para governo e sem torcida.
+  </p>
 </Base>

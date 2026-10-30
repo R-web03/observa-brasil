@@ -1,0 +1,64 @@
+---
+// Simulação: a mesma compra parcelada com juros diferentes. É só a conta da tabela Price,
+// com valores escolhidos pela pessoa; não usa nenhum dado real e diz isso.
+// Sem JavaScript, mostra o resultado do valor inicial, calculado no build.
+interface Props {
+  valor: number;
+  parcelas: number;
+  juroInicial: number; // % ao mês
+}
+const { valor, parcelas, juroInicial } = Astro.props;
+const parcela = (v: number, n: number, i: number) => (i === 0 ? v / n : (v * i) / (1 - (1 + i) ** -n));
+const reais = (x: number) => x.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+const p0 = parcela(valor, parcelas, juroInicial / 100);
+---
+
+<figure class="simulador" data-simulador data-valor={valor} data-parcelas={parcelas}>
+  <figcaption class="simulador-titulo">A mesma moto de {reais(valor)}, em {parcelas} parcelas</figcaption>
+  <label class="simulador-controle">
+    <span class="ob-field-label">Juro que a loja cobra: <output data-sim-juro>{juroInicial.toLocaleString('pt-BR')}% ao mês</output></span>
+    <input type="range" min="0.5" max="5" step="0.1" value={juroInicial} data-sim-range aria-describedby="sim-ajuda" />
+    <span class="ob-field-help" id="sim-ajuda">Arraste para ver o que acontece quando o juro sobe ou desce.</span>
+  </label>
+  <dl class="simulador-numeros">
+    <div><dt>Cada parcela</dt><dd data-sim-parcela>{reais(p0)}</dd></div>
+    <div><dt>Total pago</dt><dd data-sim-total>{reais(p0 * parcelas)}</dd></div>
+    <div><dt>Só de juros</dt><dd data-sim-juros>{reais(p0 * parcelas - valor)}</dd></div>
+  </dl>
+  <div class="simulador-barras" aria-hidden="true">
+    <div class="simulador-barra"><span class="simulador-rotulo">À vista</span><span class="simulador-preenche simulador-preenche--vista" data-sim-vista></span></div>
+    <div class="simulador-barra"><span class="simulador-rotulo">Parcelado</span><span class="simulador-preenche" data-sim-barra></span></div>
+  </div>
+  <p class="simulador-nota">
+    Valores hipotéticos, só para ver a conta. O juro da loja não é a Selic: a Selic é a base, e cada loja ou banco soma
+    risco, prazo, impostos, custos e lucro. Quando a Selic sobe, esse juro <em>tende</em> a subir nos contratos novos, mas
+    não na mesma medida.
+  </p>
+</figure>
+
+<script>
+  const reais = (x: number) => x.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+  for (const sim of document.querySelectorAll<HTMLElement>('[data-simulador]')) {
+    const valor = Number(sim.dataset.valor);
+    const n = Number(sim.dataset.parcelas);
+    const range = sim.querySelector<HTMLInputElement>('[data-sim-range]')!;
+    const campo = (nome: string) => sim.querySelector<HTMLElement>(`[data-sim-${nome}]`)!;
+    // O maior total possível (juro máximo) é a régua das barras, para elas não mudarem de escala.
+    const maximo = (() => {
+      const i = Number(range.max) / 100;
+      return ((valor * i) / (1 - (1 + i) ** -n)) * n;
+    })();
+    const atualizar = () => {
+      const i = Number(range.value) / 100;
+      const p = (valor * i) / (1 - (1 + i) ** -n);
+      campo('juro').textContent = `${Number(range.value).toLocaleString('pt-BR')}% ao mês`;
+      campo('parcela').textContent = reais(p);
+      campo('total').textContent = reais(p * n);
+      campo('juros').textContent = reais(p * n - valor);
+      campo('vista').style.width = `${(valor / maximo) * 100}%`;
+      campo('barra').style.width = `${((p * n) / maximo) * 100}%`;
+    };
+    range.addEventListener('input', atualizar);
+    atualizar();
+  }
+</script>

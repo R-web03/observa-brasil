@@ -1,0 +1,156 @@
+---
+// Mapa de caminhos: por quais vias uma decisão (ou um choque) chega à vida das pessoas.
+// Cada caminho é uma rota de paradas. O traço entre duas paradas diz o que se sabe
+// sobre aquela ligação: contínuo (observado), tracejado (provável), pontilhado (hipótese)
+// ou interrompido (em disputa), sempre com o rótulo escrito, nunca só pela cor ou traço.
+// Os fatores ao lado acendem as ligações que eles podem mudar.
+// Sem JavaScript: todas as rotas aparecem uma embaixo da outra.
+import { NATUREZA, type Caminho, type Fator, type Natureza } from '../../lib/moldes';
+
+interface Props {
+  caminhos: Caminho[];
+  fatores: Fator[];
+}
+const { caminhos, fatores } = Astro.props;
+const naturezas = Object.keys(NATUREZA) as Natureza[];
+const nomeFator = new Map(fatores.map((f) => [f.id, f.nome]));
+---
+
+<div class="mapa" data-mapa>
+  <ul class="mapa-legenda" aria-label="Como ler os traços">
+    {
+      naturezas.map((n) => (
+        <li class:list={['mapa-legenda-item', `natureza--${n}`]}>
+          <span class="mapa-traco" aria-hidden="true" />
+          <span>
+            <strong>{NATUREZA[n].rotulo}</strong> {NATUREZA[n].explica}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="mapa-abas ob-tabs" role="tablist" aria-label="Escolha um caminho" hidden data-mapa-abas>
+    {
+      caminhos.map((c, i) => (
+        <button class="ob-tab" type="button" role="tab" id={`aba-${c.id}`} aria-controls={`rota-${c.id}`} aria-selected={i === 0 ? "true" : "false"} data-mapa-aba={c.id}>
+          {c.nome}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="mapa-corpo">
+    <div class="mapa-rotas">
+      {
+        caminhos.map((c) => (
+          <section class="rota" id={`rota-${c.id}`} role="tabpanel" aria-labelledby={`rota-${c.id}-t`} data-mapa-rota={c.id}>
+            <h3 class="rota-nome" id={`rota-${c.id}-t`}>{c.nome}</h3>
+            <ol class="rota-lista">
+              <li class="rota-partida">
+                <span class="rota-no" aria-hidden="true" />
+                <span class="rota-parada">{c.partida}</span>
+              </li>
+              {c.paradas.map((p) => (
+                <li class:list={['rota-passo', `natureza--${p.natureza}`]} data-fatores={p.fatores?.join(' ')}>
+                  <div class="rota-ligacao">
+                    <span class="rota-tag">{NATUREZA[p.natureza].rotulo}</span>
+                    <p>{p.como}</p>
+                    {p.fatores && p.fatores.length > 0 && (
+                      <p class="rota-depende">Depende de: {p.fatores.map((f) => nomeFator.get(f) ?? f).join(', ').toLowerCase()}.</p>
+                    )}
+                    {p.fonte && <p class="rota-fonte">Fonte: {p.fonte}</p>}
+                    {p.aPesquisar && <p class="rota-falta">A pesquisar: {p.aPesquisar}</p>}
+                  </div>
+                  <div class="rota-chegada">
+                    <span class="rota-no" aria-hidden="true" />
+                    <span class="rota-parada">{p.titulo}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+    </div>
+
+    <aside class="mapa-fatores" aria-labelledby="fatores-t">
+      <p class="mapa-fatores-titulo" id="fatores-t">O que pode mudar o resultado</p>
+      <p class="mapa-fatores-ajuda" hidden data-mapa-ajuda>Toque num fator para ver quais ligações ele afeta.</p>
+      <ul>
+        {
+          fatores.map((f) => (
+            <li>
+              <button class="ob-chip" type="button" aria-pressed="false" data-mapa-fator={f.id}>
+                {f.nome}
+              </button>
+              <p>{f.texto}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+  for (const mapa of document.querySelectorAll<HTMLElement>('[data-mapa]')) {
+    const abas = [...mapa.querySelectorAll<HTMLButtonElement>('[data-mapa-aba]')];
+    const rotas = [...mapa.querySelectorAll<HTMLElement>('[data-mapa-rota]')];
+    const fatores = [...mapa.querySelectorAll<HTMLButtonElement>('[data-mapa-fator]')];
+    const semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    mapa.querySelector<HTMLElement>('[data-mapa-abas]')!.hidden = false;
+    mapa.querySelector<HTMLElement>('[data-mapa-ajuda]')!.hidden = false;
+    mapa.classList.add('mapa--abas');
+
+    const abrir = (id: string, focar = false) => {
+      for (const a of abas) {
+        const sel = a.dataset.mapaAba === id;
+        a.setAttribute('aria-selected', String(sel));
+        a.tabIndex = sel ? 0 : -1;
+        if (sel && focar) a.focus();
+      }
+      for (const r of rotas) {
+        const sel = r.dataset.mapaRota === id;
+        r.hidden = !sel;
+        if (!sel || semMovimento) continue;
+        // As paradas surgem uma depois da outra, devagar, para a pessoa seguir o caminho.
+        r.querySelectorAll<HTMLElement>('.rota-lista > li').forEach((li, i) => {
+          li.classList.remove('rota-entra');
+          void li.offsetWidth;
+          li.style.animationDelay = `${i * 90}ms`;
+          li.classList.add('rota-entra');
+        });
+      }
+    };
+
+    abas.forEach((a, i) => {
+      a.addEventListener('click', () => abrir(a.dataset.mapaAba!));
+      a.addEventListener('keydown', (ev) => {
+        const passo = ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowLeft' ? -1 : 0;
+        if (!passo) return;
+        ev.preventDefault();
+        abrir(abas[(i + passo + abas.length) % abas.length]!.dataset.mapaAba!, true);
+      });
+    });
+
+    for (const f of fatores) {
+      f.addEventListener('click', () => {
+        const ligar = f.getAttribute('aria-pressed') !== 'true';
+        for (const outro of fatores) outro.setAttribute('aria-pressed', 'false');
+        f.setAttribute('aria-pressed', String(ligar));
+        mapa.classList.toggle('mapa--fator', ligar);
+        for (const passo of mapa.querySelectorAll<HTMLElement>('.rota-passo')) {
+          const afeta = ligar && (passo.dataset.fatores ?? '').split(' ').includes(f.dataset.mapaFator!);
+          passo.classList.toggle('rota-passo--afetado', afeta);
+        }
+      });
+    }
+
+    // Abre a rota do link (#rota-frete), se houver; senão, a primeira.
+    const doLink = location.hash.startsWith('#rota-') ? location.hash.slice(6) : null;
+    const inicial = abas.find((a) => a.dataset.mapaAba === doLink)?.dataset.mapaAba ?? abas[0]?.dataset.mapaAba;
+    if (inicial) abrir(inicial);
+    if (doLink && inicial === doLink) mapa.scrollIntoView({ block: 'start' });
+  }
+</script>

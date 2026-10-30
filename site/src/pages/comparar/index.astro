@@ -1,0 +1,118 @@
+---
+// Panorama de "Comparar": o mesmo tema em épocas diferentes, períodos lado a lado,
+// um governo de cada vez e os indicadores. As regras da comparação ficam à vista.
+import Base from '../../layouts/Base.astro';
+import { GOVERNOS } from '../../lib/governos';
+import { TEMAS } from '../../lib/temas';
+import { listar, url } from '../../lib/conteudo';
+
+const tema = (id: string) => TEMAS.find((t) => t.id === id)!;
+const PARES = [
+  { assunto: 'Combustíveis', pergunta: 'O que cada governo fez com o imposto da gasolina?', lados: [tema('gasolina-2022'), tema('gasolina-2023')] },
+  { assunto: 'Energia', pergunta: 'Duas mudanças grandes na conta de luz, com dez anos de distância', lados: [tema('conta-de-luz-2013-2015'), tema('privatizacao-eletrobras')] },
+  { assunto: 'Juros e contas públicas', pergunta: 'A Selic subiu em 2021 e de novo a partir de 2024: o que o Banco Central disse em cada vez', lados: [tema('alta-da-selic-2021-2022'), tema('contas-2023')] },
+];
+const comparacoes = await listar('comparacoes');
+---
+
+<Base titulo="Comparar governos" descricao="O mesmo tema em governos e períodos diferentes, com os mesmos critérios. Sem ranking e sem nota.">
+  <nav class="trilha" aria-label="Você está em">
+    <ol><li><a href="/">Início</a></li><li aria-current="page">Comparar governos</li></ol>
+  </nav>
+  <header class="cabecalho">
+    <p class="ob-eyebrow">Comparar governos ou períodos</p>
+    <h1 class="ob-headline">A mesma régua para todo mundo</h1>
+    <p class="ob-deck">
+      Compare o mesmo tema em épocas diferentes, ou dois períodos lado a lado. Toda comparação separa o que cada governo
+      herdou, o que decidiu e o que veio de fora.
+    </p>
+  </header>
+
+  <details class="ob-method regras-comparacao">
+    <summary><span class="ob-method-icon" aria-hidden="true">=</span>As regras que valem para toda comparação</summary>
+    <div class="ob-method-body">
+      <ul>
+        <li><strong>Janelas iguais.</strong> Mesmo número de meses de cada lado, contados do mesmo ponto do mandato.</li>
+        <li><strong>Mais de um indicador.</strong> Nenhum governo é julgado por um número só.</li>
+        <li><strong>Herdado e entregue.</strong> O ponto de partida de cada um aparece ao lado do de chegada.</li>
+        <li><strong>O que veio de fora.</strong> Pandemia, guerra, preços internacionais e secas ficam marcados no período.</li>
+        <li><strong>Quem decidiu.</strong> Juros são do Banco Central; leis passam pelo Congresso; preços de estatais, pela empresa.</li>
+        <li><strong>Sem nota e sem ranking.</strong> Mostramos o que mudou e por qual caminho, não quem "ganhou".</li>
+      </ul>
+      <p><a href="/metodo">Ler o método completo</a></p>
+    </div>
+  </details>
+
+  <section class="secao" id="mesmo-tema" aria-labelledby="mesmo-tema-t">
+    <div class="secao-topo secao-topo--coluna">
+      <h2 id="mesmo-tema-t" class="t-title-2">O mesmo tema, em épocas diferentes</h2>
+      <p class="secao-deck">Duas decisões sobre o mesmo assunto, lado a lado. Cada lado abre a análise completa.</p>
+    </div>
+    <ul class="pares">
+      {
+        PARES.map((p) => (
+          <li class="par">
+            <p class="porta-etiqueta">{p.assunto}</p>
+            <p class="par-pergunta">{p.pergunta}</p>
+            <div class="par-lados">
+              {p.lados.map((l) => (
+                <a class="par-lado" href={l.href}>
+                  <span class="par-quando">{l.quando} · {GOVERNOS.find((g) => g.id === l.governo)?.nome}</span>
+                  <span>{l.pergunta}</span>
+                </a>
+              ))}
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="secao" aria-labelledby="periodos-t">
+    <div class="secao-topo secao-topo--coluna">
+      <h2 id="periodos-t" class="t-title-2">Período contra período</h2>
+      <p class="secao-deck">Os mesmos indicadores, mês a mês, em janelas do mesmo tamanho.</p>
+    </div>
+    <div class="grade grade--3">
+      {
+        comparacoes.map((c) => (
+          <a class="ob-card ob-card--link porta" href={url('comparacoes', c.id)}>
+            <span class="porta-etiqueta">Comparação</span>
+            <span class="porta-titulo">{c.data.titulo}</span>
+            <span class="porta-meta">{c.data.indicadores.length} indicadores</span>
+          </a>
+        ))
+      }
+      <a class="ob-card ob-card--link porta" href="/governos">
+        <span class="porta-etiqueta">Tabela</span>
+        <span class="porta-titulo">Todos os governos desde 2003, indicador por indicador</span>
+        <span class="porta-meta">Média de cada período, com as ressalvas</span>
+      </a>
+      <a class="ob-card ob-card--link porta" href="/indicadores">
+        <span class="porta-etiqueta">Indicadores</span>
+        <span class="porta-titulo">Um número ao longo do tempo: inflação, juros, emprego, dívida</span>
+        <span class="porta-meta">Dados do IBGE e do Banco Central</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="secao" aria-labelledby="um-governo-t">
+    <div class="secao-topo secao-topo--coluna">
+      <h2 id="um-governo-t" class="t-title-2">Um governo de cada vez</h2>
+      <p class="secao-deck">O que herdou, o que decidiu, o que veio de fora e o que entregou.</p>
+    </div>
+    <ul class="governos">
+      {
+        GOVERNOS.map((g) => (
+          <li>
+            <a class="governo governo--link" href={`/governos/${g.id}`}>
+              <span class="governo-periodo">{g.inicio.slice(0, 4)} — {g.fim ? g.fim.slice(0, 4) : 'atual'}</span>
+              <span class="governo-nome">{g.nome}</span>
+              <span class="governo-estado">Ver o governo →</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Base>

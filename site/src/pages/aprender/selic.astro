@@ -1,0 +1,192 @@
+---
+// Aula de conceito no molde em camadas (protótipo). Conteúdo a partir da aula 5
+// (content/aulas/juros-credito-e-selic.mdx), reorganizado para começar pela pergunta.
+// O que ainda não foi verificado está marcado com <APesquisar>, e não vai ao ar assim.
+import Moldura from '../../components/molde/Moldura.astro';
+import Etapa from '../../components/molde/Etapa.astro';
+import MapaDeCaminhos from '../../components/molde/MapaDeCaminhos.astro';
+import QuemSente from '../../components/molde/QuemSente.astro';
+import SimuladorParcela from '../../components/molde/SimuladorParcela.astro';
+import ParaContinuar from '../../components/molde/ParaContinuar.astro';
+import APesquisar from '../../components/molde/APesquisar.astro';
+import Termo from '../../components/editorial/Termo.astro';
+import GraficoIndicador from '../../components/editorial/GraficoIndicador.astro';
+import { CAMADAS_AULA, type Caminho, type Fator, type Situacao } from '../../lib/moldes';
+
+const fatores: Fator[] = [
+  { id: 'expectativas', nome: 'Expectativas', texto: 'Se as pessoas e empresas acreditam que a inflação vai cair, ela cai mais fácil, com menos juro.' },
+  { id: 'fora', nome: 'Preços lá fora', texto: 'Petróleo, alimentos e dólar mudam os preços daqui, e os juros pouco fazem contra isso no curto prazo.' },
+  { id: 'governo', nome: 'Gasto do governo', texto: 'Se o governo gasta mais ao mesmo tempo, ele empurra a economia para o lado oposto ao dos juros.' },
+  { id: 'bancos', nome: 'Risco e concorrência', texto: 'Quanto o banco teme o calote e quantos bancos disputam o cliente pesam tanto quanto a Selic.' },
+  { id: 'contrato', nome: 'Tipo de contrato', texto: 'Contrato prefixado não muda depois de assinado. Contrato atrelado à Selic ou ao CDI muda junto.' },
+];
+
+const caminhos: Caminho[] = [
+  {
+    id: 'credito',
+    nome: 'No crédito',
+    partida: 'O Copom sobe a Selic',
+    paradas: [
+      { titulo: 'Os bancos pagam mais para conseguir dinheiro', como: 'A Selic é o juro dos empréstimos de um dia entre os bancos. Quando ela sobe, o dinheiro fica mais caro para o próprio banco.', natureza: 'observado', fonte: 'Banco Central' },
+      { titulo: 'O juro dos empréstimos novos sobe', como: 'O banco repassa esse custo aos contratos novos. Quanto repassa depende do risco do cliente e da concorrência.', natureza: 'provavel', fatores: ['bancos', 'contrato'], aPesquisar: 'série do Banco Central com o juro médio das famílias, para mostrar o repasse em 2021 e 2022' },
+      { titulo: 'A parcela nova fica mais cara', como: 'Com juro maior, a mesma compra parcelada custa mais no total. Quem já tem contrato prefixado não sente.', natureza: 'provavel', fatores: ['contrato'] },
+    ],
+  },
+  {
+    id: 'inflacao',
+    nome: 'Na inflação',
+    partida: 'O Copom sobe a Selic',
+    paradas: [
+      { titulo: 'Menos gente compra a prazo', como: 'Crédito mais caro faz famílias adiarem compras e empresas adiarem investimentos.', natureza: 'provavel', fatores: ['governo', 'bancos'] },
+      { titulo: 'Fica mais difícil subir preços', como: 'Com menos gente comprando, as lojas têm menos espaço para reajustar.', natureza: 'provavel', fatores: ['fora'] },
+      { titulo: 'A inflação desacelera, com atraso', como: 'É o objetivo da alta. O efeito leva meses para aparecer, e quanto a inflação cai é assunto de estimativa.', natureza: 'em-disputa', fatores: ['expectativas', 'fora', 'governo'], aPesquisar: 'a defasagem estimada pelo Banco Central no Relatório de Política Monetária' },
+    ],
+  },
+  {
+    id: 'emprego',
+    nome: 'No emprego',
+    partida: 'O Copom sobe a Selic',
+    paradas: [
+      { titulo: 'Empresas vendem e investem menos', como: 'Com crédito caro e vendas mais fracas, obras e contratações podem ser adiadas.', natureza: 'provavel', fatores: ['governo'] },
+      { titulo: 'O emprego esfria, ou cresce mais devagar', como: 'É o efeito colateral. Em 2021 e 2022, o desemprego caiu mesmo com a Selic subindo, porque a economia saía da pandemia.', natureza: 'em-disputa', fonte: 'IBGE, PNAD Contínua', fatores: ['governo', 'fora'] },
+    ],
+  },
+  {
+    id: 'aplicacoes',
+    nome: 'Na poupança',
+    partida: 'O Copom sobe a Selic',
+    paradas: [
+      { titulo: 'Aplicações atreladas à Selic rendem mais', como: 'Tesouro Selic e CDBs que pagam pelo CDI acompanham a taxa automaticamente.', natureza: 'observado', fatores: ['contrato'] },
+      { titulo: 'A poupança tem um teto', como: 'Pela regra da poupança, com a Selic acima de 8,5% ao ano ela rende 0,5% ao mês mais a TR. Acima disso, não acompanha a Selic.', natureza: 'observado', fonte: 'Lei 12.703/2012' },
+    ],
+  },
+  {
+    id: 'governo',
+    nome: 'Nas contas do governo',
+    partida: 'O Copom sobe a Selic',
+    paradas: [
+      { titulo: 'A dívida pública fica mais cara', como: 'Parte dos títulos do governo paga juro pela Selic. Quando ela sobe, a conta de juros sobe junto.', natureza: 'observado', aPesquisar: 'que fatia da dívida é corrigida pela Selic hoje (Tesouro, Relatório Mensal da Dívida)' },
+      { titulo: 'Sobra menos espaço no orçamento', como: 'Mais dinheiro para juros pode significar menos para outras despesas, ou mais dívida.', natureza: 'hipotese', fatores: ['governo'] },
+    ],
+  },
+];
+
+const situacoes: Situacao[] = [
+  { situacao: 'Já tem financiamento com juro prefixado', como: 'A parcela não muda: o juro foi fixado na assinatura. Confira no contrato se ele é prefixado.', tipo: 'direto', quando: 'na hora', natureza: 'observado' },
+  { situacao: 'Vai pegar crédito novo', como: 'Carro, moto, casa ou empréstimo pessoal tendem a sair mais caros nos meses seguintes.', tipo: 'direto', quando: 'em meses', natureza: 'provavel' },
+  { situacao: 'Paga juros do cartão ou do cheque especial', como: 'Esses juros já são muito altos por causa do risco de calote, e mudam relativamente menos que a Selic.', tipo: 'direto', quando: 'em meses', natureza: 'provavel' },
+  { situacao: 'Tem dinheiro aplicado', como: 'Tesouro Selic e CDBs pelo CDI rendem mais logo. A poupança só até o teto da regra.', tipo: 'direto', quando: 'na hora', natureza: 'observado' },
+  { situacao: 'Trabalha no comércio ou na construção', como: 'São setores que vendem muito a prazo. Se as vendas caem, as vagas e as comissões podem cair.', tipo: 'indireto', quando: 'em meses', natureza: 'provavel' },
+  { situacao: 'Vive de salário mínimo, aposentadoria ou benefício', como: 'Sente pouco pelo crédito e mais pelos preços: se a alta segura a inflação, a renda perde menos valor.', tipo: 'indireto', quando: 'em meses', natureza: 'provavel' },
+];
+---
+
+<Moldura
+  titulo="O que muda para mim quando a Selic sobe?"
+  descricao="A Selic é o juro básico do país. Quando ela sobe, o crédito novo tende a encarecer e as aplicações rendem mais. Veja o caminho, quem sente e o que não se sabe."
+  trilha={[{ href: '/', rotulo: 'Início' }, { href: '/aprender', rotulo: 'Aprender' }]}
+  tipo="Aula de conceito"
+  meta={['Leitura de 6 min', 'Aula 5 do percurso sugerido, que é opcional']}
+  etapas={CAMADAS_AULA}
+>
+  <Etapa id="resposta" n={1} rotulo="Resposta rápida" titulo="O juro novo tende a subir, e guardar dinheiro passa a render mais">
+    <p class="resposta-rapida">
+      A <Termo id="selic">Selic</Termo> é o juro básico do país. Quando o <Termo id="copom">Copom</Termo>, do Banco Central,
+      sobe a Selic, pegar dinheiro emprestado tende a ficar mais caro nos meses seguintes, e as aplicações passam a render
+      mais. O objetivo é segurar a <Termo id="inflacao">inflação</Termo>.
+    </p>
+    <ul class="resposta-pontos">
+      <li><strong>Parcela já contratada com juro fixo:</strong> não muda.</li>
+      <li><strong>Crédito novo:</strong> tende a encarecer.</li>
+      <li><strong>Quem decide:</strong> o Banco Central, não o presidente.</li>
+    </ul>
+  </Etapa>
+
+  <Etapa id="exemplo" n={2} rotulo="Exemplo concreto" titulo="A moto de Rafael">
+    <p>
+      Rafael quer trabalhar com entregas e precisa de uma moto. Sem o dinheiro todo, ele parcela. Somando as parcelas, a
+      moto sai mais cara: a diferença são os juros, o <strong>aluguel do dinheiro</strong> que ele usa hoje e só termina de
+      pagar daqui a três anos.
+    </p>
+    <SimuladorParcela valor={12000} parcelas={36} juroInicial={2} />
+    <div class="analogia">
+      <p class="analogia-titulo">A comparação e o seu limite</p>
+      <p>
+        Juro é como aluguel: quem usa o que é de outro paga pelo uso. <strong>Onde a comparação falha:</strong> o aluguel
+        de uma casa costuma ter preço parecido no mesmo bairro. O do dinheiro muda muito de pessoa para pessoa e de um tipo
+        de empréstimo para outro, porque depende do risco de não pagar.
+      </p>
+    </div>
+  </Etapa>
+
+  <Etapa id="como-funciona" n={3} rotulo="Como funciona" titulo="Cinco caminhos por onde a Selic chega até você">
+    <p>
+      A Selic não age por um caminho só. Escolha um e siga as paradas. O traço entre elas diz o quanto se sabe sobre cada
+      ligação.
+    </p>
+    <MapaDeCaminhos caminhos={caminhos} fatores={fatores} />
+    <Fragment slot="mais">
+      <p>
+        <strong>Por que subir os juros segura os preços.</strong> Pense num termostato: com a economia "quente demais", o
+        Banco Central esfria o crédito. <strong>Onde a comparação falha:</strong> o termostato age em minutos, e os juros
+        levam meses. E ao esfriar os preços, os juros também esfriam vendas e emprego.
+      </p>
+      <p>
+        <strong>Expectativas contam.</strong> Se todo mundo acha que os preços vão subir, as lojas reajustam antes e a
+        inflação esperada acontece. Por isso o Banco Central acompanha toda semana as previsões do Boletim Focus.
+      </p>
+    </Fragment>
+  </Etapa>
+
+  <Etapa id="quem-sente" n={4} rotulo="Quem sente e como" titulo="Depende menos da renda e mais da sua situação">
+    <p>
+      Duas famílias com a mesma renda podem sentir a Selic de jeitos opostos: uma tem dívida, a outra tem aplicação. Por
+      isso olhamos situações, e não só faixas de renda.
+    </p>
+    <QuemSente situacoes={situacoes} />
+    <p class="nota-medida">
+      Não dizemos quem "perde mais": isso exige uma medida comum (reais, parte da renda, tempo), e ela ainda não existe por
+      situação. Para uma leitura por faixa de renda, veja <a href="/impactos/alta-da-selic-2021-2022">a alta da Selic de 2021 e 2022</a>.
+    </p>
+  </Etapa>
+
+  <Etapa id="dados" n={5} rotulo="O que os dados mostram" titulo="De 26,5% a 2% ao ano, desde 2003">
+    <GraficoIndicador id="selic-meta" titulo="A meta da Selic já foi de 26,5% e de 2% ao ano desde 2003" casas={2} />
+    <Fragment slot="mais">
+      <ul>
+        <li>Em fev. 2003, a meta estava em 26,5% ao ano. A menor da série foi 2%, de ago. 2020 a mar. 2021.</li>
+        <li>Chegou a 15% em jun. 2025. Em set. 2026, o Copom baixou para 13,75% ao ano.</li>
+        <li>Em jan. 2026, 85% das famílias endividadas deviam no cartão; só 9,6% tinham financiamento de casa e 8,7% de carro.</li>
+      </ul>
+      <APesquisar itens={['Link direto para a pesquisa Peic da CNC de jan. 2026 (o número está nos estudos, sem o endereço da tabela).']} />
+    </Fragment>
+    <Fragment slot="fontes">
+      <ul class="lista-fontes">
+        <li><a href="https://www.bcb.gov.br/controleinflacao/historicotaxasjuros" rel="noopener">Banco Central: histórico das taxas de juros</a> (meta Selic, SGS 432)</li>
+        <li>CNC: Pesquisa de Endividamento e Inadimplência do Consumidor (Peic), jan. 2026</li>
+        <li><a href="https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2012/lei/l12703.htm" rel="noopener">Planalto: Lei 12.703/2012</a> (regra da poupança)</li>
+      </ul>
+    </Fragment>
+  </Etapa>
+
+  <Etapa id="incerto" n={6} rotulo="O que ainda é incerto" titulo="Quanto, em quanto tempo, e qual o juro certo">
+    <ul>
+      <li><strong>Quanto a inflação cai</strong> com cada ponto de Selic, e em quantos meses, são estimativas, e mudam de um período para outro.</li>
+      <li><strong>Qual é o juro "certo"</strong> é uma das discussões mais comuns entre economistas: alguns veem juro alto demais travando o emprego; outros veem juro necessário por causa da inflação e das contas públicas.</li>
+      <li><strong>Fatores de fora</strong>, como petróleo e dólar, podem anular ou reforçar o efeito da Selic no mesmo período.</li>
+    </ul>
+    <APesquisar itens={['Faixa de estimativas publicadas para a defasagem da política monetária no Brasil, com autor e hipóteses de cada uma.']} />
+  </Etapa>
+
+  <Etapa id="continuar" n={7} rotulo="Para continuar" titulo="Para onde ir agora">
+    <ParaContinuar
+      proximo={{ href: '/curso/inflacao-e-poder-de-compra', titulo: 'Por que o mesmo salário compra menos com o tempo?', porque: 'A Selic existe para frear a inflação. Entender a inflação fecha o círculo.' }}
+      outros={[
+        { href: '/impactos/alta-da-selic-2021-2022', titulo: 'Tema: quem sentiu a alta dos juros de 2021 e 2022' },
+        { href: '/impactos/contas-2023', titulo: 'Tema: o rombo de 2023 e o caminho até a Selic' },
+        { href: '/indicadores/selic-meta', titulo: 'Os números da Selic, mês a mês' },
+      ]}
+      panorama={{ href: '/aprender', titulo: 'Voltar a todas as perguntas' }}
+    />
+  </Etapa>
+</Moldura>

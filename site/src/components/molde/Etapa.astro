@@ -1,0 +1,40 @@
+---
+// Uma camada da aula ou da análise. Mostra o essencial; o resto fica guardado:
+// - slot "mais": o aprofundamento, fechado por padrão;
+// - slot "fontes": de onde vêm os dados desta parte, também fechado.
+interface Props {
+  id: string;
+  n: number;
+  rotulo: string; // o nome da camada, igual em toda página do mesmo molde
+  titulo: string; // o que esta camada responde, nesta página
+}
+const { id, n, rotulo, titulo } = Astro.props;
+const temMais = Astro.slots.has('mais');
+const temFontes = Astro.slots.has('fontes');
+---
+
+<section class="etapa" id={id} aria-labelledby={`${id}-t`}>
+  <p class="etapa-rotulo"><span class="etapa-n" aria-hidden="true">{n}</span>{rotulo}</p>
+  <h2 class="etapa-titulo" id={`${id}-t`}>{titulo}</h2>
+  <div class="etapa-corpo">
+    <slot />
+  </div>
+  {
+    temMais && (
+      <details class="etapa-mais">
+        <summary>Aprofundar</summary>
+        <div class="etapa-corpo">
+          <slot name="mais" />
+        </div>
+      </details>
+    )
+  }
+  {
+    temFontes && (
+      <details class="etapa-fontes">
+        <summary>De onde vêm essas informações</summary>
+        <slot name="fontes" />
+      </details>
+    )
+  }
+</section>

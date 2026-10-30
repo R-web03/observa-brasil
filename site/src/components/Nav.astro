@@ -1,15 +1,16 @@
 ---
 import Marca from './Marca.astro';
 
+// As três entradas por intenção. Método, fontes e correções ficam no rodapé.
+// Cada entrada acende também nas páginas antigas que pertencem a ela.
 const LINKS = [
-  { href: '/curso', rotulo: 'Curso' },
-  { href: '/conceitos', rotulo: 'Conceitos' },
-  { href: '/governos', rotulo: 'Governos' },
-  { href: '/impactos', rotulo: 'Impactos' },
-  { href: '/metodo', rotulo: 'Método' },
+  { href: '/aprender', rotulo: 'Aprender', tambem: ['/curso', '/conceitos'] },
+  { href: '/temas', rotulo: 'Investigar um tema', tambem: ['/impactos', '/analises'] },
+  { href: '/comparar', rotulo: 'Comparar governos', tambem: ['/governos', '/comparacoes', '/indicadores'] },
 ];
 const atual = Astro.url.pathname;
-const ativo = (href: string) => atual === href || atual.startsWith(`${href}/`);
+const dentro = (href: string) => atual === href || atual.startsWith(`${href}/`);
+const ativo = (href: string) => LINKS.some((l) => l.href === href && [l.href, ...l.tambem].some(dentro));
 ---
 
 <header class="topo">

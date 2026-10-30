@@ -1,0 +1,70 @@
+---
+// Panorama de "Aprender": as aulas apresentadas pela pergunta que respondem.
+// O percurso numerado é uma sugestão; cada aula funciona sozinha.
+import Base from '../../layouts/Base.astro';
+import { listar, url } from '../../lib/conteudo';
+import { PERGUNTAS_DAS_AULAS } from '../../lib/temas';
+
+const aulas = (await listar('aulas'))
+  .sort((a, b) => a.data.numero - b.data.numero)
+  .map((a) => {
+    const p = PERGUNTAS_DAS_AULAS[a.id];
+    return { n: a.data.numero, pergunta: p?.pergunta ?? a.data.titulo, href: p?.href ?? url('aulas', a.id), novo: Boolean(p?.href), minutos: a.data.tempo_leitura_min, linha: a.data.linha_fina };
+  });
+---
+
+<Base titulo="Aprender" descricao="Economia básica a partir de perguntas do dia a dia. Aulas curtas, que funcionam sozinhas.">
+  <nav class="trilha" aria-label="Você está em">
+    <ol><li><a href="/">Início</a></li><li aria-current="page">Aprender</li></ol>
+  </nav>
+  <header class="cabecalho">
+    <p class="ob-eyebrow">Aprender</p>
+    <h1 class="ob-headline">Comece por uma pergunta</h1>
+    <p class="ob-deck">
+      Cada aula responde uma dúvida concreta: primeiro em poucas frases, depois com um exemplo, o mecanismo e o que ainda
+      não se sabe. Escolha a que te interessa. A ordem abaixo é só uma sugestão.
+    </p>
+  </header>
+
+  <ol class="perguntas" aria-label="Aulas, na ordem sugerida">
+    {
+      aulas.map((a) => (
+        <li>
+          <a class="pergunta-cartao" href={a.href}>
+            <span class="pergunta-n" aria-hidden="true">{a.n}</span>
+            <span class="pergunta-corpo">
+              <span class="pergunta-titulo">{a.pergunta}</span>
+              <span class="pergunta-linha">{a.linha}</span>
+              <span class="pergunta-meta">
+                {a.minutos} min{a.novo && <span class="ob-tag ob-tag--accent">formato novo</span>}
+              </span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+    <li class="pergunta-futura">
+      <span class="pergunta-n" aria-hidden="true">8</span>
+      <span class="pergunta-corpo">
+        <span class="pergunta-titulo">Mais quatro aulas em produção</span>
+        <span class="pergunta-linha">O papel do Estado e dos mercados; estatais e privatizações; por que economistas discordam; como avaliar uma promessa.</span>
+      </span>
+    </li>
+  </ol>
+
+  <section class="secao">
+    <div class="chamada">
+      <div class="chamada-texto">
+        <h2 class="t-title-2">Uma palavra travou a leitura?</h2>
+        <p class="secao-deck">
+          Nas aulas, os termos técnicos vêm sublinhados: toque para ver a definição curta. Ou procure qualquer palavra no
+          glossário.
+        </p>
+      </div>
+      <div class="ob-row">
+        <a class="ob-btn ob-btn--primary" href="/conceitos">Abrir o glossário</a>
+        <a class="ob-btn ob-btn--secondary" href="/busca">Buscar</a>
+      </div>
+    </div>
+  </section>
+</Base>
