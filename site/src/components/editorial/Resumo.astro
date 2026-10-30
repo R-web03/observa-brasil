@@ -1,0 +1,17 @@
+---
+// Quadro "Em poucas palavras" no topo da aula: o essencial em três ou quatro frases.
+// Uso no MDX:
+//   <Resumo>
+//   - Primeira ideia.
+//   - Segunda ideia.
+//   </Resumo>
+interface Props {
+  titulo?: string;
+}
+const { titulo = 'Em poucas palavras' } = Astro.props;
+---
+
+<aside class="resumo" aria-label={titulo}>
+  <p class="resumo-titulo">{titulo}</p>
+  <slot />
+</aside>

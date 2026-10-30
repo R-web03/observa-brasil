@@ -3,6 +3,8 @@ import { defineConfig, envField } from 'astro/config';
 import vercel from '@astrojs/vercel';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import { unified } from '@astrojs/markdown-remark';
+import { glossarioAutomatico } from './src/lib/glossario-automatico.mjs';
 
 // Endereço público do site. Troque quando o domínio estiver definido.
 const SITE_URL = process.env.SITE_URL ?? 'https://observa-brasil.vercel.app';
@@ -18,6 +20,12 @@ export default defineConfig({
     webAnalytics: { enabled: false },
     maxDuration: 60, // segundos; a coleta agendada é incremental para caber aqui
   }),
+
+  // Processador unified (em vez do padrão do Astro 7) para rodar o plugin do glossário:
+  // palavras do glossário viram links com balão de explicação em todo .md/.mdx.
+  markdown: {
+    processor: unified({ gfm: true, rehypePlugins: [glossarioAutomatico] }),
+  },
 
   integrations: [
     mdx(),

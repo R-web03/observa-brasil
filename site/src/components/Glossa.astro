@@ -1,0 +1,102 @@
+---
+// Balão do glossário: aparece sobre qualquer link .glossa (marcado pelo plugin
+// lib/glossario-automatico.mjs ou pelo componente <Termo>).
+// Mouse: passa por cima e o balão abre. Teclado: foco abre, Esc fecha.
+// Toque: o primeiro toque abre o balão; o segundo segue para a página do verbete.
+// Sem JavaScript, o link leva direto ao verbete.
+---
+
+<script>
+  const balao = document.createElement('div');
+  balao.className = 'glossa-balao';
+  balao.id = 'glossa-balao';
+  balao.setAttribute('role', 'tooltip');
+  balao.hidden = true;
+  const titulo = document.createElement('strong');
+  const texto = document.createElement('p');
+  const mais = document.createElement('a');
+  mais.textContent = 'Ver no glossário →';
+  balao.append(titulo, texto, mais);
+  document.body.append(balao);
+
+  let atual: HTMLAnchorElement | null = null;
+  let fechar: number | undefined;
+  let ultimoToque = false;
+  let jaAberto = false;
+
+  const posicionar = (alvo: HTMLElement) => {
+    const r = alvo.getBoundingClientRect();
+    const b = balao.getBoundingClientRect();
+    const margem = 12;
+    let x = r.left + r.width / 2 - b.width / 2;
+    x = Math.max(margem, Math.min(x, innerWidth - b.width - margem));
+    const abaixo = r.bottom + 10;
+    const y = abaixo + b.height + margem > innerHeight ? r.top - b.height - 10 : abaixo;
+    balao.style.left = `${Math.round(x)}px`;
+    balao.style.top = `${Math.round(Math.max(margem, y))}px`;
+  };
+
+  const abrir = (alvo: HTMLAnchorElement) => {
+    clearTimeout(fechar);
+    if (atual && atual !== alvo) atual.removeAttribute('aria-describedby');
+    atual = alvo;
+    titulo.textContent = alvo.dataset.termo ?? alvo.textContent ?? '';
+    texto.textContent = alvo.dataset.def ?? '';
+    mais.href = alvo.href;
+    balao.hidden = false;
+    balao.classList.remove('aberto');
+    posicionar(alvo);
+    requestAnimationFrame(() => balao.classList.add('aberto'));
+    alvo.setAttribute('aria-describedby', balao.id);
+  };
+
+  const esconder = (atraso = 0) => {
+    clearTimeout(fechar);
+    fechar = window.setTimeout(() => {
+      balao.classList.remove('aberto');
+      balao.hidden = true;
+      atual?.removeAttribute('aria-describedby');
+      atual = null;
+    }, atraso);
+  };
+
+  const glossaDe = (e: Event) => (e.target as Element | null)?.closest?.<HTMLAnchorElement>('a.glossa') ?? null;
+
+  document.addEventListener('pointerdown', (e) => {
+    ultimoToque = e.pointerType !== 'mouse';
+    // Guardado aqui, antes do foco do toque abrir o balão: decide se o clique navega.
+    const g = glossaDe(e);
+    jaAberto = g !== null && atual === g && !balao.hidden;
+    if (!g && !balao.contains(e.target as Node)) esconder();
+  });
+  document.addEventListener('pointerover', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    const g = glossaDe(e);
+    if (g) abrir(g);
+    else if (balao.contains(e.target as Node)) clearTimeout(fechar);
+  });
+  document.addEventListener('pointerout', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    if (glossaDe(e) || balao.contains(e.target as Node)) esconder(180);
+  });
+  document.addEventListener('focusin', (e) => {
+    const g = glossaDe(e);
+    if (g) abrir(g);
+  });
+  document.addEventListener('focusout', (e) => {
+    if (glossaDe(e) && !balao.contains(e.relatedTarget as Node)) esconder(120);
+  });
+  document.addEventListener('click', (e) => {
+    const g = glossaDe(e);
+    // No toque, o primeiro toque só mostra a explicação; o segundo segue para o verbete.
+    if (g && ultimoToque && !jaAberto) {
+      e.preventDefault();
+      abrir(g);
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') esconder();
+  });
+  window.addEventListener('scroll', () => atual && posicionar(atual), { passive: true });
+  window.addEventListener('resize', () => esconder());
+</script>

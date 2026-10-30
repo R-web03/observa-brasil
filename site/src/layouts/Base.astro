@@ -4,6 +4,7 @@ import '../styles/ds-components.css';
 import '../styles/site.css';
 import Nav from '../components/Nav.astro';
 import Rodape from '../components/Rodape.astro';
+import Glossa from '../components/Glossa.astro';
 
 interface Props {
   titulo: string;
@@ -66,5 +67,6 @@ const canonico = new URL(Astro.url.pathname, Astro.site);
       <slot />
     </main>
     <Rodape />
+    <Glossa />
   </body>
 </html>

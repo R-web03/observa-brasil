@@ -71,7 +71,11 @@ const verbetes = defineCollection({
     termo: z.string(),
     definicao: z.string().max(240), // a frase do aviso de uma linha
     sinonimos: z.array(z.string()).default([]),
+    // Palavras que acionam o balão automático. Se ausente, usa termo + sinônimos;
+    // lista vazia desliga (útil para palavras comuns, como "taxa").
+    gatilhos: z.array(z.string()).optional(),
     familia: z.enum([
+      'organizacao-do-estado',
       'fundamentos',
       'precos-e-moeda',
       'trabalho-e-renda',

@@ -1,6 +1,8 @@
 ---
-// Termo técnico com link para o verbete e a definição de uma linha.
+// Termo técnico com link para o verbete e o balão com a definição curta.
 // Uso no MDX: <Termo id="ipca">IPCA</Termo>
+// Na maior parte do texto não é preciso: o plugin do glossário marca os termos sozinho.
+// Use <Termo> quando a palavra do texto não for o nome nem um sinônimo do verbete.
 import { getEntry } from 'astro:content';
 import { visivel } from '../../lib/conteudo';
 
@@ -15,11 +17,11 @@ const publicado = visivel(verbete.data.status);
 
 {
   publicado ? (
-    <a class="ob-link" href={`/conceitos/${id}`} title={verbete.data.definicao}>
+    <a class="glossa" href={`/conceitos/${id}`} data-termo={verbete.data.termo} data-def={verbete.data.definicao}>
       <slot />
     </a>
   ) : (
-    <span title={verbete.data.definicao}>
+    <span>
       <slot />
     </span>
   )
