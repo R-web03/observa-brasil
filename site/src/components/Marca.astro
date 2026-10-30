@@ -1,0 +1,28 @@
+---
+// Símbolo do Observa Brasil (direção A, "olho-losango"): um O inclinado em forma de olho,
+// com um losango como pupila, em metal escovado sobre ladrilho escuro.
+// Os ids dos gradientes levam um sufixo por instância para o símbolo poder repetir na página.
+interface Props {
+  tamanho?: number;
+  sufixo?: string;
+}
+const { tamanho = 32, sufixo = 'nav' } = Astro.props;
+const claro = `marca-claro-${sufixo}`;
+const escuro = `marca-escuro-${sufixo}`;
+---
+
+<span class="marca" aria-hidden="true">
+  <svg width={tamanho} height={tamanho} viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id={claro} x1="0.1" y1="0" x2="0.9" y2="1">
+        <stop offset="0" stop-color="#FFFFFF" /><stop offset="0.28" stop-color="#E4E7EA" /><stop offset="0.5" stop-color="#8A9097" /><stop offset="0.62" stop-color="#F6F7F8" /><stop offset="1" stop-color="#A3A9B0" />
+      </linearGradient>
+      <linearGradient id={escuro} x1="0.1" y1="0" x2="0.9" y2="1">
+        <stop offset="0" stop-color="#CDD1D6" /><stop offset="0.45" stop-color="#666C73" /><stop offset="0.68" stop-color="#C2C7CC" /><stop offset="1" stop-color="#474C53" />
+      </linearGradient>
+    </defs>
+    <polygon points="34,18 86,18 81.94,31 44.94,31 29,82 14,82" fill={`url(#${claro})`} />
+    <polygon points="80.69,35 66,82 33,82 37.06,69 55.06,69 65.69,35" fill={`url(#${escuro})`} />
+    <polygon points="52.5,39 57,50 47.5,61 43,50" fill="#FFFFFF" />
+  </svg>
+</span>

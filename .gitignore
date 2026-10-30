@@ -3,3 +3,7 @@
 !.env.example
 node_modules/
 .DS_Store
+
+# Referências enviadas (vídeos, exportações de design): ficam fora do repositório
+*.mp4
+*.zip
