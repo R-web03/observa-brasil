@@ -18,10 +18,13 @@ export const GET: APIRoute = async ({ request }) => {
   const db = supabaseServidor();
   if (!db) return json({ ok: false, mensagem: 'Banco não configurado' }, 503);
 
-  // Coleta incremental (2 anos) para caber no tempo da função.
-  // A carga completa é feita uma vez com `npm run ingerir`.
+  // Coleta incremental (2 anos) para caber no tempo da função; séries que a fonte
+  // recalcula por inteiro (sempreCompleta) são baixadas completas.
+  // A carga completa de tudo é feita uma vez com `npm run ingerir`.
   const desde = anosAtras(2);
-  const resultados = await Promise.all(SERIES.map((serie) => ingerirSerie(db, serie, desde)));
+  const resultados = await Promise.all(
+    SERIES.map((serie) => ingerirSerie(db, serie, serie.sempreCompleta ? undefined : desde)),
+  );
 
   const algumOk = resultados.some((r) => r.status === 'ok');
   let rebuild = false;

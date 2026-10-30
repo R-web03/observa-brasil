@@ -1,12 +1,12 @@
 ---
 import { render, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import GraficoLinha from '../../components/GraficoLinha.astro';
+import GraficoInterativo from '../../components/GraficoInterativo.astro';
 import Fonte from '../../components/editorial/Fonte.astro';
 import Aviso from '../../components/editorial/Aviso.astro';
 import { componentesEditoriais } from '../../components/editorial';
 import { listar } from '../../lib/conteudo';
-import { observacoes } from '../../lib/dados';
+import { mensal, observacoes } from '../../lib/dados';
 import { formatarData, formatarMesAno } from '../../lib/formato';
 import { buscarSerie } from '../../lib/ingestao/series';
 import { corDaSerie } from '../../lib/cores';
@@ -25,7 +25,9 @@ const d = indicador.data;
 
 // A ficha e a série coletada compartilham o mesmo id.
 const serie = buscarSerie(indicador.id);
-const pontos = serie ? await observacoes(indicador.id) : [];
+const brutos = serie ? await observacoes(indicador.id) : [];
+// Séries diárias (Selic) viram mensais: o gráfico fica leve e a forma não muda.
+const pontos = d.frequencia === 'diaria' ? mensal(brutos) : brutos;
 const primeiro = pontos[0];
 const ultimo = pontos.at(-1);
 const hoje = formatarData(new Date());
@@ -41,12 +43,14 @@ const hoje = formatarData(new Date());
   <div class="artigo largo">
     {
       pontos.length > 1 && primeiro && ultimo ? (
-        <GraficoLinha
+        <GraficoInterativo
           titulo={d.nome}
           descricao={`Série de ${formatarMesAno(new Date(primeiro.data))} a ${formatarMesAno(new Date(ultimo.data))}.`}
           pontos={pontos}
           unidade={d.unidade}
           cor={corDaSerie(indicador.id)}
+          anual={d.frequencia === 'anual'}
+          casas={indicador.id === 'selic-meta' || indicador.id === 'cambio-dolar' ? 2 : indicador.id === 'salario-minimo' || indicador.id === 'rendimento-real' ? 0 : 1}
         >
           <Fonte
             fonte={`${d.instituicao}, ${d.serie}`}
@@ -55,7 +59,7 @@ const hoje = formatarData(new Date());
             unidade={d.unidade}
             consulta={hoje}
           />
-        </GraficoLinha>
+        </GraficoInterativo>
       ) : (
         <Aviso tipo="info" titulo="Série ainda não carregada">
           Os dados aparecem aqui depois que a coleta automática gravar a série no banco.

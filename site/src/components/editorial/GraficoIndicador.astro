@@ -4,7 +4,7 @@
 // <GraficoIndicador id="ipca-12-meses" titulo="A inflação subiu forte em 2021 e 2022" />
 // O título diz a conclusão; ele precisa ser verdadeiro para a série inteira mostrada.
 import { getEntry } from 'astro:content';
-import GraficoLinha from '../GraficoLinha.astro';
+import GraficoInterativo from '../GraficoInterativo.astro';
 import Fonte from './Fonte.astro';
 import Aviso from './Aviso.astro';
 import { mensal, observacoes } from '../../lib/dados';
@@ -31,9 +31,9 @@ const periodo = primeiro && ultimo ? `${formatarMesAno(new Date(primeiro.data))}
 
 {
   primeiro && ultimo && pontos.length > 1 ? (
-    <GraficoLinha titulo={titulo} descricao={`${d.nome}, ${periodo}.`} pontos={pontos} unidade={d.unidade} casas={casas} cor={corDaSerie(id)}>
+    <GraficoInterativo titulo={titulo} descricao={`${d.nome}, ${periodo}.`} pontos={pontos} unidade={d.unidade} casas={casas} cor={corDaSerie(id)} anual={d.frequencia === "anual"}>
       <Fonte fonte={`${d.instituicao}, ${d.serie}`} link={d.link} periodo={periodo} unidade={d.unidade} consulta={formatarData(new Date())} />
-    </GraficoLinha>
+    </GraficoInterativo>
   ) : (
     <Aviso tipo="info" titulo="Gráfico indisponível">
       A série de {d.nome} ainda não foi carregada. Os dados aparecem aqui depois da coleta automática.

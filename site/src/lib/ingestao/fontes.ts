@@ -83,10 +83,16 @@ export async function lerBcbSgs(codigo: number, desde: string): Promise<Observac
 // ---------------------------------------------------------------------------
 // IBGE — Sidra
 // https://apisidra.ibge.gov.br/values/t/{tabela}/n1/all/v/{variavel}/p/all
-// O período vem como AAAAMM (mês) ou AAAATT (trimestre); usamos o 1º dia do mês.
+// O período vem como AAAAMM (mês) ou AAAATT (trimestre). Mês: 1º dia do mês.
+// Trimestre: 1º dia do último mês do trimestre (2º tri → junho), como no trimestre móvel.
 // ---------------------------------------------------------------------------
 
-export async function lerIbgeSidra(tabela: number, variavel: number, desde: string): Promise<Observacao[]> {
+export async function lerIbgeSidra(
+  tabela: number,
+  variavel: number,
+  desde: string,
+  trimestral = false,
+): Promise<Observacao[]> {
   const url = `https://apisidra.ibge.gov.br/values/t/${tabela}/n1/all/v/${variavel}/p/all`;
   const dados = (await buscarJson(url)) as Array<Record<string, string>>;
   if (!Array.isArray(dados) || dados.length < 1) throw new Error(`Resposta inesperada do Sidra ${tabela}`);
@@ -97,7 +103,8 @@ export async function lerIbgeSidra(tabela: number, variavel: number, desde: stri
     const periodo = linha.D3C;
     const valor = Number(linha.V);
     if (!periodo || !/^\d{6}$/.test(periodo) || !Number.isFinite(valor)) continue; // "..." = sem dado
-    const data = `${periodo.slice(0, 4)}-${periodo.slice(4, 6)}-01`;
+    const mes = trimestral ? Number(periodo.slice(4, 6)) * 3 : Number(periodo.slice(4, 6));
+    const data = `${periodo.slice(0, 4)}-${String(mes).padStart(2, '0')}-01`;
     if (data >= desde) resultado.push({ data, valor });
   }
   return ateHoje(resultado);
@@ -106,12 +113,13 @@ export async function lerIbgeSidra(tabela: number, variavel: number, desde: stri
 /** Lê a série desde `desde` (padrão: o início configurado). */
 export async function lerSerie(serie: Serie, desde = serie.desde): Promise<Observacao[]> {
   const inicio = desde > serie.desde ? desde : serie.desde;
-  switch (serie.fonte) {
-    case 'bcb-sgs':
-      return lerBcbSgs(serie.codigo, inicio);
-    case 'ibge-sidra':
-      return lerIbgeSidra(serie.tabela, serie.variavel, inicio);
-  }
+  const obs =
+    serie.fonte === 'bcb-sgs'
+      ? await lerBcbSgs(serie.codigo, inicio)
+      : await lerIbgeSidra(serie.tabela, serie.variavel, inicio, serie.frequencia === 'trimestral');
+  const m = serie.multiplicador ?? 1;
+  // "+ 0" evita gravar −0 quando o valor é zero.
+  return m === 1 ? obs : obs.map((o) => ({ ...o, valor: o.valor * m + 0 }));
 }
 
 /** Data de N anos atrás (AAAA-MM-DD), para coletas incrementais. */

@@ -1,0 +1,164 @@
+---
+import Base from '../../layouts/Base.astro';
+import GraficoInterativo from '../../components/GraficoInterativo.astro';
+import Aviso from '../../components/editorial/Aviso.astro';
+import NotaMetodo from '../../components/editorial/NotaMetodo.astro';
+import { GOVERNOS, resumir, type Governo } from '../../lib/governos';
+import { CONTEXTO } from '../../lib/governos-contexto';
+import { indicadoresDeGoverno } from '../../lib/painel-governos';
+import { corDaSerie } from '../../lib/cores';
+import { formatarData, formatarMesAno, formatarNumero } from '../../lib/formato';
+import type { Ponto } from '../../lib/dados';
+
+export function getStaticPaths() {
+  return GOVERNOS.map((g) => ({ params: { id: g.id }, props: { governo: g } }));
+}
+
+interface Props {
+  governo: Governo;
+}
+const { governo: g } = Astro.props;
+const indicadores = await indicadoresDeGoverno();
+const contexto = CONTEXTO[g.id] ?? { choques: [], decisoes: [] };
+const indice = GOVERNOS.findIndex((x) => x.id === g.id);
+const anterior = GOVERNOS[indice - 1];
+const seguinte = GOVERNOS[indice + 1];
+
+const linhas = indicadores.map((ind) => ({ ind, r: resumir(ind.pontos, g, ind.anual) }));
+const quando = (p: Ponto | undefined, anual?: boolean) => (p ? (anual ? p.data.slice(0, 4) : formatarMesAno(new Date(p.data))) : '');
+const valor = (v: number | undefined, casas: number) => (v === undefined ? '—' : formatarNumero(v, casas));
+const fichaDe = (id: string) => (id === 'salario-minimo-real' ? 'salario-minimo' : id);
+const periodo = `${formatarData(new Date(g.inicio))} a ${g.fim ? formatarData(new Date(g.fim)) : 'hoje (em curso)'}`;
+const dataDecisao = (d: string) => (d.length === 7 ? formatarMesAno(new Date(`${d}-01`)) : formatarData(new Date(d)));
+// Gráficos principais da página: um por tema.
+const GRAFICOS = ['pib-crescimento', 'ipca-12-meses', 'desocupacao', 'salario-minimo-real', 'divida-bruta-pib', 'selic-meta'];
+---
+
+<Base titulo={`Governo ${g.nome}`} descricao={`Os números da economia no governo ${g.nome} (${periodo}), com a mesma régua usada para todos os governos.`} emRevisao>
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Governos<span class="ob-eyebrow-sep">·</span><span>{g.inicio.slice(0, 4)} — {g.fim ? g.fim.slice(0, 4) : 'atual'}</span></div>
+    <h1 class="ob-headline">{g.nome}</h1>
+    <p class="ob-deck">{g.presidente}, de {periodo}.</p>
+  </header>
+
+  <div class="artigo largo">
+    {g.nota && <Aviso tipo="info" titulo="Sobre o período">{g.nota}</Aviso>}
+
+    <NotaMetodo titulo="A mesma régua para todos os governos">
+      <ul>
+        <li><strong>Herdado</strong> é o último dado publicado antes do primeiro mês do governo. <strong>Entregue</strong> é o último dado dentro do governo.</li>
+        <li>Cada mês conta para quem estava no exercício da Presidência. Dados anuais, como o PIB, contam para quem governou a maior parte do ano.</li>
+        <li>Os números mostram o que aconteceu durante o governo, não o que o governo causou. Juros são decididos pelo Banco Central, leis pelo Congresso, e há choques de fora do país.</li>
+        <li>Não há nota nem ranking. Todos os indicadores aparecem, favoráveis ou não.</li>
+      </ul>
+    </NotaMetodo>
+
+    <h2>Os números do período</h2>
+    <div class="tabela-rolagem">
+      <table class="tabela-governo">
+        <thead>
+          <tr><th scope="col">Indicador</th><th scope="col">Herdado</th><th scope="col">Entregue</th><th scope="col">Média no período</th><th scope="col">Menor e maior</th></tr>
+        </thead>
+        <tbody>
+          {
+            linhas.map(({ ind, r }) => (
+              <tr>
+                <th scope="row">
+                  <a href={`/indicadores/${fichaDe(ind.id)}`}>{ind.nome}</a>
+                  <span class="tg-unidade">{ind.unidade}</span>
+                </th>
+                {r.pontos.length === 0 ? (
+                  <td colspan="4" class="tg-vazio">Sem dados neste período{ind.nota ? `. ${ind.nota}` : ''}</td>
+                ) : (
+                  <>
+                    <td>
+                      <span class="tg-valor">{valor(r.herdado?.valor, ind.casas)}</span>
+                      <span class="tg-quando">{r.herdado ? quando(r.herdado, ind.anual) : 'série começa depois'}</span>
+                    </td>
+                    <td>
+                      <span class="tg-valor">{valor(r.entregue?.valor, ind.casas)}</span>
+                      <span class="tg-quando">{quando(r.entregue, ind.anual)}</span>
+                    </td>
+                    <td><span class="tg-valor">{valor(r.media, ind.casas)}</span></td>
+                    <td>
+                      <span class="tg-quando">{valor(r.minimo?.valor, ind.casas)} ({quando(r.minimo, ind.anual)})</span>
+                      <span class="tg-quando">{valor(r.maximo?.valor, ind.casas)} ({quando(r.maximo, ind.anual)})</span>
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="tg-rodape">
+      Fontes: IBGE (PIB, IPCA, PNAD Contínua) e Banco Central (Selic, dívida, resultado primário, câmbio, salário mínimo).
+      Clique no nome do indicador para ver a ficha, com a série exata e as limitações.
+    </p>
+
+    {
+      contexto.choques.length > 0 && (
+        <>
+          <h2>O que veio de fora</h2>
+          <p>Acontecimentos que pesaram na economia no período e que não dependeram só do governo:</p>
+          <ul>
+            {contexto.choques.map((c) => (
+              <li>{c}</li>
+            ))}
+          </ul>
+        </>
+      )
+    }
+
+    <h2>Os números em gráficos</h2>
+    <p>O período deste governo aparece destacado. Passe o mouse ou o dedo sobre a linha para ver o valor de cada mês.</p>
+    {
+      GRAFICOS.map((id) => {
+        const ind = indicadores.find((i) => i.id === id);
+        if (!ind || ind.pontos.length < 2) return null;
+        return (
+          <GraficoInterativo
+            titulo={ind.nome}
+            descricao={`${ind.nome}, com o governo ${g.nome} destacado.`}
+            pontos={ind.pontos}
+            unidade={ind.unidade}
+            casas={ind.casas}
+            anual={ind.anual}
+            cor={corDaSerie(fichaDe(id))}
+            destacar={g.id}
+          />
+        );
+      })
+    }
+
+    {
+      contexto.decisoes.length > 0 && (
+        <>
+          <h2>Principais decisões econômicas</h2>
+          <p>
+            O que foi decidido, por quem e quando. A lista descreve as medidas; quem ganhou e quem pagou com cada uma fica na
+            <a href="/impactos"> pirâmide de impacto</a>, com o grau de evidência.
+          </p>
+          <ol class="linha-do-tempo">
+            {contexto.decisoes.map((d) => (
+              <li>
+                <span class="ldt-data">{dataDecisao(d.data)}</span>
+                <strong class="ldt-titulo">{d.titulo}</strong>
+                <span>{d.oQueFaz}</span>
+                <span class="ldt-meta">{[d.norma, d.quemDecidiu].filter(Boolean).join(' · ')}</span>
+                {d.impacto && <a class="ldt-impacto" href={`/impactos#${d.impacto}`}>Ver quem ganhou e quem pagou →</a>}
+              </li>
+            ))}
+          </ol>
+        </>
+      )
+    }
+
+    <nav class="navegacao-aula" aria-label="Outros governos">
+      {anterior && <a class="ob-btn ob-btn--secondary" href={`/governos/${anterior.id}`}>← {anterior.nome}</a>}
+      <a class="ob-btn ob-btn--secondary" href="/governos">Todos os governos</a>
+      {seguinte && <a class="ob-btn ob-btn--primary" href={`/governos/${seguinte.id}`}>{seguinte.nome} →</a>}
+    </nav>
+  </div>
+</Base>

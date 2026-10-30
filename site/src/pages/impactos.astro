@@ -1,0 +1,100 @@
+---
+import Base from '../layouts/Base.astro';
+import NotaMetodo from '../components/editorial/NotaMetodo.astro';
+import { CAMADAS, ESTUDOS, ROTULO_EFEITO } from '../lib/impactos';
+import { buscarGoverno } from '../lib/governos';
+---
+
+<Base titulo="Pirâmide de impacto" descricao="Quem ganhou e quem pagou com cada decisão econômica, por faixa de renda, com o grau de evidência de cada efeito." emRevisao>
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Impactos</div>
+    <h1 class="ob-headline">Quem ganhou e quem pagou</h1>
+    <p class="ob-deck">
+      A mesma decisão chega diferente em cada faixa de renda. Escolha uma decisão e toque em cada camada da pirâmide para
+      ver como ela chega ao bolso, e o quanto se sabe sobre isso.
+    </p>
+  </header>
+
+  <nav class="impacto-escolha" aria-label="Escolha uma decisão">
+    {ESTUDOS.map((e) => <a class="ob-chip" href={`#${e.id}`}>{e.titulo}</a>)}
+  </nav>
+
+  <div class="artigo largo">
+    <NotaMetodo titulo="Como ler a pirâmide">
+      <ul>
+        <li><strong>▲ Ganhou</strong>, <strong>▼ Pagou</strong>, <strong>◐ Misto</strong> (ganhou de um lado, pagou de outro) e <strong>? Incerto</strong> (não dá para saber a direção com o que existe hoje).</li>
+        <li>Cada efeito tem um <strong>grau de evidência</strong>: forte, moderada, fraca, em disputa ou sem evidência. "Forte" exige estudos que comparem com um cenário sem a decisão.</li>
+        <li>As faixas de renda são aproximadas. Os estudos nem sempre usam os mesmos cortes.</li>
+        <li>Mostramos o que se sabe, inclusive quando a resposta é "ainda não se sabe".</li>
+      </ul>
+    </NotaMetodo>
+  </div>
+
+  {
+    ESTUDOS.map((e) => {
+      const g = buscarGoverno(e.governo);
+      return (
+        <section class="estudo" id={e.id} aria-labelledby={`${e.id}-t`}>
+          <p class="ob-eyebrow">
+            {g && <a href={`/governos/${g.id}`}>{g.nome}</a>}
+            <span class="ob-eyebrow-sep">·</span>
+            <span>{e.quando}</span>
+          </p>
+          <h2 id={`${e.id}-t`} class="t-title-1">{e.titulo}</h2>
+          <p class="secao-deck">{e.resumo}</p>
+          <p class="estudo-quem">Quem decidiu: {e.quemDecidiu}</p>
+
+          <div class="piramide" role="list" aria-label={`Efeitos por faixa de renda: ${e.titulo}`}>
+            {CAMADAS.map((c, i) => {
+              const ef = e.camadas[c.id];
+              const r = ROTULO_EFEITO[ef.efeito];
+              return (
+                <details class:list={['camada', `camada--${i}`, `efeito--${ef.efeito}`]} role="listitem">
+                  <summary>
+                    <span class="camada-nome">
+                      {c.nome}
+                      <small>{c.faixa}</small>
+                    </span>
+                    <span class="camada-efeito">
+                      <span aria-hidden="true">{r.icone}</span> {r.texto}
+                    </span>
+                    <span class="camada-curto">{ef.curto}</span>
+                  </summary>
+                  <div class="camada-detalhe">
+                    <p>{ef.detalhe}</p>
+                    <p class="camada-evidencia">Grau de evidência: <strong>{ef.evidencia}</strong></p>
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+
+          <div class="artigo largo estudo-texto">
+            {e.quemPaga && (
+              <p>
+                <strong>Quem mais paga a conta:</strong> {e.quemPaga}
+              </p>
+            )}
+            <h3>Os fatos</h3>
+            <ul>
+              {e.fatos.map((f) => (
+                <li>{f}</li>
+              ))}
+            </ul>
+            <h3>O que ainda não se sabe</h3>
+            <p>{e.naoSabemos}</p>
+            <p class="tg-rodape">
+              Fontes:{' '}
+              {e.fontes.map((f, i) => (
+                <>
+                  {i > 0 && ' · '}
+                  <a href={f.url} rel="noopener">{f.nome}</a>
+                </>
+              ))}
+            </p>
+          </div>
+        </section>
+      );
+    })
+  }
+</Base>

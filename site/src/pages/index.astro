@@ -49,11 +49,11 @@ const portas = [
 
 // Mandatos presidenciais desde 2003. Todos com o mesmo peso visual: nenhum governo é destacado.
 const governos = [
-  { nome: 'Lula 1 e 2', periodo: '2003 — 2010' },
-  { nome: 'Dilma', periodo: '2011 — 2016' },
-  { nome: 'Temer', periodo: '2016 — 2018' },
-  { nome: 'Bolsonaro', periodo: '2019 — 2022' },
-  { nome: 'Lula 3', periodo: '2023 — atual' },
+  { id: 'lula-1-2', nome: 'Lula 1 e 2', periodo: '2003 — 2010' },
+  { id: 'dilma', nome: 'Dilma', periodo: '2011 — 2016' },
+  { id: 'temer', nome: 'Temer', periodo: '2016 — 2018' },
+  { id: 'bolsonaro', nome: 'Bolsonaro', periodo: '2019 — 2022' },
+  { id: 'lula-3', nome: 'Lula 3', periodo: '2023 — atual' },
 ];
 ---
 
@@ -68,7 +68,7 @@ const governos = [
       </p>
       <div class="ob-row">
         <a class="ob-btn ob-btn--primary ob-btn--lg" href={primeira ? url('aulas', primeira.id) : '/curso'}>Começar pelo curso</a>
-        <a class="ob-btn ob-btn--secondary ob-btn--lg" href="/comparacoes">Ver governos</a>
+        <a class="ob-btn ob-btn--secondary ob-btn--lg" href="/governos">Ver governos</a>
       </div>
     </div>
     <div class="heroi-marca">
@@ -128,17 +128,19 @@ const governos = [
     <div class="secao-topo secao-topo--coluna">
       <h2 id="governos" class="t-title-1">Governos</h2>
       <p class="secao-deck">
-        Cada governo com os mesmos indicadores e o mesmo método. As comparações estão em preparação e saem depois do
-        curso.
+        Cada governo com os mesmos indicadores e o mesmo método: o que herdou, o que entregou, o que veio de fora e o que
+        foi decidido.
       </p>
     </div>
     <ul class="governos">
       {
         governos.map((g) => (
-          <li class="governo">
-            <span class="governo-periodo">{g.periodo}</span>
-            <span class="governo-nome">{g.nome}</span>
-            <span class="governo-estado">Em preparação</span>
+          <li>
+            <a class="governo governo--link" href={`/governos/${g.id}`}>
+              <span class="governo-periodo">{g.periodo}</span>
+              <span class="governo-nome">{g.nome}</span>
+              <span class="governo-estado">Ver os números →</span>
+            </a>
           </li>
         ))
       }

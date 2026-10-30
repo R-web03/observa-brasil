@@ -1,0 +1,84 @@
+---
+import Base from '../../layouts/Base.astro';
+import NotaMetodo from '../../components/editorial/NotaMetodo.astro';
+import { GOVERNOS, resumir } from '../../lib/governos';
+import { indicadoresDeGoverno } from '../../lib/painel-governos';
+import { formatarData, formatarNumero } from '../../lib/formato';
+
+const indicadores = await indicadoresDeGoverno();
+const fichaDe = (id: string) => (id === 'salario-minimo-real' ? 'salario-minimo' : id);
+---
+
+<Base titulo="Governos" descricao="Os números da economia em cada governo desde 2003, com a mesma régua para todos." emRevisao>
+  <header class="cabecalho">
+    <div class="ob-eyebrow">Governos</div>
+    <h1 class="ob-headline">Cada governo com a mesma régua</h1>
+    <p class="ob-deck">
+      De 2003 até hoje: o que cada governo herdou, o que entregou, o que veio de fora e o que foi decidido. Sem nota e sem
+      ranking.
+    </p>
+  </header>
+
+  <ul class="governos">
+    {
+      GOVERNOS.map((g) => (
+        <li>
+          <a class="governo governo--link" href={`/governos/${g.id}`}>
+            <span class="governo-periodo">{g.inicio.slice(0, 4)} — {g.fim ? g.fim.slice(0, 4) : 'atual'}</span>
+            <span class="governo-nome">{g.nome}</span>
+            <span class="governo-estado">{formatarData(new Date(g.inicio))} a {g.fim ? formatarData(new Date(g.fim)) : 'hoje'}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <section class="artigo largo secao">
+    <h2>A média de cada indicador, governo a governo</h2>
+    <p>
+      A média mostra como foi o período, mas não diz por quê. Antes de comparar, veja na página de cada governo o que ele
+      herdou e o que veio de fora.
+    </p>
+    <div class="tabela-rolagem">
+      <table class="tabela-governo">
+        <thead>
+          <tr>
+            <th scope="col">Indicador</th>
+            {GOVERNOS.map((g) => <th scope="col"><a href={`/governos/${g.id}`}>{g.nome}</a></th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {
+            indicadores.map((ind) => (
+              <tr>
+                <th scope="row">
+                  <a href={`/indicadores/${fichaDe(ind.id)}`}>{ind.nome}</a>
+                  <span class="tg-unidade">{ind.unidade}</span>
+                </th>
+                {GOVERNOS.map((g) => {
+                  const r = resumir(ind.pontos, g, ind.anual);
+                  const parcial = r.pontos.length > 0 && r.herdado === undefined && !ind.anual;
+                  return (
+                    <td>
+                      <span class="tg-valor">{r.media === undefined ? '—' : formatarNumero(r.media, ind.casas)}</span>
+                      {parcial && <span class="tg-quando">só parte do período</span>}
+                      {g.fim === null && r.pontos.length > 0 && <span class="tg-quando">até agora</span>}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <NotaMetodo titulo="Como ler esta tabela">
+      <ul>
+        <li>Média simples dos meses (ou anos, no PIB) em que cada governo estava no exercício.</li>
+        <li>"—" quer dizer que a série ainda não existia no período. "Só parte do período" quer dizer que ela começa no meio do governo.</li>
+        <li>O governo em curso tem menos tempo de dados que os outros. Compare com cuidado.</li>
+        <li>Juros são decididos pelo Banco Central; câmbio e preços internacionais dependem também do resto do mundo.</li>
+      </ul>
+    </NotaMetodo>
+  </section>
+</Base>

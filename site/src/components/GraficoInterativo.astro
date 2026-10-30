@@ -1,0 +1,210 @@
+---
+// Gráfico de linha interativo: o SVG é desenhado no build (funciona sem JavaScript)
+// e o script acrescenta a linha-guia com o valor de cada ponto (mouse, toque ou setas).
+// Faixas neutras marcam os mandatos presidenciais; nenhuma cor representa governo.
+// Acessível: título com a conclusão, descrição, tabela de dados equivalente.
+import type { Ponto } from '../lib/dados';
+import { GOVERNOS } from '../lib/governos';
+import { formatarMesAno, formatarNumero } from '../lib/formato';
+
+interface Props {
+  titulo: string;
+  descricao: string;
+  pontos: Ponto[];
+  unidade: string;
+  casas?: number;
+  cor?: string;
+  anual?: boolean; // dados anuais: rótulos por ano
+  destacar?: string; // id do governo a destacar
+  faixas?: boolean;
+}
+
+const { titulo, descricao, pontos, unidade, casas = 1, cor = 'var(--chart-1)', anual = false, destacar, faixas = true } = Astro.props;
+const L = 720, A = 300, M = { topo: 30, dir: 16, base: 30, esq: 52 };
+
+const tempo = (d: string) => Date.parse(d);
+const t0 = pontos.length ? tempo(pontos[0]!.data) : 0;
+const t1 = pontos.length ? tempo(pontos.at(-1)!.data) : 1;
+const valores = pontos.map((p) => p.valor);
+const minimo = Math.min(...valores, 0);
+const maximo = Math.max(...valores, 0);
+const folga = (maximo - minimo) * 0.06 || 1;
+const vMin = minimo < 0 ? minimo - folga : 0;
+const vMax = maximo + folga;
+const x = (t: number) => M.esq + ((t - t0) / Math.max(t1 - t0, 1)) * (L - M.esq - M.dir);
+const y = (v: number) => M.topo + (1 - (v - vMin) / (vMax - vMin || 1)) * (A - M.topo - M.base);
+const caminho = pontos.map((p, i) => `${i ? 'L' : 'M'}${x(tempo(p.data)).toFixed(1)} ${y(p.valor).toFixed(1)}`).join(' ');
+const marcas = [vMin < 0 ? vMin : 0, (vMin + vMax) / 2, vMax].map((v) => Number(v.toFixed(casas)));
+
+// Faixas dos mandatos que cruzam o período do gráfico.
+const bandas = faixas
+  ? GOVERNOS.map((g) => {
+      const ini = Math.max(tempo(g.inicio), t0);
+      const fim = Math.min(g.fim ? tempo(g.fim) : t1, t1);
+      return { g, x0: x(ini), x1: x(fim) };
+    }).filter((b) => b.x1 > b.x0)
+  : [];
+
+const id = `gi-${Math.abs(titulo.split('').reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7))}`;
+const rotulo = (d: string) => (anual ? d.slice(0, 4) : formatarMesAno(new Date(d)));
+const dados = pontos.map((p) => [p.data, p.valor, p.preliminar ? 1 : 0]);
+const governosJson = GOVERNOS.map((g) => [g.inicio, g.fim, g.nome]);
+const ultimos = (anual ? pontos : pontos.slice(-24)).slice().reverse();
+---
+
+{
+  pontos.length > 1 && (
+    <figure class="ob-chart grafico-interativo">
+      <figcaption class="ob-chart-title" id={id}>{titulo}</figcaption>
+      <p class="ob-chart-sub">{unidade}{faixas && ' · faixas: mandatos presidenciais'}</p>
+      <div
+        class="grafico-area"
+        data-grafico
+        data-pontos={JSON.stringify(dados)}
+        data-governos={JSON.stringify(governosJson)}
+        data-geo={JSON.stringify({ L, A, M, t0, t1, vMin, vMax })}
+        data-casas={casas}
+        data-unidade={unidade}
+        data-anual={anual ? '1' : '0'}
+      >
+        <svg viewBox={`0 0 ${L} ${A}`} role="img" aria-labelledby={id} aria-describedby={`${id}-d`} tabindex="0">
+          <desc id={`${id}-d`}>{descricao} Use as setas para percorrer os valores.</desc>
+          {bandas.map((b, i) => (
+            <g class:list={['banda', { 'banda--par': i % 2 === 0, 'banda--destaque': b.g.id === destacar }]}>
+              <rect x={b.x0} y={M.topo - 22} width={b.x1 - b.x0} height={A - M.topo - M.base + 22} />
+              {b.x1 - b.x0 > 34 && (
+                <text x={(b.x0 + b.x1) / 2} y={M.topo - 9} text-anchor="middle">{b.g.nome}</text>
+              )}
+            </g>
+          ))}
+          {marcas.map((m) => (
+            <g>
+              <line x1={M.esq} x2={L - M.dir} y1={y(m)} y2={y(m)} class:list={['grade-linha', { 'grade-zero': m === 0 }]} />
+              <text x={M.esq - 8} y={y(m) + 4} text-anchor="end">{formatarNumero(m, casas)}</text>
+            </g>
+          ))}
+          <path class="grafico-linha" d={caminho} pathLength="1" fill="none" stroke={cor} stroke-width="2" stroke-linejoin="round" />
+          <text x={M.esq} y={A - 8}>{rotulo(pontos[0]!.data)}</text>
+          <text x={L - M.dir} y={A - 8} text-anchor="end">{rotulo(pontos.at(-1)!.data)}</text>
+          <g class="guia" aria-hidden="true">
+            <line class="guia-linha" x1="0" x2="0" y1={M.topo - 22} y2={A - M.base} />
+            <circle class="guia-ponto" r="5" cx="0" cy="0" fill={cor} />
+          </g>
+        </svg>
+        <div class="guia-balao" aria-live="polite" hidden></div>
+      </div>
+      <details>
+        <summary>Ver dados ({anual ? 'todos os anos' : `últimos ${ultimos.length}`})</summary>
+        <div class="tabela-rolagem">
+          <table class="ob-table">
+            <thead><tr><th scope="col">{anual ? 'Ano' : 'Data'}</th><th scope="col">Valor ({unidade})</th></tr></thead>
+            <tbody>
+              {ultimos.map((p) => (
+                <tr><td>{rotulo(p.data)}</td><td class="ob-num">{formatarNumero(p.valor, casas)}{p.preliminar && ' (preliminar)'}</td></tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <slot />
+    </figure>
+  )
+}
+
+<script>
+  const MESES = ['jan.', 'fev.', 'mar.', 'abr.', 'maio', 'jun.', 'jul.', 'ago.', 'set.', 'out.', 'nov.', 'dez.'];
+  type Geo = { L: number; A: number; M: { topo: number; dir: number; base: number; esq: number }; t0: number; t1: number; vMin: number; vMax: number };
+
+  for (const area of document.querySelectorAll<HTMLElement>('[data-grafico]')) {
+    const svg = area.querySelector('svg')!;
+    const guia = svg.querySelector<SVGGElement>('.guia')!;
+    const linha = guia.querySelector('line')!;
+    const ponto = guia.querySelector('circle')!;
+    const balao = area.querySelector<HTMLElement>('.guia-balao')!;
+    const pontos = JSON.parse(area.dataset.pontos!) as [string, number, number][];
+    const governos = JSON.parse(area.dataset.governos!) as [string, string | null, string][];
+    const geo = JSON.parse(area.dataset.geo!) as Geo;
+    const casas = Number(area.dataset.casas);
+    const anual = area.dataset.anual === '1';
+    const unidade = area.dataset.unidade ?? '';
+    const numero = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: casas, maximumFractionDigits: casas });
+
+    const xDe = (t: number) => geo.M.esq + ((t - geo.t0) / Math.max(geo.t1 - geo.t0, 1)) * (geo.L - geo.M.esq - geo.M.dir);
+    const yDe = (v: number) => geo.M.topo + (1 - (v - geo.vMin) / (geo.vMax - geo.vMin || 1)) * (geo.A - geo.M.topo - geo.M.base);
+    const xs = pontos.map((p) => xDe(Date.parse(p[0])));
+    const rotulo = (d: string) => (anual ? d.slice(0, 4) : `${MESES[Number(d.slice(5, 7)) - 1]} ${d.slice(0, 4)}`);
+    const governoDe = (d: string) => {
+      const m = d.slice(0, 7);
+      if (anual) return '';
+      return governos.find(([ini, fim]) => m >= ini.slice(0, 7) && (fim === null || m <= fim.slice(0, 7)))?.[2] ?? '';
+    };
+    const formatar = (v: number) => (v < 0 ? '−' : '') + numero.format(Math.abs(v));
+
+    let atual = -1;
+    const mostrar = (i: number) => {
+      atual = Math.max(0, Math.min(pontos.length - 1, i));
+      const [data, valor, preliminar] = pontos[atual]!;
+      const px = xs[atual]!;
+      const py = yDe(valor);
+      linha.setAttribute('x1', String(px));
+      linha.setAttribute('x2', String(px));
+      ponto.setAttribute('cx', String(px));
+      ponto.setAttribute('cy', String(py));
+      guia.classList.add('visivel');
+      const gov = governoDe(data);
+      balao.replaceChildren();
+      const d = document.createElement('span');
+      d.className = 'guia-data';
+      d.textContent = rotulo(data) + (gov ? ` · ${gov}` : '');
+      const v = document.createElement('strong');
+      v.textContent = `${formatar(valor)} ${unidade.startsWith('%') ? unidade : ''}`.trim() + (preliminar ? ' (preliminar)' : '');
+      balao.append(d, v);
+      if (!unidade.startsWith('%')) {
+        const u = document.createElement('span');
+        u.className = 'guia-data';
+        u.textContent = unidade;
+        balao.append(u);
+      }
+      balao.hidden = false;
+      // Posição em pixels da tela: o SVG escala com a largura do quadro.
+      const escala = svg.getBoundingClientRect().width / geo.L;
+      const larg = balao.offsetWidth;
+      const esquerda = Math.min(Math.max(px * escala - larg / 2, 0), area.clientWidth - larg);
+      balao.style.left = `${esquerda}px`;
+      balao.style.top = `${Math.max(0, py * escala - balao.offsetHeight - 14)}px`;
+    };
+    const esconder = () => {
+      guia.classList.remove('visivel');
+      balao.hidden = true;
+    };
+    const maisProximo = (clienteX: number) => {
+      const r = svg.getBoundingClientRect();
+      const vx = ((clienteX - r.left) / r.width) * geo.L;
+      let lo = 0, hi = xs.length - 1;
+      while (hi - lo > 1) {
+        const meio = (lo + hi) >> 1;
+        if (xs[meio]! < vx) lo = meio;
+        else hi = meio;
+      }
+      return Math.abs(xs[lo]! - vx) <= Math.abs(xs[hi]! - vx) ? lo : hi;
+    };
+
+    svg.addEventListener('pointermove', (e) => mostrar(maisProximo(e.clientX)));
+    svg.addEventListener('pointerdown', (e) => mostrar(maisProximo(e.clientX)));
+    svg.addEventListener('pointerleave', (e) => {
+      if (e.pointerType === 'mouse') esconder();
+    });
+    svg.addEventListener('focus', () => mostrar(atual < 0 ? pontos.length - 1 : atual));
+    svg.addEventListener('blur', esconder);
+    svg.addEventListener('keydown', (e) => {
+      const passo = e.shiftKey ? 12 : 1;
+      if (e.key === 'ArrowLeft') mostrar(atual - passo);
+      else if (e.key === 'ArrowRight') mostrar(atual + passo);
+      else if (e.key === 'Home') mostrar(0);
+      else if (e.key === 'End') mostrar(pontos.length - 1);
+      else if (e.key === 'Escape') esconder();
+      else return;
+      e.preventDefault();
+    });
+  }
+</script>
