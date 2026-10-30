@@ -38,6 +38,11 @@
   display: grid; gap: var(--space-3);
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
 }
+/* Lista de cartões (ex.: aulas em <ol>): sem a numeração do navegador, que ficava solta ao lado.
+   O cartão já diz "Aula 1", "Aula 2"... */
+ol.grade, ul.grade { list-style: none; margin: 0; padding: 0; }
+.grade > li { display: flex; }
+.grade > li > .ob-card { flex: 1; }
 
 .portas { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); }
 
